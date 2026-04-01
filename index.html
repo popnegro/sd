@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PH Portfolio | Unsplash Engine</title>
+    <style>
+        :root {
+            --bg: #080808;
+            --accent: #ffffff;
+            --meta: rgba(255, 255, 255, 0.4);
+            --transition-main: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background: var(--bg);
+            color: var(--accent);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Custom Cursor Experimental */
+        #cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        #cursor-ring {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            z-index: 999;
+            pointer-events: none;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* Header Experimental */
+        header {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 8%;
+        }
+
+        .title-reveal {
+            font-size: clamp(3rem, 12vw, 8rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -4px;
+            text-transform: uppercase;
+            overflow: hidden;
+        }
+
+        .title-reveal span {
+            display: block;
+            transform: translateY(100%);
+            transition: var(--transition-main);
+        }
+
+        /* Grid de Porfolio */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 4vw;
+            padding: 0 4vw 10vh;
+        }
+
+        .photo-item {
+            position: relative;
+            width: 100%;
+            margin-bottom: 4vh;
+        }
+
+        /* Parallax y efecto de escala */
+        .photo-wrapper {
+            overflow: hidden;
+            background: #111;
+            aspect-ratio: 16/10;
+            clip-path: inset(0% 0% 0% 0%);
+            transition: clip-path 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 120%; /* Extra para el parallax */
+            object-fit: cover;
+            transform: scale(1.2);
+            transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        .photo-item:hover img {
+            transform: scale(1) translateY(-10%);
+        }
+
+        .photo-info {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--meta);
+        }
+
+        @media (max-width: 768px) {
+            .gallery { grid-template-columns: 1fr; }
+            #cursor-dot, #cursor-ring { display: none; }
+            * { cursor: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
+
+    <header>
+        <h1 class="title-reveal">
+            <span id="t1">Digital</span>
+            <span id="t2">Archive</span>
+        </h1>
+    </header>
+
+    <main class="gallery" id="unsplash-gallery">
+        </main>
+
+    <script>
+        const API_KEY = '_XNzSM9N-KV8aX1m4N82b6UT37Ps1AtWn4HWLXjbz9g';
+        const USERNAME = 'luisgrasso'; // O usa 'photos' para generales
+
+        // 1. Fetch de Imágenes
+        async function fetchPhotos() {
+            try {
+                // Obtenemos fotos del usuario o fotos recientes
+                const response = await fetch(`https://api.unsplash.com/users/${USERNAME}/photos?per_page=12&client_id=${API_KEY}`);
+                const photos = await response.json();
+                renderPhotos(photos);
+            } catch (err) {
+                console.error("Error al conectar con Unsplash:", err);
+            }
+        }
+
+        // 2. Render con Microinteracciones
+        function renderPhotos(photos) {
+            const container = document.getElementById('unsplash-gallery');
+            
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                
+                // Usamos el parámetro &w=1200 para optimizar carga
+                item.innerHTML = `
+                    <div class="photo-wrapper">
+                        <img src="${photo.urls.regular}&w=1200&q=80" alt="${photo.alt_description}" loading="lazy">
+                    </div>
+                    <div class="photo-info">
+                        <span>0${index + 1}</span>
+                        <span>${photo.location?.name || 'Unknown Location'}</span>
+                        <span>${new Date(photo.created_at).getFullYear()}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+
+            // Animación de entrada de títulos
+            setTimeout(() => {
+                document.getElementById('t1').style.transform = 'translateY(0)';
+                document.getElementById('t2').style.transform = 'translateY(0)';
+            }, 300);
+        }
+
+        // 3. Cursor Experimental (Smooth Follow)
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+
+        document.addEventListener('mousemove', (e) => {
+            const { clientX: x, clientY: y } = e;
+            
+            // Punto central
+            dot.style.transform = `translate3d(${x - 4}px, ${y - 4}px, 0)`;
+            
+            // Anillo con lag (suavizado por CSS transition)
+            ring.style.transform = `translate3d(${x - 20}px, ${y - 20}px, 0)`;
+        });
+
+        // Efecto click en cursor
+        document.addEventListener('mousedown', () => ring.style.transform += ' scale(0.5)');
+        document.addEventListener('mouseup', () => ring.style.transform += ' scale(1)');
+
+        // 4. Parallax Simple al Scroll
+        window.addEventListener('scroll', () => {
+            const images = document.querySelectorAll('.photo-item img');
+            images.forEach(img => {
+                const speed = 0.05;
+                const rect = img.parentElement.getBoundingClientRect();
+                const offset = window.pageYOffset - rect.top;
+                img.style.transform = `scale(1.2) translateY(${offset * speed}px)`;
+            });
+        });
+
+        fetchPhotos();
+    </script>
+</body>
+</html>
