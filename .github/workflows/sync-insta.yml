@@ -1,0 +1,31 @@
+name: Sync Instagram Feed
+on:
+  schedule:
+    - cron: '0 0 * * *' # Se ejecuta cada medianoche
+  workflow_dispatch: # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Run Sync Script
+        run: |
+          node scripts/sync-insta.js
+        env:
+          INSTA_TOKEN: ${{ secrets.INSTA_TOKEN }}
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add data/galeria.json
+          git commit -m "Auto-update: Instagram Feed" || echo "No changes to commit"
+          git push
