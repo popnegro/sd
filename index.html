@@ -37,6 +37,7 @@
             pointer-events: none;
             z-index: 10000;
             mix-blend-mode: difference;
+            transition: width 0.3s var(--ease), height 0.3s var(--ease), background 0.3s var(--ease);
         }
 
         /* --- Header Metropolitan --- */
@@ -69,6 +70,7 @@
             margin-bottom: 15vh;
             text-decoration: none;
             color: inherit;
+            display: block;
         }
 
         @media (min-width: 768px) {
@@ -147,44 +149,56 @@
 
     <script>
         /**
-         * LUIS GRASSO | PORTFOLIO ENGINE
-         * Vanilla JS / No dependencies
+         * LUIS GRASSO | PORTFOLIO ENGINE UNIFICADO
+         * Estética: Dark Tech / Metropolitan
          */
 
         const CONFIG = {
-            dataSource: './data/galeria.json',
-            lerpAmount: 0.15
+            dataSource: '/feed.jsons', // Asegúrate de que esta ruta sea correcta
+            lerpAmount: 0.1
         };
 
-        // 1. Carga de Datos
+        // 1. Carga de Datos y Renderizado
         async function init() {
+            const root = document.getElementById('gallery-root');
+            
             try {
                 const response = await fetch(CONFIG.dataSource);
                 const data = await response.json();
-                render(data);
+                
+                if (data && data.posts) {
+                    render(data.posts);
+                } else if (Array.isArray(data)) {
+                    render(data);
+                }
             } catch (err) {
-                console.error("Fallo al cargar galeria.json", err);
+                console.error("Fallo al cargar el archivo JSON:", err);
+                root.innerHTML = `<p style="grid-column: span 12; opacity: 0.5; text-transform: uppercase; font-size: 10px;">Error de sincronización con el archivo de datos.</p>`;
             }
         }
 
-        // 2. Renderizado con estructura asimétrica
         function render(items) {
             const root = document.getElementById('gallery-root');
+            root.innerHTML = ''; // Limpiar contenedor
             
             items.forEach((item, index) => {
                 const article = document.createElement('a');
-                article.href = "#";
+                article.href = item.url || "#";
+                article.target = "_blank";
                 article.className = 'project-item';
                 
+                // Formateo de número (01, 02...)
+                const count = (index + 1).toString().padStart(2, '0');
+                
                 article.innerHTML = `
-                    <div class="media-container" style="aspect-ratio: ${item.aspect || '1/1'}">
-                        <img src="${item.url}" alt="${item.title}" loading="lazy">
+                    <div class="media-container" style="aspect-ratio: ${item.aspect || '4/5'}">
+                        <img src="${item.image || item.url}" alt="${item.title || item.caption}" loading="lazy">
                     </div>
                     <div class="project-meta">
-                        <span>${item.location}</span>
-                        <span>0${index + 1} // ${item.date}</span>
+                        <span>${item.location || 'Argentina'}</span>
+                        <span>${count} // ${item.date || '2026'}</span>
                     </div>
-                    <h2 class="project-title">${item.title}</h2>
+                    <h2 class="project-title">${item.title || item.caption}</h2>
                 `;
                 root.appendChild(article);
             });
@@ -192,7 +206,7 @@
             setupObservers();
         }
 
-        // 3. Custom Cursor (LERP)
+        // 2. Custom Cursor (LERP)
         const cursor = document.getElementById('cursor');
         let mouse = { x: 0, y: 0 };
         let pos = { x: 0, y: 0 };
@@ -205,12 +219,14 @@
         function animateCursor() {
             pos.x += (mouse.x - pos.x) * CONFIG.lerpAmount;
             pos.y += (mouse.y - pos.y) * CONFIG.lerpAmount;
-            cursor.style.transform = `translate3d(${pos.x - 5}px, ${pos.y - 5}px, 0)`;
+            cursor.style.left = `${pos.x}px`;
+            cursor.style.top = `${pos.y}px`;
+            cursor.style.transform = `translate(-50%, -50%)`;
             requestAnimationFrame(animateCursor);
         }
         animateCursor();
 
-        // 4. Reveal al Scroll (Intersection Observer)
+        // 3. Reveal al Scroll (Intersection Observer)
         function setupObservers() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
@@ -218,16 +234,16 @@
                         entry.target.classList.add('visible');
                     }
                 });
-            }, { threshold: 0.2 });
+            }, { threshold: 0.1 });
 
             document.querySelectorAll('.media-container').forEach(el => observer.observe(el));
         }
 
-        // Mouse Hover effect para el cursor
+        // 4. Interacciones del Cursor
         document.addEventListener('mouseover', e => {
             if (e.target.closest('.project-item')) {
-                cursor.style.width = '40px';
-                cursor.style.height = '40px';
+                cursor.style.width = '60px';
+                cursor.style.height = '60px';
                 cursor.style.backgroundColor = 'transparent';
                 cursor.style.border = '1px solid var(--accent)';
             }
@@ -242,6 +258,7 @@
             }
         });
 
+        // Inicio
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
