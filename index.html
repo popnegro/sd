@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luis Grasso | Visual Archive</title>
+    <title>Luis Grasso | Visual Archive & Audio Sync</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
@@ -17,7 +17,6 @@
             --ease: cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* --- Base --- */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; -webkit-user-select: none; user-select: none; }
 
         body {
@@ -26,10 +25,10 @@
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             line-height: 1.2;
-            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.2s ease;
         }
 
-        /* --- Cursor --- */
+        /* --- Custom Cursor --- */
         #cursor {
             position: fixed;
             top: 0; left: 0;
@@ -39,61 +38,44 @@
             pointer-events: none;
             z-index: 99999;
             mix-blend-mode: difference;
-            transform-origin: center center;
-            transition: width 0.5s var(--ease), height 0.5s var(--ease), background-color 0.3s;
             will-change: transform;
         }
 
-        /* --- Layout --- */
-        header {
-            height: 60vh;
+        /* --- Header & Layout --- */
+        .header-container {
+            min-height: 80vh;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
             padding: 5% 8%;
         }
 
         .main-title {
-            font-size: clamp(3.5rem, 12vw, 12rem);
+            font-size: clamp(3.5rem, 10vw, 9rem);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: -0.06em;
             line-height: 0.8;
         }
 
-        /* --- Text Blocks --- */
-        .text-block {
-            padding: 20vh 8%;
-            display: flex;
-            justify-content: center;
+        .video-wrapper {
+            flex: 1;
+            position: relative;
+            padding-bottom: 30%;
+            height: 0;
+            overflow: hidden;
+            background: var(--gray);
         }
 
-        .content-limit { max-width: 900px; width: 100%; }
-
-        .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            color: var(--accent);
-            margin-bottom: 2rem;
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: none; filter: grayscale(1); opacity: 0.5;
+            pointer-events: none;
         }
 
-        .display-text {
-            font-size: clamp(2rem, 5vw, 4.5rem);
-            font-weight: 400;
-            line-height: 1.1;
-            letter-spacing: -0.02em;
-        }
-
-        .body-text {
-            font-size: clamp(1.2rem, 2.5vw, 2rem);
-            line-height: 1.4;
-            opacity: 0.8;
-        }
-
-        .highlight { font-style: italic; opacity: 0.5; }
-
-        /* --- Gallery --- */
+        /* --- Gallery System --- */
         .gallery {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
@@ -102,7 +84,7 @@
         }
 
         .project-item { grid-column: span 12; margin-bottom: 10vh; }
-
+        
         @media (min-width: 768px) {
             .project-item { grid-column: span 6; }
             .project-item:nth-child(even) { margin-top: 25vh; }
@@ -114,7 +96,7 @@
             background: var(--gray);
             overflow: hidden;
             clip-path: inset(100% 0 0 0);
-            transition: clip-path 1.6s var(--ease);
+            transition: clip-path 1.2s var(--ease);
         }
 
         .media-wrapper.revealed { clip-path: inset(0% 0 0 0); }
@@ -122,16 +104,16 @@
         .media-wrapper img {
             width: 100%; height: 100%;
             object-fit: cover; display: block;
-            opacity: 0;
             filter: grayscale(1) contrast(1.1);
-            transform: scale(1.3);
-            transition: transform 2.5s var(--ease), filter 1.5s ease, opacity 0.8s ease;
-            image-rendering: -webkit-optimize-contrast;
+            transform: scale(1.1);
+            transition: transform 0.8s var(--ease), filter 0.5s ease;
+            will-change: transform, filter;
         }
 
-        .media-wrapper img.loaded { opacity: 1; }
-
-        .project-item:hover img { transform: scale(1.1); filter: grayscale(0) contrast(1); }
+        /* --- Audio Glitch State --- */
+        .glitch-active img {
+            transition: none !important;
+        }
 
         .project-meta {
             margin-top: 1.5rem;
@@ -141,183 +123,166 @@
             text-transform: uppercase;
             letter-spacing: 0.25em;
             opacity: 0.4;
-            margin-bottom: 0.5rem;
         }
 
-        .project-title { font-size: clamp(1.2rem, 2vw, 2rem); font-weight: 400; }
+        .project-title { font-size: clamp(1.2rem, 2vw, 2rem); font-weight: 400; margin-top: 0.5rem; }
 
-        /* --- Transitions --- */
-        .scroll-reveal {
-            opacity: 0;
-            transform: translateY(60px);
-            transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
-            will-change: transform, opacity;
+        .text-block { padding: 15vh 8%; }
+        .label { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.3em; margin-bottom: 1rem; text-transform: uppercase;}
+        .display-text { font-size: clamp(2rem, 5vw, 4.5rem); max-width: 900px; }
+
+        footer { padding: 5vh 8%; border-top: 1px solid var(--gray); font-size: 0.7rem; opacity: 0.3; }
+
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; align-items: flex-start; }
+            .video-wrapper { width: 100%; padding-bottom: 56%; }
         }
-
-        .scroll-reveal.active { opacity: 1; transform: translateY(0); }
-
-        footer { padding: 10vh 8% 5vh; border-top: 1px solid var(--gray); font-size: 0.7rem; opacity: 0.3; }
-
     </style>
 </head>
 <body>
 
     <div id="cursor"></div>
 
-    <header>
+    <header class="header-container">
         <h1 class="main-title">SELECTED<br>WORKS_</h1>
+        <div class="video-wrapper">
+            <iframe src="https://www.youtube.com/embed/dF_vXRCrt1c?autoplay=1&loop=1&playlist=dF_vXRCrt1c&mute=1&controls=0" allow="autoplay"></iframe>
+        </div>
     </header>
 
-    <section class="text-block scroll-reveal">
-        <div class="content-limit">
-            <p class="label">01 / Concepto</p>
-            <h2 class="display-text">Exploración de la forma, el <span class="highlight">vacío</span> y la luz a través del lente contemporáneo.</h2>
-        </div>
-    </section>
-
-    <section class="text-block scroll-reveal">
-        <div class="content-limit">
-            <p class="label">02 / Proceso</p>
-            <p class="body-text">Cada captura es un fragmento de tiempo preservado. No buscamos la perfección, sino la honestidad del material y la crudeza del entorno urbano.</p>
-        </div>
+    <section class="text-block" data-stage="negacion">
+        <p class="label">01 / Concepto</p>
+        <h2 class="display-text">La arquitectura del <span style="font-style: italic; opacity: 0.5">vacío</span> y el ruido digital.</h2>
     </section>
 
     <main id="gallery-root" class="gallery"></main>
+
+    <section class="text-block" data-stage="ira" style="text-align: right;">
+        <p class="label">02 / Energía</p>
+        <h2 class="display-text" style="margin-left: auto;">Distorsión como medio de expresión honesta.</h2>
+    </section>
 
     <footer>
         <p>© 2026 LUIS GRASSO — MENDOZA, ARGENTINA</p>
     </footer>
 
     <script>
+        // 1. Configuración
         const PROJECTS = [
             { title: "Arquitectura Brutalista", img: "img/incendio.webp", loc: "Mendoza", year: "2024", ratio: "4/5" },
             { title: "Sombras Urbanas", img: "img/incendio.webp", loc: "Buenos Aires", year: "2023", ratio: "1/1" },
             { title: "Minimalismo", img: "img/incendio.webp", loc: "San Rafael", year: "2024", ratio: "3/4" }
         ];
 
-        const placeholderSVG = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjEwMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzE1MTUxNSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjZWJmZjAwIiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=";
+        const soundLibrary = {
+            negacion: 'assets/sounds/white-noise-glitch.mp3',
+            ira: 'assets/sounds/distorted-bass.mp3'
+        };
 
-        // 1. Renderizado Galería
-        function initGallery() {
-            const container = document.getElementById('gallery-root');
-            PROJECTS.forEach((p, i) => {
-                const item = document.createElement('section');
-                item.className = 'project-item';
-                item.innerHTML = `
-                    <div class="media-wrapper" style="aspect-ratio: ${p.ratio}">
-                        <img src="${p.img}" alt="${p.title}" onload="this.classList.add('loaded')" onerror="handleImageError(this)">
-                    </div>
-                    <div class="project-info">
-                        <div class="project-meta">
-                            <span>${p.loc}</span>
-                            <span>${String(i + 1).padStart(2, '0')} — ${p.year}</span>
-                        </div>
-                        <h2 class="project-title">${p.title}</h2>
-                    </div>`;
-                container.appendChild(item);
-            });
+        let audioCtx, analyser, dataArray, currentAudio;
+        let isAudioInit = false;
+
+        // 2. Galería
+        const container = document.getElementById('gallery-root');
+        PROJECTS.forEach((p, i) => {
+            const sect = document.createElement('section');
+            sect.className = 'project-item';
+            sect.innerHTML = `
+                <div class="media-wrapper" style="aspect-ratio: ${p.ratio}">
+                    <img src="${p.img}" alt="${p.title}">
+                </div>
+                <div class="project-meta"><span>${p.loc}</span><span>0${i+1} — ${p.year}</span></div>
+                <h2 class="project-title">${p.title}</h2>
+            `;
+            container.appendChild(sect);
+        });
+
+        // 3. Audio Engine
+        async function initAudio() {
+            if (isAudioInit) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 128; 
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            isAudioInit = true;
+            renderLoop();
         }
 
-        function handleImageError(image) {
-            if (!image.dataset.error) {
-                image.dataset.error = "true";
-                image.src = placeholderSVG;
-                image.classList.add('loaded');
-                image.style.filter = "none";
+        function playSound(stage) {
+            if (!isAudioInit || !soundLibrary[stage]) return;
+            if (currentAudio) { currentAudio.pause(); }
+
+            const audio = new Audio(soundLibrary[stage]);
+            audio.loop = true;
+            audio.crossOrigin = "anonymous";
+            
+            const source = audioCtx.createMediaElementSource(audio);
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+            
+            audio.play().catch(() => {});
+            currentAudio = audio;
+        }
+
+        // 4. Render Loop (Glitch)
+        function renderLoop() {
+            requestAnimationFrame(renderLoop);
+            analyser.getByteFrequencyData(dataArray);
+
+            // Analizar bajos (frecuencias 0 a 4)
+            let bass = 0;
+            for(let i=0; i<5; i++) { bass += dataArray[i]; }
+            bass = bass / 5;
+
+            const threshold = 180; // Sensibilidad ajustable
+            const images = document.querySelectorAll('.media-wrapper.revealed img');
+
+            if (bass > threshold) {
+                const intensity = (bass - threshold) / 2;
+                images.forEach(img => {
+                    img.parentElement.classList.add('glitch-active');
+                    img.style.filter = `invert(1) hue-rotate(${Math.random()*360}deg) contrast(3)`;
+                    img.style.transform = `scale(1.1) translate(${(Math.random()-0.5)*intensity}px)`;
+                });
+                document.body.style.backgroundColor = "rgba(235, 255, 0, 0.05)";
+            } else {
+                images.forEach(img => {
+                    img.parentElement.classList.remove('glitch-active');
+                    img.style.filter = "grayscale(1) contrast(1.1)";
+                    img.style.transform = "scale(1)";
+                });
+                document.body.style.backgroundColor = "var(--bg)";
             }
         }
 
-        // 2. Sistema de Observación Unificado
-        function initObservers() {
-            const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+        // 5. Interacción & Observers
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    const stage = entry.target.getAttribute('data-stage');
+                    if (stage) playSound(stage);
+                }
+            });
+        }, { threshold: 0.4 });
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        if (entry.target.classList.contains('media-wrapper')) {
-                            entry.target.classList.add('revealed');
-                        } else {
-                            entry.target.classList.add('active');
-                        }
-                    }
-                });
-            }, observerOptions);
+        document.querySelectorAll('.media-wrapper, [data-stage]').forEach(el => observer.observe(el));
 
-            document.querySelectorAll('.media-wrapper, .scroll-reveal').forEach(el => observer.observe(el));
-        }
-
-        // 3. Cursor Engine
+        // Cursor
         const cursor = document.getElementById('cursor');
-        let m = { x: window.innerWidth/2, y: window.innerHeight/2 };
-        let p = { x: window.innerWidth/2, y: window.innerHeight/2 };
-
+        let m = {x:0, y:0}, p = {x:0, y:0};
         window.addEventListener('mousemove', e => { m.x = e.clientX; m.y = e.clientY; });
-
+        
         function updateCursor() {
             p.x += (m.x - p.x) * 0.15;
             p.y += (m.y - p.y) * 0.15;
             cursor.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%)`;
             requestAnimationFrame(updateCursor);
         }
+        updateCursor();
 
-        // 4. Hovers
-        document.addEventListener('mouseover', e => {
-            if (e.target.closest('.project-item, .display-text')) {
-                cursor.style.width = '80px'; cursor.style.height = '80px';
-                cursor.style.backgroundColor = 'rgba(235, 255, 0, 0.15)';
-            }
-        });
-
-        document.addEventListener('mouseout', e => {
-            if (e.target.closest('.project-item, .display-text')) {
-                cursor.style.width = '12px'; cursor.style.height = '12px';
-                cursor.style.backgroundColor = 'var(--accent)';
-            }
-        });
-
-        // Diccionario de sonidos por etapa
-const soundLibrary = {
-  negacion: new Audio('assets/sounds/white-noise-glitch.mp3'),
-  ira: new Audio('assets/sounds/distorted-bass.mp3'),
-  negociacion: new Audio('assets/sounds/ticking-clock-reverb.mp3'),
-  depresion: new Audio('assets/sounds/low-frequency-hum.mp3'),
-  aceptacion: new Audio('assets/sounds/ambient-piano-pad.mp3')
-};
-
-// Función para gestionar el audio
-const playStageSound = (stage) => {
-  // Detener todos los sonidos antes de iniciar el nuevo
-  Object.values(soundLibrary).forEach(sound => {
-    sound.pause();
-    sound.currentTime = 0;
-  });
-  
-  const activeSound = soundLibrary[stage];
-  activeSound.loop = true; // El sonido persiste mientras se ve la etapa
-  activeSound.volume = 0.5;
-  activeSound.play();
-};
-
-// Observador para detectar el contenedor en pantalla
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const stage = entry.target.getAttribute('data-stage');
-      playStageSound(stage);
-    }
-  });
-}, { threshold: 0.6 }); // Se activa cuando el 60% del contenedor es visible
-
-document.querySelectorAll('.gallery-container').forEach(container => {
-  observer.observe(container);
-});
-
-        // Inicio Único
-        window.addEventListener('load', () => {
-            initGallery();
-            initObservers();
-            updateCursor();
-        });
+        // Activar audio al primer clic
+        document.addEventListener('click', initAudio, { once: true });
     </script>
 </body>
 </html>
