@@ -3,331 +3,263 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luis Grasso | Visual Archive 2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
-    
+    <title>SOUNDS OF DISTORTION | V3.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@900&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #050505;
-            --text: #ffffff;
-            --accent: #ebff00;
-            --gray: #1a1a1a;
-            --ease: cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        /* --- Base Setup --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; -webkit-user-select: none; user-select: none; }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            line-height: 1.2;
-            -webkit-font-smoothing: antialiased;
-            transition: background-color 0.3s var(--ease);
-        }
-
-        /* --- Custom Cursor --- */
-        #cursor {
-            position: fixed;
-            top: 0; left: 0;
-            width: 12px; height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            mix-blend-mode: difference;
-            will-change: transform;
-            transition: width 0.3s var(--ease), height 0.3s var(--ease), background-color 0.3s;
-        }
-
-        /* --- Layout & Header --- */
-        .header-container {
-            min-height: 90vh;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 5vw;
-            padding: 0 8%;
-        }
-
-        .main-title {
-            font-size: clamp(3.5rem, 12vw, 12rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -0.06em;
-            line-height: 0.8;
-            flex: 1;
-        }
-
-        .video-wrapper {
-            flex: 0.8;
-            position: relative;
-            padding-bottom: 30%;
-            height: 0;
-            overflow: hidden;
-            background: var(--gray);
-            border-radius: 2px;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border: none; filter: grayscale(1) contrast(1.2);
-            opacity: 0.4; pointer-events: none;
-        }
-
-        /* --- Gallery Architecture --- */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 4rem 2rem;
-            padding: 10vh 8%;
-        }
-
-        .project-item { grid-column: span 12; margin-bottom: 15vh; }
+        :root { --bg: #0a0a0a; --scroll-speed: 0; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; transition: filter 0.1s; }
         
-        @media (min-width: 768px) {
-            .project-item { grid-column: span 6; }
-            .project-item:nth-child(even) { margin-top: 30vh; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* Estática de TV (Canvas) */
+        #staticCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            opacity: 0.15;
+            pointer-events: none;
+            image-rendering: pixelated;
         }
 
-        .media-wrapper {
+        /* Scanlines */
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Masonry Grid */
+        .masonry-grid { columns: 1; gap: 1.5rem; }
+        @media (min-width: 768px) { .masonry-grid { columns: 2; } }
+        @media (min-width: 1024px) { .masonry-grid { columns: 3; } }
+
+        .masonry-item {
+            break-inside: avoid;
+            margin-bottom: 1.5rem;
             position: relative;
+            background: #000;
+            mask-image: radial-gradient(circle, black 50%, transparent 95%);
+            -webkit-mask-image: radial-gradient(circle, black 50%, transparent 95%);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .masonry-item img {
             width: 100%;
-            background: var(--gray);
-            overflow: hidden;
-            clip-path: inset(100% 0 0 0);
-            transition: clip-path 1.4s var(--ease);
-            will-change: clip-path;
+            height: auto;
+            display: block;
+            filter: grayscale(1) contrast(1.4) brightness(0.7);
+            mix-blend-mode: lighten;
         }
 
-        .media-wrapper.revealed { clip-path: inset(0% 0 0 0); }
-
-        .media-wrapper img {
-            width: 100%; height: 100%;
-            object-fit: cover; display: block;
-            filter: grayscale(1) contrast(1.1);
-            transform: scale(1.15);
-            transition: transform 1.2s var(--ease), filter 0.8s ease;
+        .masonry-item:hover {
+            transform: scale(1.02);
+            mask-image: none;
+            -webkit-mask-image: none;
         }
 
-        /* Performance Optim: Disable transitions during Audio Glitch */
-        .glitch-mode img { transition: none !important; }
+        .revealed { 
+            opacity: 0; 
+            transform: translateY(40px); 
+            filter: blur(15px); 
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .revealed.is-visible { opacity: 1; transform: translateY(0); filter: blur(0); }
 
-        .project-meta {
-            margin-top: 1.5rem;
+        .main-title { line-height: 0.75; letter-spacing: -0.06em; z-index: 10; }
+
+        /* Glitch Cromático Mejorado */
+        .glitch-active {
+            filter: drop-shadow(calc(var(--scroll-speed) * 0.1px) 0 #ff0000) 
+                    drop-shadow(calc(var(--scroll-speed) * -0.1px) 0 #00ffff);
+        }
+
+        .text-stroke {
+            -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+            color: transparent;
+        }
+
+        /* Animación Marquee para System Failure */
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee-container {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            opacity: 0.4;
-        }
-
-        .project-title { font-size: clamp(1.2rem, 2.5vw, 2.2rem); font-weight: 400; margin-top: 0.5rem; }
-
-        /* --- Typography Blocks --- */
-        .text-block { padding: 20vh 8%; max-width: 1200px; }
-        .label { font-size: 0.7rem; color: var(--accent); letter-spacing: 0.4em; margin-bottom: 2rem; text-transform: uppercase;}
-        .display-text { font-size: clamp(2rem, 6vw, 5rem); font-weight: 400; line-height: 1; letter-spacing: -0.02em; }
-
-        footer { padding: 10vh 8%; border-top: 1px solid var(--gray); font-size: 0.7rem; opacity: 0.3; letter-spacing: 0.1em; }
-
-        @media (max-width: 768px) {
-            .header-container { flex-direction: column; justify-content: center; padding-top: 20vh; }
-            .video-wrapper { width: 100%; padding-bottom: 56.25%; }
+            width: 200%;
+            animation: marquee 10s linear infinite;
         }
     </style>
 </head>
 <body>
 
-    <div id="cursor"></div>
+    <div id="overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-black cursor-pointer group">
+        <div class="text-center">
+            <p class="mono text-[10px] tracking-[0.5em] uppercase text-zinc-600 mb-4 group-hover:text-white transition-colors">Señal no encontrada</p>
+            <p class="mono text-xs animate-pulse uppercase border border-zinc-800 px-6 py-3">Sintonizar canal</p>
+        </div>
+    </div>
 
-    <header class="header-container">
-        <h1 class="main-title">SELECTED<br>WORKS_</h1>
-        <div class="video-wrapper">
-    <iframe 
-        src="https://www.youtube-nocookie.com/embed/dF_vXRCrt1c?autoplay=1&loop=1&playlist=dF_vXRCrt1c&mute=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1" 
-        allow="autoplay; encrypted-media" 
-        loading="lazy">
-    </iframe>
-</div>
-    </header>
+    <canvas id="staticCanvas"></canvas>
 
-    <section class="text-block" data-stage="negacion">
-        <p class="label">01 / Concepto</p>
-        <h2 class="display-text">La captura del <span style="font-style: italic; opacity: 0.5">vacío</span> como acto de resistencia digital.</h2>
-    </section>
+    <main class="relative z-10">
+        <section class="h-screen flex items-center justify-end px-12 overflow-hidden">
+            <h1 class="main-title text-[18vw] font-black text-right uppercase select-none italic">
+                Sounds<br>of<br>Distortion
+            </h1>
+        </section>
 
-    <main id="gallery-root" class="gallery"></main>
+        <div class="container mx-auto px-6 space-y-72 pb-64">
+            
+            <section class="revealed max-w-xl ml-auto text-right">
+                <p class="mono text-zinc-600 text-sm mb-4">01 / Proceso</p>
+                <h2 class="text-5xl md:text-8xl font-black uppercase italic">Distorsión brutalista.</h2>
+            </section>
 
-    <section class="text-block" data-stage="ira" style="margin-left: auto; text-align: right;">
-        <p class="label">02 / Proceso</p>
-        <h2 class="display-text">Distorsión brutalista y honestidad del material.</h2>
-    </section>
+            <section class="py-20">
+                <div class="masonry-grid" id="projectsGrid">
+                    <div class="masonry-item"><img src="assets/img//tristeza/01.png"></div>
+                    <div class="masonry-item"><img src="assets/img//tristeza/02.png"></div>
+                    <div class="masonry-item"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=800"></div>
+                    <div class="masonry-item"><img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800"></div>
+                    <div class="masonry-item"><img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800"></div>
+                    <div class="masonry-item"><img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=800"></div>
+                </div>
+            </section>
 
-    <footer>
-        <p>© 2026 LUIS GRASSO — MENDOZA, ARGENTINA</p>
-    </footer>
+            <section class="revealed max-w-2xl ml-auto text-right">
+                <p class="mono text-zinc-600 text-sm mb-4">02 / Materialidad</p>
+                <h2 class="text-5xl md:text-8xl font-black uppercase">Honestidad del material digital.</h2>
+            </section>
+
+            <section class="revealed grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="order-2 md:order-1">
+                    <p class="mono text-zinc-600 text-sm mb-4">03 / Erosión</p>
+                    <h2 class="text-6xl font-black uppercase italic mb-8 leading-none">Degradación<br>Controlada.</h2>
+                    <p class="mono text-zinc-400 text-sm leading-relaxed max-w-sm">
+                        La perfección es un error de cálculo. Buscamos la belleza en los artefactos de compresión y el ruido térmico.
+                    </p>
+                </div>
+                <div class="masonry-item order-1 md:order-2">
+                    <img src="https://images.unsplash.com/photo-1550684376-efcbd6e3f031?q=80&w=800" alt="Erosión">
+                </div>
+            </section>
+
+            <section class="revealed py-20 relative overflow-hidden border-y border-zinc-900">
+                <div class="marquee-container">
+                    <h2 class="text-[10vw] font-black uppercase text-stroke px-4">
+                        SYSTEM FAILURE — SYSTEM ERROR — LOST SIGNAL — 
+                    </h2>
+                    <h2 class="text-[10vw] font-black uppercase text-stroke px-4">
+                        SYSTEM FAILURE — SYSTEM ERROR — LOST SIGNAL — 
+                    </h2>
+                </div>
+            </section>
+
+            <section class="revealed flex flex-col items-center justify-center text-center py-40">
+                <p class="mono text-zinc-600 text-sm mb-6">05 / Transmisión</p>
+                <h2 class="text-7xl md:text-9xl font-black uppercase tracking-tighter mb-12">Fin de la<br>señal.</h2>
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="mono border border-white px-8 py-4 hover:bg-white hover:text-black transition-all duration-500 uppercase text-xs tracking-widest">
+                    Volver al origen
+                </button>
+            </section>
+        </div>
+    </main>
 
     <script>
-        /**
-         * ENGINE: AUDIO-VISUAL SYNC v2.0
-         */
-        const PROJECTS = [
-            { title: "Arquitectura Brutalista", img: "/img/incendio.webp", loc: "Mendoza", year: "2024", ratio: "4/5" },
-            { title: "Sombras Urbanas", img: "/img/incendio.webp", loc: "Buenos Aires", year: "2023", ratio: "1/1" },
-            { title: "Minimalismo", img: "/img/incendio.webp", loc: "San Rafael", year: "2024", ratio: "3/4" }
-        ];
-
-        const SOUNDS = {
-            negacion: 'assets/sounds/white-noise-glitch.wav',
-            ira: 'assets/sounds/distorted-bass.wav'
+        const state = {
+            isStarted: false,
+            intensity: 0.3,
+            lastScrollTop: 0,
+            scrollSpeed: 0
         };
 
-        // State Management
-        let audioCtx, analyser, dataArray, currentAudio, gainNode;
-        let isInit = false;
-        let activeImgs = [];
+        let audioCtx, filter, noiseNode;
+        const canvas = document.getElementById('staticCanvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
 
-        // 1. Render Gallery
-        const container = document.getElementById('gallery-root');
-        PROJECTS.forEach((p, i) => {
-            const el = document.createElement('section');
-            el.className = 'project-item';
-            el.innerHTML = `
-                <div class="media-wrapper" style="aspect-ratio: ${p.ratio}">
-                    <img src="${p.img}" alt="${p.title}" loading="lazy">
-                </div>
-                <div class="project-meta"><span>${p.loc}</span><span>${(i+1).toString().padStart(2, '0')} — ${p.year}</span></div>
-                <h2 class="project-title">${p.title}</h2>
-            `;
-            container.appendChild(el);
-        });
+        function resize() {
+            canvas.width = 256; 
+            canvas.height = 256;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        // 2. Audio Engine Core
-        async function initEngine() {
-            if (isInit) return;
+        function drawStatic() {
+            const idata = ctx.createImageData(canvas.width, canvas.height);
+            const d = idata.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const v = Math.random() * 255 * state.intensity;
+                d[i] = d[i+1] = d[i+2] = v;
+                d[i+3] = 255;
+            }
+            ctx.putImageData(idata, 0, 0);
+            requestAnimationFrame(drawStatic);
+        }
+
+        async function initAudio() {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            gainNode = audioCtx.createGain();
-            
-            analyser.fftSize = 128;
-            dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
-            gainNode.connect(audioCtx.destination);
-            isInit = true;
-            updateLoop();
+            const bSize = audioCtx.sampleRate * 2;
+            const b = audioCtx.createBuffer(1, bSize, audioCtx.sampleRate);
+            const out = b.getChannelData(0);
+            for (let i = 0; i < bSize; i++) out[i] = Math.random() * 2 - 1;
+
+            noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = b;
+            noiseNode.loop = true;
+
+            filter = audioCtx.createBiquadFilter();
+            filter.type = "bandpass";
+            filter.frequency.value = 800;
+
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0.05;
+
+            noiseNode.connect(filter).connect(gain).connect(audioCtx.destination);
+            noiseNode.start();
         }
 
-        function playStage(stage) {
-            if (!isInit || !SOUNDS[stage]) return;
+        // Lógica de Scroll Unificada y Optimizada
+        window.addEventListener('scroll', () => {
+            const st = window.pageYOffset || document.documentElement.scrollTop;
+            state.scrollSpeed = Math.abs(st - state.lastScrollTop);
+            state.lastScrollTop = st <= 0 ? 0 : st;
+
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
             
-            // Crossfade out
-            if (currentAudio) {
-                const prevAudio = currentAudio;
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-                setTimeout(() => prevAudio.pause(), 500);
+            if (filter) {
+                filter.frequency.setTargetAtTime(400 + (scrollPercent * 3500), audioCtx.currentTime, 0.1);
+                state.intensity = 0.25 + (scrollPercent * 0.6);
             }
 
-            const audio = new Audio(SOUNDS[stage]);
-            audio.loop = true;
-            audio.crossOrigin = "anonymous";
-            
-            const source = audioCtx.createMediaElementSource(audio);
-            source.connect(analyser);
-            analyser.connect(gainNode);
-            
-            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(1, audioCtx.currentTime + 1);
-            
-            audio.play().catch(() => console.log("Audio waiting..."));
-            currentAudio = audio;
-        }
-
-        // 3. Render Loop (Sync Glitch)
-        function updateLoop() {
-            requestAnimationFrame(updateLoop);
-            if (!analyser) return;
-
-            analyser.getByteFrequencyData(dataArray);
-            let bass = 0;
-            for(let i=0; i<4; i++) { bass += dataArray[i]; }
-            bass /= 4;
-
-            const threshold = 195;
-            // Cacheamos las imágenes visibles para no consultar el DOM 60 veces por segundo
-            if (bass > threshold) {
-                const intensity = (bass - threshold) * 0.8;
-                document.body.classList.add('glitch-mode');
-                activeImgs = document.querySelectorAll('.media-wrapper.revealed img');
-                
-                activeImgs.forEach(img => {
-                    img.style.filter = `invert(1) hue-rotate(${Math.random()*360}deg) contrast(3)`;
-                    img.style.transform = `scale(1.1) translate(${(Math.random()-0.5)*intensity}px, ${(Math.random()-0.5)*intensity}px)`;
-                });
-                document.body.style.backgroundColor = "rgba(235, 255, 0, 0.08)";
-            } else {
-                if (document.body.classList.contains('glitch-mode')) {
-                    document.body.classList.remove('glitch-mode');
-                    activeImgs.forEach(img => {
-                        img.style.filter = "grayscale(1) contrast(1.1)";
-                        img.style.transform = "scale(1)";
-                    });
-                    document.body.style.backgroundColor = "var(--bg)";
-                }
+            // Glitch por velocidad
+            if (state.scrollSpeed > 25) {
+                document.body.classList.add('glitch-active');
+                document.body.style.setProperty('--scroll-speed', state.scrollSpeed);
+                clearTimeout(window.gT);
+                window.gT = setTimeout(() => document.body.classList.remove('glitch-active'), 100);
             }
-        }
+        }, { passive: true });
 
-        // 4. Interaction & Observers
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('revealed');
-                    const stage = entry.target.getAttribute('data-stage');
-                    if (stage) playStage(stage);
-                }
-            });
-        }, { threshold: 0.3 });
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('is-visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.revealed').forEach(el => observer.observe(el));
 
-        document.querySelectorAll('.media-wrapper, [data-stage]').forEach(el => observer.observe(el));
-
-        // 5. High Performance Cursor
-        const cursor = document.getElementById('cursor');
-        let mouse = {x: window.innerWidth/2, y: window.innerHeight/2};
-        let pos = {x: mouse.x, y: mouse.y};
-
-        window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-        function animateCursor() {
-            pos.x += (mouse.x - pos.x) * 0.2;
-            pos.y += (mouse.y - pos.y) * 0.2;
-            cursor.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0) translate(-50%, -50%)`;
-            requestAnimationFrame(animateCursor);
-        }
-        animateCursor();
-
-        // Hover Effects
-        document.body.addEventListener('mouseover', e => {
-            if (e.target.closest('.project-item, .display-text, .main-title')) {
-                cursor.style.width = '80px'; cursor.style.height = '80px';
-                cursor.style.backgroundColor = 'rgba(235, 255, 0, 0.2)';
+        document.getElementById('overlay').addEventListener('click', () => {
+            if (!state.isStarted) {
+                initAudio();
+                drawStatic();
+                state.isStarted = true;
+                document.getElementById('overlay').style.opacity = '0';
+                setTimeout(() => document.getElementById('overlay').style.display = 'none', 600);
             }
         });
-
-        document.body.addEventListener('mouseout', e => {
-            if (e.target.closest('.project-item, .display-text, .main-title')) {
-                cursor.style.width = '12px'; cursor.style.height = '12px';
-                cursor.style.backgroundColor = 'var(--accent)';
-            }
-        });
-
-        // Unlock Audio Context
-        document.addEventListener('mousedown', initEngine, { once: true });
     </script>
 </body>
 </html>
