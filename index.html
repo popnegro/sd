@@ -1,187 +1,232 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUNDS & DISTORTION | V1.1 (Audio Engine)</title>
+    <title>SOUNDS & DISTORTION | CRT Sync V1.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root { --kick: 0; }
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-    #carousel-container {
-        /* Desplazamiento y deformación */
-        transform: translate3d(0, calc(var(--kick) * 12px), 0);
-        /* El kick ahora potencia los colores originales y el contraste */
-        filter: 
-            contrast(calc(1 + var(--kick) * 0.5)) 
-            saturate(calc(1 + var(--kick) * 1.5)) 
-            brightness(calc(1 + var(--kick) * 0.3));
-        will-change: transform, filter;
-    }
+        :root { --kick: 0; }
 
-    .slide.active {
-        opacity: 0.8; /* Mayor opacidad para apreciar mejor los colores */
-    }
+        /* Contenedor CRT: Deformación y Color */
+        .crt-container {
+            transform: translate3d(0, calc(var(--kick) * 15px), 0);
+            filter: contrast(calc(1 + var(--kick) * 0.8)) 
+                    saturate(calc(1 + var(--kick) * 1.5)) 
+                    brightness(calc(1 + var(--kick) * 0.4))
+                    blur(calc(var(--kick) * 1px));
+            will-change: transform, filter;
+        }
 
-    /* Glitch Layers: He eliminado 'saturate(8)' para que el glitch 
-       use los colores de la imagen base pero desfasados */
-    .glitch-layer {
-        background-size: cover;
-        background-position: center;
-        will-change: transform, opacity;
-    }
+        /* Capas de Glitch RGB */
+        .glitch-layer {
+            background-size: cover;
+            background-position: center;
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
 
-    .layer-red {
-        /* Filtro rojo sobre la imagen original */
-        filter: hue-rotate(0deg) brightness(1.2) contrast(1.2);
-        transform: translate3d(calc(var(--kick) * 40px), 0, 0) skewX(calc(var(--kick) * 15deg));
-        opacity: calc(var(--kick) * 0.7);
-    }
+        .layer-red {
+            filter: hue-rotate(0deg) brightness(1.5);
+            transform: translate3d(calc(var(--kick) * 45px), 0, 0) skewX(calc(var(--kick) * 20deg));
+            opacity: calc(var(--kick) * 0.8);
+        }
 
-    .layer-blue {
-        /* Filtro cian sobre la imagen original */
-        filter: hue-rotate(180deg) brightness(1.2) contrast(1.2);
-        transform: translate3d(calc(var(--kick) * -40px), 0, 0) skewX(calc(var(--kick) * -15deg));
-        opacity: calc(var(--kick) * 0.7);
-    }
-</style>
+        .layer-blue {
+            filter: hue-rotate(180deg) brightness(1.5);
+            transform: translate3d(calc(var(--kick) * -45px), 0, 0) skewX(calc(var(--kick) * -20deg));
+            opacity: calc(var(--kick) * 0.8);
+        }
+
+        /* Scanlines Estilo TV Antigua */
+        .scanlines::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.05));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0.2;
+        }
+
+        .main-title {
+            transition: transform 0.05s ease-out;
+            transform: translate3d(0, calc(var(--kick) * -20px), 0);
+        }
+
+        /* Transición rápida para el cambio de slide al ritmo del kick */
+        .slide {
+            transition: opacity 0.15s ease-in-out;
+        }
+    </style>
 </head>
 
 <body class="bg-black no-scrollbar antialiased">
 
-    <audio id="bg-track" src="assets/sounds/countdown-female.mp3" loop preload="auto"></audio>
+    <audio id="bg-track" src="assets/sounds/distorted-bass.wav" loop preload="auto"></audio>
 
-    <section id="audio-visualizer" class="relative h-screen flex items-center justify-end px-6 md:px-12 overflow-hidden select-none">
+    <main>
+    <section id="visualizer-section" class="relative h-screen flex items-end justify-start px-6 md:px-20 pb-20 overflow-hidden select-none bg-black">
         
-       <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-    <div id="glitch-wrapper" class="w-full h-full relative scale-105">
-        
-        <div id="carousel-container" class="absolute inset-0 w-full h-full">
-            <img src="assets/img/denial/1.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/2.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/3.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/4.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
-                        <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+        <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none scanlines">
+            <div id="glitch-wrapper" class="w-full h-full relative scale-110 crt-container">
+                
+                <div id="carousel" class="absolute inset-0 w-full h-full">
+                    <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 active">
+                    <img src="assets/img/denial/2.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/3.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/4.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/acceptance/01.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                    <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                </div>
 
-        </div>
+                <div class="glitch-layer layer-red absolute inset-0 w-full h-full mix-blend-screen"></div>
+                <div class="glitch-layer layer-blue absolute inset-0 w-full h-full mix-blend-screen"></div>
+            </div>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+        </figure>
 
-        <div class="glitch-layer layer-red absolute inset-0 w-full h-full opacity-0 mix-blend-screen"></div>
-        <div class="glitch-layer layer-blue absolute inset-0 w-full h-full opacity-0 mix-blend-screen"></div>
-        
-        <div class="absolute inset-0 w-full h-full pointer-events-none opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]"></div>
-    </div>
-    
-    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
-</figure>
+        <div class="relative z-20 flex flex-col items-start max-w-6xl">
+            
+            <header class="mb-12">
+                <button id="start-engine" 
+                        class="group relative flex items-center gap-6 text-emerald-400 text-[11px] font-bold border border-emerald-400/30 bg-black/60 px-10 py-6 hover:bg-emerald-400 hover:text-black hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] transition-all duration-500 uppercase tracking-[0.6em] backdrop-blur-xl overflow-hidden">
+                    
+                    <span class="relative flex h-4 w-4">
+                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full transition-transform duration-500 group-hover:scale-125">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                    </span>
 
-        <div class="relative z-20 flex flex-col items-end max-w-5xl">
-            <header class="mb-8 text-right">
-                <button id="start-audio" 
-                        class="text-emerald-500 text-[10px] border border-emerald-500/30 px-6 py-3 hover:bg-emerald-500/10 transition-all duration-700 uppercase tracking-[0.3em] backdrop-blur-md cursor-pointer active:scale-95">
-                    [ Iniciar Flujo de Datos ]
+                    <span class="relative z-10">Play Stream</span>
+
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
                 </button>
             </header>
 
-            <h1 class="main-title text-[12vw] md:text-[15vw] font-black text-right uppercase italic mix-blend-difference leading-[0.8] text-white">
-                Sounds<span class="cursive-text text-[10vw] block md:inline text-emerald-500"> &</span> Distortion
+            <h1 class="main-title text-[12vw] md:text-[9vw] font-black text-left uppercase italic mix-blend-difference leading-[0.9] text-white opacity-80">
+                Sounds<span class="text-emerald-500 md:inline md:ml-4"> &</span> Changes
             </h1>
             
-            <footer class="mt-4 opacity-50">
-                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block">// Audio Stream v1.1</span>
+            <footer class="mt-10 flex flex-col gap-6 items-start">
+                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.8em] uppercase block">
+                    // Status: ABRIL 15 2026 - V1.0
+                </span>
+
+                <aside class="hidden md:block" role="status">
+                    <div class="h-[2px] w-72 bg-white/10 relative overflow-hidden">
+                        <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_15px_#10b981]"></div>
+                    </div>
+                </aside>
             </footer>
         </div>
-
-        <aside class="absolute bottom-12 right-12 text-right hidden md:block" role="status">
-            <span id="audio-label" class="text-white/30 text-[9px] font-mono tracking-[0.4em] uppercase block mb-3">System: Standby</span>
-            <div class="h-[1px] w-48 bg-white/10 ml-auto relative overflow-hidden">
-                <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_10px_#10b981]"></div>
-            </div>
-        </aside>
     </section>
+</main>
+
+<style>
+    @keyframes shimmer {
+        100% { transform: translateX(100%); }
+    }
+
+    #start-engine {
+        text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+    }
+
+    /* Asegura que el contenedor de la sección ocupe el alto total */
+    #visualizer-section {
+        min-height: 100vh;
+    }
+</style>
 
     <script>
-    (function() {
-        const slides = document.querySelectorAll('.slide');
-        const glitchLayers = document.querySelectorAll('.glitch-layer');
-        const root = document.documentElement;
-        let currentIndex = 0;
+        (function() {
+            const btn = document.getElementById('start-engine');
+            const audio = document.getElementById('bg-track');
+            const slides = document.querySelectorAll('.slide');
+            const glitchLayers = document.querySelectorAll('.glitch-layer');
+            const bar = document.getElementById('visualizer-bar');
+            const root = document.documentElement;
 
-        // --- LÓGICA DEL CAROUSEL ---
-        function nextSlide() {
-            slides[currentIndex].classList.remove('active', 'opacity-60');
-            slides[currentIndex].classList.add('opacity-0');
-            
-            currentIndex = (currentIndex + 1) % slides.length;
-            
-            slides[currentIndex].classList.add('active', 'opacity-60');
-            slides[currentIndex].classList.remove('opacity-0');
+            let currentIndex = 0;
+            let audioCtx, analyser, dataArray;
+            let isRunning = false;
+            let lastSwitchTime = 0;
+            const minSwitchCooldown = 350; // Evita cambios demasiado frenéticos (ms)
 
-            // Dentro de tu función nextSlide():
-const newSrc = slides[currentIndex].src;
-glitchLayers.forEach(layer => {
-    layer.style.backgroundImage = `url('${newSrc}')`;
-});
-            
-            // Simular un pico de interferencia al cambiar (Glitch de cambio de canal)
-            triggerInstantGlitch();
-        }
+            // Función para rotar imágenes
+            function rotateSlides() {
+                slides[currentIndex].classList.replace('opacity-100', 'opacity-0');
+                currentIndex = (currentIndex + 1) % slides.length;
+                slides[currentIndex].classList.replace('opacity-0', 'opacity-100');
 
-        function triggerInstantGlitch() {
-            let peak = 1.0;
-            const interval = setInterval(() => {
-                peak -= 0.1;
-                if (peak <= 0) {
-                    clearInterval(interval);
-                } else {
-                    // Solo inyectamos este valor si el audio no está controlando ya la variable
-                    if (!isRunning) root.style.setProperty('--kick', peak);
-                }
-            }, 50);
-        }
+                // Sincronizar capas de glitch con la nueva imagen
+                const currentSrc = slides[currentIndex].src;
+                glitchLayers.forEach(l => l.style.backgroundImage = `url('${currentSrc}')`);
+            }
 
-        // Iniciar auto-reproducción cada 3 segundos
-        slides[0].classList.add('active', 'opacity-60');
-        setInterval(nextSlide, 3000);
+            // Inicializar primera slide
+            slides[0].classList.replace('opacity-0', 'opacity-100');
+            glitchLayers.forEach(l => l.style.backgroundImage = `url('${slides[0].src}')`);
 
-        // --- LÓGICA DE AUDIO (REUTILIZADA) ---
-        const btn = document.getElementById('start-audio');
-        const audio = document.getElementById('bg-track');
-        let isRunning = false;
+            async function startEngine() {
+                if (isRunning) return;
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = audioCtx.createMediaElementSource(audio);
+                    analyser = audioCtx.createAnalyser();
+                    analyser.fftSize = 64; 
+                    
+                    source.connect(analyser);
+                    analyser.connect(audioCtx.destination);
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                    
+                    audio.play();
+                    isRunning = true;
+                    btn.style.display = 'none';
+                    render();
+                } catch (e) { console.error("Engine failed", e); }
+            }
 
-        async function initAudio() {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const source = audioCtx.createMediaElementSource(audio);
-            const analyser = audioCtx.createAnalyser();
-            analyser.fftSize = 64;
-            source.connect(analyser);
-            analyser.connect(audioCtx.destination);
-
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            isRunning = true;
-            audio.play();
-            
             function render() {
+                if (!isRunning) return;
                 analyser.getByteFrequencyData(dataArray);
-                let rawKick = (dataArray[0] + dataArray[1]) / 510;
-                let intensity = rawKick > 0.45 ? (rawKick - 0.45) * 2 : 0;
                 
-                root.style.setProperty('--kick', intensity.toFixed(3));
+                // Detección de Bombo (Bajos profundos)
+                let lowFreq = (dataArray[0] + dataArray[1] + dataArray[2]) / 765;
+                let threshold = 0.62; // Ajustar sensibilidad según el MP3
+                let intensity = lowFreq > threshold ? (lowFreq - threshold) * 4 : 0;
+                let finalKick = Math.min(intensity, 1.5);
+
+                // Aplicar variables CSS
+                root.style.setProperty('--kick', finalKick.toFixed(3));
+                bar.style.width = (finalKick * 100) + "%";
+
+                // Lógica de cambio de slide sincronizada al golpe
+                const now = Date.now();
+                if (finalKick > 0.85 && (now - lastSwitchTime) > minSwitchCooldown) {
+                    rotateSlides();
+                    lastSwitchTime = now;
+                }
+
                 requestAnimationFrame(render);
             }
-            render();
-        }
 
-        btn.addEventListener('click', () => {
-            initAudio();
-            btn.style.display = 'none';
-        });
-    })();
-</script>
+            btn.addEventListener('click', () => {
+                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                startEngine();
+            });
+        })();
+    </script>
 </body>
 </html>
