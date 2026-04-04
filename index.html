@@ -29,8 +29,8 @@
         }
 
         .main-title {
-            line-height: 0.85;
-            letter-spacing: -0.05em;
+            line-height: 0.8;
+            letter-spacing: -0.065em;
         }
 
         /* Scroll Reveal Base */
@@ -119,8 +119,8 @@
         <div class="flex flex-col gap-6 text-center">            
             <a href="#denial" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Denial</a>
             <a href="#anger" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Anger</a>
-            <a href="#negotiation" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Negotiation</a>
-            <a href="#depression" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Depression</a>
+            <a href="#" class="menu-link text-3xl md:text-6xl text-gray-100 italic blur-sm">Negotiation </a>
+            <a href="#depression" class="menu-link text-3xl md:text-6xl text-gray-100 italic blur-sm">Depression</a>
             <a href="#acceptance" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Acceptance</a>
             <a href="#sentence" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Sentence</a>
         </div>
@@ -140,15 +140,20 @@
             </div>
 
             <h1 class="relative z-10 main-title text-[15vw] font-black text-right uppercase italic mix-blend-difference pointer-events-none select-none">
-                Sounds<span class="cursive-text text-[8vw]"> &</span> Distortion
+                Sounds<span class="cursive-text text-[10vw]"> &</span> Distortion
             </h1>
+            <div class="mb-0 reveal flicker-in absolute bottom-12 text-right">
+            <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Incomplete Stream</span>
+            </div>
+           
+
         </section>
 
         <section id="denial" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 01</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-black uppercase italic leading-none">Denial</h2>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Denial</h2>
                 </div>
                   <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
@@ -195,7 +200,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 02</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-black uppercase italic leading-none">Anger</h2>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Anger</h2>
                 </div>
 
                 <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
@@ -239,11 +244,11 @@
             </div>
         </section>
 
-         <section id="negotiation" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
+         <section id="negotiation" class="py-32 px-6 md:px-12 bg-black border-t border-white/5 blur-sm">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 03</span>
-                    <h2 class="text-4xl md:text-8xl font-black uppercase italic leading-none">Negotiation</h2>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-medium uppercase italic leading-none">Negotiation</h2>
                 </div>
 
                 <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
@@ -280,11 +285,12 @@
                 </div>
             </div>
         </section>
-         <section id="depression" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
+
+         <section id="depression" class="py-32 px-6 md:px-12 bg-black border-t border-white/5 blur-sm">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 04</span>
-                    <h2 class="text-4xl md:text-8xl font-black uppercase italic leading-none">Depression</h2>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-medium uppercase italic leading-none">Depression</h2>
                 </div>
 
                 <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
@@ -293,22 +299,18 @@
                         <img src="assets/img/depression/" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
                     </div>
-
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
                         <img src="assets/img/depression//03.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_03.png</div>
                     </div>
-
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
                         <img src="assets/img/depression//04.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_04.png</div>
                     </div>
-
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
                         <img src="assets/img/depression//05.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
                     </div>
-
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
                         <img src="assets/img/depression//01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
@@ -321,11 +323,12 @@
                 </div>
             </div>
         </section>
+
          <section id="acceptance" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 05</span>
-                    <h2 class="text-4xl md:text-8xl font-black uppercase italic leading-none">Acceptance</h2>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Acceptance</h2>
                 </div>
 
                 <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
