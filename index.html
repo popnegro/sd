@@ -6,7 +6,7 @@
     <title>SOUNDS OF DISTORTION | V3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
         
         :root {
             --accent: #10b981;
@@ -21,6 +21,10 @@
 
         /* --- MICROINTERACCIONES & ESTILOS --- */
         
+        .cursive-text {
+            font-family: 'Libre Caslon Display', serif;
+        }
+
         .main-title {
             line-height: 0.85;
             letter-spacing: -0.05em;
@@ -64,15 +68,14 @@
 
         /* Estilo Enlaces Menú */
         .menu-link {
-            color: transparent;
-            -webkit-text-stroke: 1px white;
+            font-family: 'Libre Caslon Display', serif;
+            color: white;
             transition: all 0.5s ease;
         }
         .menu-link:hover {
             color: white;
             -webkit-text-stroke: 0px transparent;
             transform: skewX(-8deg);
-            text-shadow: 0 0 15px var(--accent);
         }
 
         /* Scrollbar Oculta */
@@ -112,12 +115,13 @@
             [ EXIT_X ]
         </button>
         
-        <div class="flex flex-col gap-6 text-center">
-            <a href="#home" class="menu-link text-6xl md:text-9xl font-black uppercase italic">Home</a>
-            <a href="#work" class="menu-link text-6xl md:text-9xl font-black uppercase italic">Archive</a>
-            <a href="#erosion" class="menu-link text-6xl md:text-9xl font-black uppercase italic">Erosion</a>
+        <div class="flex flex-col gap-6 text-center">            
+            <a href="#erosion" class="menu-link text-16xl md:text-6xl font-black uppercase italic">Denial</a>
+            <a href="#erosion" class="menu-link text-16xl md:text-6xl font-black uppercase italic">Anger</a>
+            <a href="#erosion" class="menu-link text-16xl md:text-6xl font-black uppercase italic">Bargaining</a>
+            <a href="#erosion" class="menu-link text-16xl md:text-6xl font-black uppercase italic">Depression</a>
+            <a href="#erosion" class="menu-link text-16xl md:text-6xl font-black uppercase italic">Acceptance</a>
         </div>
-        <div class="absolute bottom-12 text-[9px] opacity-20 tracking-[0.5em] uppercase">Built_with_distortion_v3</div>
     </div>
 
     <main id="home">
@@ -134,7 +138,7 @@
             </div>
 
             <h1 class="relative z-10 main-title text-[18vw] font-black text-right uppercase italic mix-blend-difference pointer-events-none select-none">
-                Sounds<br>of<br>Distortion
+                Sounds<span class="cursive-text text-[12vw]"> &</span> Changes
             </h1>
         </section>
 
@@ -142,7 +146,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="mb-24 reveal flicker-in">
                     <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-4">// Data Stream 01</span>
-                    <h2 class="text-6xl md:text-8xl font-black uppercase italic leading-none">Archive_Corrupt</h2>
+                    <h2 class="text-6xl md:text-8xl font-black uppercase italic leading-none">Tristeza</h2>
                 </div>
 
                 <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
@@ -167,6 +171,10 @@
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
                     </div>
 
+                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/tristeza/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
+                    </div>
                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
                         <img src="assets/img/tristeza/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
                         <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
