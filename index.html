@@ -4,93 +4,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUNDS & DISTORTION | V1.0</title>
+    <title>SOUNDS & DISTORTION | V1.1 (Audio Engine)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style type="text/css">
-        /* Ocultar scrollbar manteniendo funcionalidad */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  <style>
+    :root { --kick: 0; }
 
-        :root { --kick: 0; }
-        
-        /* Animaciones y Transformaciones optimizadas para GPU */
-        .eye-main {
-            transform: translate3d(calc(var(--kick) * -10px), 0, 0)
-                       scale(calc(1 + (var(--kick) * 0.1))) 
-                       skewX(calc(var(--kick) * 10deg));
-            filter: brightness(calc(0.35 + (var(--kick) * 1.5))) 
-                    contrast(calc(1.3 + (var(--kick) * 1)));
-            will-change: transform, filter;
-        }
+    #carousel-container {
+        /* Desplazamiento y deformación */
+        transform: translate3d(0, calc(var(--kick) * 12px), 0);
+        /* El kick ahora potencia los colores originales y el contraste */
+        filter: 
+            contrast(calc(1 + var(--kick) * 0.5)) 
+            saturate(calc(1 + var(--kick) * 1.5)) 
+            brightness(calc(1 + var(--kick) * 0.3));
+        will-change: transform, filter;
+    }
 
-        .glitch-layer {
-            /* Usamos la misma imagen del asset para las capas de glitch */
-            background-image: url('assets/img/eyes.webp');
-            background-size: cover;
-            background-position: center;
-            will-change: transform, opacity;
-        }
+    .slide.active {
+        opacity: 0.8; /* Mayor opacidad para apreciar mejor los colores */
+    }
 
-        .layer-red {
-            filter: saturate(8) hue-rotate(0deg) brightness(1.5);
-            transform: translate3d(calc(var(--kick) * 30px), 0, 0);
-            opacity: calc(var(--kick) * 0.8);
-        }
+    /* Glitch Layers: He eliminado 'saturate(8)' para que el glitch 
+       use los colores de la imagen base pero desfasados */
+    .glitch-layer {
+        background-size: cover;
+        background-position: center;
+        will-change: transform, opacity;
+    }
 
-        .layer-blue {
-            filter: saturate(8) hue-rotate(190deg) brightness(1.5);
-            transform: translate3d(calc(var(--kick) * -30px), 0, 0);
-            opacity: calc(var(--kick) * 0.8);
-        }
+    .layer-red {
+        /* Filtro rojo sobre la imagen original */
+        filter: hue-rotate(0deg) brightness(1.2) contrast(1.2);
+        transform: translate3d(calc(var(--kick) * 40px), 0, 0) skewX(calc(var(--kick) * 15deg));
+        opacity: calc(var(--kick) * 0.7);
+    }
 
-        .main-title {
-            transition: transform 0.1s cubic-bezier(0.23, 1, 0.32, 1);
-            transform: translate3d(0, calc(var(--kick) * -10px), 0);
-        }
-    </style>
+    .layer-blue {
+        /* Filtro cian sobre la imagen original */
+        filter: hue-rotate(180deg) brightness(1.2) contrast(1.2);
+        transform: translate3d(calc(var(--kick) * -40px), 0, 0) skewX(calc(var(--kick) * -15deg));
+        opacity: calc(var(--kick) * 0.7);
+    }
+</style>
 </head>
 
 <body class="bg-black no-scrollbar antialiased">
 
-    <section id="audio-visualizer" class="relative h-screen flex items-center justify-end px-6 md:px-12 overflow-hidden select-none" aria-labelledby="section-title">
+    <audio id="bg-track" src="assets/sounds/countdown-female.mp3" loop preload="auto"></audio>
+
+    <section id="audio-visualizer" class="relative h-screen flex items-center justify-end px-6 md:px-12 overflow-hidden select-none">
         
-        <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-            <div id="glitch-wrapper" class="w-full h-full relative scale-105">
-                <img id="eye-asset" 
-                     src="assets/img/eyes.webp" 
-                     alt="Visualización de enlace neural"
-                     class="eye-main h-full w-full object-cover grayscale">
-                
-                <div class="glitch-layer layer-red absolute inset-0 w-full h-full opacity-0 mix-blend-screen" aria-hidden="true"></div>
-                <div class="glitch-layer layer-blue absolute inset-0 w-full h-full opacity-0 mix-blend-screen" aria-hidden="true"></div>
-            </div>
-            
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
-        </figure>
+       <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+    <div id="glitch-wrapper" class="w-full h-full relative scale-105">
+        
+        <div id="carousel-container" class="absolute inset-0 w-full h-full">
+            <img src="assets/img/denial/1.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/2.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/3.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/4.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+            <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+                        <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500">
+
+        </div>
+
+        <div class="glitch-layer layer-red absolute inset-0 w-full h-full opacity-0 mix-blend-screen"></div>
+        <div class="glitch-layer layer-blue absolute inset-0 w-full h-full opacity-0 mix-blend-screen"></div>
+        
+        <div class="absolute inset-0 w-full h-full pointer-events-none opacity-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%]"></div>
+    </div>
+    
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
+</figure>
 
         <div class="relative z-20 flex flex-col items-end max-w-5xl">
             <header class="mb-8 text-right">
                 <button id="start-audio" 
-                        class="text-emerald-500 text-[10px] border border-emerald-500/30 px-6 py-3 hover:bg-emerald-500/10 transition-all duration-700 uppercase tracking-[0.3em] backdrop-blur-md cursor-pointer active:scale-95"
-                        aria-live="polite">
-                    [ Iniciar Enlace Neural ]
+                        class="text-emerald-500 text-[10px] border border-emerald-500/30 px-6 py-3 hover:bg-emerald-500/10 transition-all duration-700 uppercase tracking-[0.3em] backdrop-blur-md cursor-pointer active:scale-95">
+                    [ Iniciar Flujo de Datos ]
                 </button>
             </header>
 
-            <h1 id="section-title" class="main-title text-[12vw] md:text-[15vw] font-black text-right uppercase italic mix-blend-difference leading-[0.8] text-white">
+            <h1 class="main-title text-[12vw] md:text-[15vw] font-black text-right uppercase italic mix-blend-difference leading-[0.8] text-white">
                 Sounds<span class="cursive-text text-[10vw] block md:inline text-emerald-500"> &</span> Distortion
             </h1>
             
             <footer class="mt-4 opacity-50">
-                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block">// Incomplete Stream</span>
+                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block">// Audio Stream v1.1</span>
             </footer>
         </div>
 
         <aside class="absolute bottom-12 right-12 text-right hidden md:block" role="status">
-            <span id="audio-label" class="text-white/30 text-[9px] font-mono tracking-[0.4em] uppercase block mb-3">
-                System: Standby
-            </span>
+            <span id="audio-label" class="text-white/30 text-[9px] font-mono tracking-[0.4em] uppercase block mb-3">System: Standby</span>
             <div class="h-[1px] w-48 bg-white/10 ml-auto relative overflow-hidden">
                 <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_10px_#10b981]"></div>
             </div>
@@ -98,72 +106,82 @@
     </section>
 
     <script>
-        (function() {
-            const btn = document.getElementById('start-audio');
-            const bar = document.getElementById('visualizer-bar');
-            const label = document.getElementById('audio-label');
-            const root = document.documentElement;
+    (function() {
+        const slides = document.querySelectorAll('.slide');
+        const glitchLayers = document.querySelectorAll('.glitch-layer');
+        const root = document.documentElement;
+        let currentIndex = 0;
+
+        // --- LÓGICA DEL CAROUSEL ---
+        function nextSlide() {
+            slides[currentIndex].classList.remove('active', 'opacity-60');
+            slides[currentIndex].classList.add('opacity-0');
             
-            let audioCtx;
-            let analyser;
-            let dataArray;
-            let isRunning = false;
+            currentIndex = (currentIndex + 1) % slides.length;
+            
+            slides[currentIndex].classList.add('active', 'opacity-60');
+            slides[currentIndex].classList.remove('opacity-0');
 
-            async function initAudio() {
-                if (isRunning) return;
+            // Dentro de tu función nextSlide():
+const newSrc = slides[currentIndex].src;
+glitchLayers.forEach(layer => {
+    layer.style.backgroundImage = `url('${newSrc}')`;
+});
+            
+            // Simular un pico de interferencia al cambiar (Glitch de cambio de canal)
+            triggerInstantGlitch();
+        }
 
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    audioCtx = new AudioContext();
-                    
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    const source = audioCtx.createMediaStreamSource(stream);
-                    
-                    analyser = audioCtx.createAnalyser();
-                    analyser.fftSize = 128;
-                    source.connect(analyser);
-
-                    dataArray = new Uint8Array(analyser.frequencyBinCount);
-                    
-                    isRunning = true;
-                    
-                    // Animación de salida para el botón
-                    btn.style.opacity = '0';
-                    setTimeout(() => btn.style.display = 'none', 700);
-
-                    label.innerText = "System: Linked / Freq Analysis Active";
-                    label.classList.replace('text-white/30', 'text-emerald-500');
-                    
-                    render();
-
-                } catch (err) {
-                    console.error("Audio Access Error:", err);
-                    label.innerText = "System: Connection Failed";
-                    label.classList.replace('text-white/30', 'text-red-500');
+        function triggerInstantGlitch() {
+            let peak = 1.0;
+            const interval = setInterval(() => {
+                peak -= 0.1;
+                if (peak <= 0) {
+                    clearInterval(interval);
+                } else {
+                    // Solo inyectamos este valor si el audio no está controlando ya la variable
+                    if (!isRunning) root.style.setProperty('--kick', peak);
                 }
-            }
+            }, 50);
+        }
 
+        // Iniciar auto-reproducción cada 3 segundos
+        slides[0].classList.add('active', 'opacity-60');
+        setInterval(nextSlide, 3000);
+
+        // --- LÓGICA DE AUDIO (REUTILIZADA) ---
+        const btn = document.getElementById('start-audio');
+        const audio = document.getElementById('bg-track');
+        let isRunning = false;
+
+        async function initAudio() {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = audioCtx.createMediaElementSource(audio);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            source.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            isRunning = true;
+            audio.play();
+            
             function render() {
-                if (!isRunning) return;
                 analyser.getByteFrequencyData(dataArray);
+                let rawKick = (dataArray[0] + dataArray[1]) / 510;
+                let intensity = rawKick > 0.45 ? (rawKick - 0.45) * 2 : 0;
                 
-                // Promedio de graves (Kick)
-                let rawKick = (dataArray[0] + dataArray[1] + dataArray[2]) / (3 * 255);
-                let threshold = 0.40; // Ajustado para mayor sensibilidad
-                let intensity = rawKick > threshold ? (rawKick - threshold) * 2.5 : 0;
-                let finalKick = Math.min(intensity, 1);
-
-                root.style.setProperty('--kick', finalKick.toFixed(3));
-                bar.style.width = (finalKick * 100) + "%";
-
+                root.style.setProperty('--kick', intensity.toFixed(3));
                 requestAnimationFrame(render);
             }
+            render();
+        }
 
-            btn.addEventListener('click', () => {
-                initAudio();
-                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-            });
-        })();
-    </script>
+        btn.addEventListener('click', () => {
+            initAudio();
+            btn.style.display = 'none';
+        });
+    })();
+</script>
 </body>
 </html>
