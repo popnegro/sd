@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-        
+
         :root {
             --accent: #00ffaa;
         }
@@ -20,10 +21,10 @@
         }
 
         /* --- MICROINTERACCIONES & ESTILOS --- */
-        
+
         .cursive-text {
             font-family: 'Libre Caslon Display', serif;
-            text-transform: lowercase;
+            text-transform: uppercase;
             letter-spacing: normal;
             margin-left: -0.5%;
         }
@@ -39,6 +40,7 @@
             transform: translateY(30px);
             transition: all 0.9s cubic-bezier(0.2, 1, 0.3, 1);
         }
+
         .reveal.active {
             opacity: 1;
             transform: translateY(0);
@@ -46,11 +48,23 @@
 
         /* Flicker de entrada para títulos */
         @keyframes text-flicker {
-            0% { opacity: 0; }
-            2% { opacity: 1; }
-            5% { opacity: 0.2; }
-            10% { opacity: 1; }
+            0% {
+                opacity: 0;
+            }
+
+            2% {
+                opacity: 1;
+            }
+
+            5% {
+                opacity: 0.2;
+            }
+
+            10% {
+                opacity: 1;
+            }
         }
+
         .flicker-in.active {
             animation: text-flicker 1.5s ease forwards;
         }
@@ -59,15 +73,21 @@
         .group-hover-lines::after {
             content: "";
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
             background-size: 100% 3px, 3px 100%;
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-        .group:hover.group-hover-lines::after { opacity: 1; }
+
+        .group:hover.group-hover-lines::after {
+            opacity: 1;
+        }
 
         /* Estilo Enlaces Menú */
         .menu-link {
@@ -75,329 +95,240 @@
             font-weight: 500;
             transition: all 0.5s ease;
         }
+
         .menu-link:hover {
             transform: skewX(-8deg);
         }
 
         /* Scrollbar Oculta */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
 
         /* Glitch en Hover Final */
         .glitch-hover:hover {
             animation: glitch 0.4s infinite;
         }
+
         @keyframes glitch {
-            0% { transform: translate(0); text-shadow: 2px 0 red; }
-            50% { transform: translate(-2px, -1px); text-shadow: -2px 0 blue; }
-            100% { transform: translate(1px, 1px); }
+            0% {
+                transform: translate(0);
+                text-shadow: 2px 0 red;
+            }
+
+            50% {
+                transform: translate(-2px, -1px);
+                text-shadow: -2px 0 blue;
+            }
+
+            100% {
+                transform: translate(1px, 1px);
+            }
         }
-
-        /* Capa de Glitch para el Background */
-#glitch-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('https://media.giphy.com/media/oEI9uWUqhC9Fe/giphy.gif'); /* Ruido estático */
-    opacity: 0;
-    pointer-events: none;
-    z-index: 50;
-    mix-blend-mode: overlay;
-    transition: opacity 0.5s ease;
-}
-
-.is-depressed #glitch-overlay {
-    opacity: 0.15; /* Intensidad del glitch */
-    animation: noise-flash 0.2s infinite;
-}
-
-@keyframes noise-flash {
-    0% { filter: hue-rotate(0deg) brightness(1); }
-    50% { filter: hue-rotate(90deg) brightness(1.2); transform: scale(1.01); }
-    100% { filter: hue-rotate(0deg) brightness(1); }
-}
     </style>
 </head>
+
 <body class="no-scrollbar">
 
     <nav class="sticky top-0 w-full z-[100] flex justify-between items-center px-6 md:px-12 py-6 mix-blend-difference">
-        <button id="menu-open" class="group flex flex-col gap-2 p-2 focus:outline-none transition-transform active:scale-90">
+        <button id="menu-open"
+            class="group flex flex-col gap-2 p-2 focus:outline-none transition-transform active:scale-90">
             <span class="w-8 h-[2px] bg-white transition-all group-hover:w-11"></span>
             <span class="w-11 h-[2px] bg-white transition-all group-hover:bg-emerald-500"></span>
             <span class="w-6 h-[2px] bg-white transition-all group-hover:w-11"></span>
         </button>
-        
+
         <div class="flex items-center gap-6 text-[10px] uppercase tracking-[0.3em] font-bold">
-            <button id="toggle-signal" class="group flex items-center gap-3 border border-white/20 px-5 py-2 hover:border-white transition-all active:bg-white/10">
+            <button id="toggle-signal"
+                class="group flex items-center gap-3 border border-white/20 px-5 py-2 hover:border-white transition-all active:bg-white/10">
                 <span id="signal-led" class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                 SIGNAL: <span id="status-text">MONO</span>
             </button>
         </div>
     </nav>
 
-    <div id="full-menu" class="fixed inset-0 z-[150] bg-black translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] flex flex-col justify-center items-center">
-        <button id="menu-close" class="absolute top-8 left-8 text-[10px] tracking-[0.6em] uppercase hover:text-emerald-500 transition-colors">
+    <div id="full-menu"
+        class="fixed inset-0 z-[150] bg-black translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] flex flex-col justify-center items-center">
+        <button id="menu-close"
+            class="absolute top-8 left-8 text-[10px] tracking-[0.6em] uppercase hover:text-emerald-500 transition-colors">
             [ EXIT_X ]
         </button>
-        
-        <div class="flex flex-col gap-6 text-center">            
+
+        <div class="flex flex-col gap-6 text-center">
             <a href="#denial" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Denial</a>
             <a href="#anger" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Anger</a>
-            <a href="#" class="menu-link text-3xl md:text-6xl text-gray-100 italic blur-sm">Negotiation </a>
-            <a href="#depression" class="menu-link text-3xl md:text-6xl text-gray-100 italic blur-sm">Depression</a>
-            <a href="#acceptance" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Acceptance</a>
-            <a href="#sentence" class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Sentence</a>
+            <!--<a href="#" class="menu-link text-3xl md:text-6xl text-gray-100 italic blur-sm">Negotiation </a>-->
+            <a href="#depression"
+                class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Depression</a>
+            <a href="#acceptance"
+                class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Acceptance</a>
+            <a href="#sentence"
+                class="menu-link text-3xl md:text-6xl font-white italic hover:text-emerald-600">Sentence</a>
         </div>
     </div>
 
     <main id="home">
-        <section class="relative h-screen flex items-center justify-end px-6 md:px-12 overflow-hidden bg-black -mt-[92px]">
+        <section
+            class="relative h-screen flex items-center justify-end px-6 md:px-12 overflow-hidden bg-black -mt-[92px]">
             <div class="absolute inset-0 z-0">
-                <img 
-                    id="eye-asset"
-                    src="assets/img/eyes.webp" 
-                    alt="Eye" 
-                    class="h-full w-full object-cover grayscale brightness-[0.35] contrast-[1.3] transition-all duration-1000"
-                >
+                <img id="eye-asset" src="assets/img/eyes.webp" alt="Eye"
+                    class="h-full w-full object-cover grayscale brightness-[0.35] contrast-[1.3] transition-all duration-1000">
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent"></div>
             </div>
 
-            <h1 class="relative z-10 main-title text-[15vw] font-black text-right uppercase italic mix-blend-difference pointer-events-none select-none">
+            <h1
+                class="relative z-10 main-title text-[15vw] font-black text-right uppercase italic mix-blend-difference pointer-events-none select-none">
                 Sounds<span class="cursive-text text-[10vw]"> &</span> Distortion
             </h1>
-            <div class="mb-0 reveal flicker-in absolute bottom-12 text-right">
-            <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Incomplete Stream</span>
-            </div>
-           
-
-        </section>
-
-        <section id="denial" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-24 reveal flicker-in">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 01</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Denial</h2>
-                </div>
-                  <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/1.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/2.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                      <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/3.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/4.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/5.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/6.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">                        
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                </div>
-                <div class="columns-1 md:columns-2 lg:columns-2 gap-8 mt-8 md:mt-3 sm:mt-[4vw]" id="masonry-grid">
-                    <div
-                        class="break-inside-avoid mb-8 reveal overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/7.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000" alt="Descripción de la imagen">                            
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                    <div
-                        class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/denial/8.webp" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000" alt="Descripción de la imagen">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                </div>
+            <div class="mb-24 reveal flicker-in absolute bottom-12 text-right">
+                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Incomplete
+                    Stream</span>
             </div>
         </section>
 
-         <section id="anger" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-24 reveal flicker-in">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 02</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Anger</h2>
-                </div>
+   <section id="denial" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-24 reveal flicker-in">
+            <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">
+                // Data Stream 01
+            </span>
+            <h2 class="text-4xl md:text-6xl cursive-text font-black italic leading-none text-white">Denial</h2>
+        </div>
 
-                <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
-                    
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/1.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/2.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_03.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/3.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_04.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/4.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/5.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/6.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                     <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/anger/7.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-         <section id="negotiation" class="py-32 px-6 md:px-12 bg-black border-t border-white/5 blur-sm">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-24 reveal flicker-in">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 03</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-medium uppercase italic leading-none">Negotiation</h2>
-                </div>
-
-                <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
-                    
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/02.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/03.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_03.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/04.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_04.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/05.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/negotiation/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-         <section id="depression" class="py-32 px-6 md:px-12 bg-black border-t border-white/5 blur-sm">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-24 reveal flicker-in">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 04</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-medium uppercase italic leading-none">Depression</h2>
-                </div>
-
-                <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
-                    
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression/" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression//03.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_03.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression//04.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_04.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression//05.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression//01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/depression//01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-         <section id="acceptance" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
-            <div class="max-w-7xl mx-auto">
-                <div class="mb-24 reveal flicker-in">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data Stream 05</span>
-                    <h2 class="text-4xl md:text-6xl cursive-text font-bold uppercase italic leading-none">Acceptance</h2>
-                </div>
-
-                <div class="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8" id="masonry-grid">
-                    
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/02.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_02.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/03.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_03.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/04.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_04.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/05.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_05.png</div>
-                    </div>
-
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-                    <div class="break-inside-avoid reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
-                        <img src="assets/img/acceptance/01.png" class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
-                        <div class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">File: TR_01.png</div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-        
-
-        <section id="reset" class="h-screen flex flex-col justify-center items-center px-6 text-center bg-zinc-950">
-            <h2 class="reveal text-7xl md:text-9xl font-black uppercase italic leading-none glitch-hover">Sentence</h2>
-            <p class="reveal text-zinc-600 font-bold uppercase tracking-[0.6em] text-[9px] mt-12 transition-delay-300">The signal has stabilized in the void.</p>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
             
-            <a href="#home" class="reveal mt-16 px-14 py-5 border border-white/10 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all text-[9px] tracking-[0.5em] uppercase">
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/1.webp" alt="Denial 1"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/2.webp" alt="Denial 2"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/3.webp" alt="Denial 3"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/5.webp" alt="Denial 5"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/6.webp" alt="Denial 6"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/4.webp" alt="Denial 4"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/7.webp" alt="Denial 7"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <img src="assets/img/denial/8.webp" alt="Denial 8"
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+            </div>
+
+            <div class="reveal aspect-[9/16] overflow-hidden border border-white/10 bg-zinc-900 group relative transition-transform duration-500 hover:-translate-y-2">
+                <video src="assets/img/denial/9.mp4" autoplay muted loop playsinline
+                    class="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                </video>
+            </div>
+
+        </div>
+    </div>
+</section>
+        <section id="anger" class="py-32 px-6 md:px-12 bg-black border-t border-white/5">
+            <div class="max-w-7xl mx-auto">
+                <div class="mb-24 reveal flicker-in">
+                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-2">// Data
+                        Stream 02</span>
+                    <h2 class="text-4xl md:text-6xl cursive-text font-black italic leading-none">Anger</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/2.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_03.png</div>
+                    </div>
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/3.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_04.png</div>
+                    </div>
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/4.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_05.png</div>
+                    </div>
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/5.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_01.png</div>
+                    </div>
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/6.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_01.png</div>
+                    </div>
+
+                    <div
+                        class="reveal overflow-hidden border border-white/10 bg-zinc-900 group group-hover-lines relative transition-transform duration-500 hover:-translate-y-2">
+                        <img src="assets/img/anger/7.png"
+                            class="w-full h-auto grayscale contrast-125 group-hover:grayscale-0 transition-all duration-1000">
+                        <div
+                            class="absolute bottom-0 left-0 p-4 text-[8px] uppercase tracking-widest text-emerald-400 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                            File: TR_01.png</div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <section id="sentence"
+            class="h-screen flex flex-col justify-center items-center px-6 text-center bg-zinc-950 border-t border-white/5">
+            <h2 class="text-4xl md:text-6xl cursive-text font-black italic leading-none">Sentence</h2>
+            <p class="reveal text-zinc-600 font-bold uppercase tracking-[0.6em] text-[9px] mt-12 transition-delay-300">
+                The signal has stabilized in the void.</p>
+
+            <a href="#home"
+                class="reveal mt-16 px-14 py-5 border border-white/10 hover:border-emerald-500 hover:bg-emerald-500/5 transition-all text-[9px] tracking-[0.5em] uppercase">
                 Reset_Signal
             </a>
         </section>
@@ -431,12 +362,12 @@
             statusText.innerText = isVivid ? "VIVID" : "MONO";
             signalLed.classList.toggle('bg-emerald-500', isVivid);
             signalLed.classList.toggle('bg-white', !isVivid);
-            
+
             // Efecto global
             const filterStr = isVivid ? "grayscale(0) brightness(0.8)" : "grayscale(1) brightness(0.35) contrast(1.3)";
             eyeAsset.style.filter = filterStr;
             allImages.forEach(img => {
-                if(img !== eyeAsset) img.style.filter = isVivid ? "grayscale(0)" : "grayscale(1) contrast(1.25)";
+                if (img !== eyeAsset) img.style.filter = isVivid ? "grayscale(0)" : "grayscale(1) contrast(1.25)";
             });
         });
 
@@ -452,4 +383,5 @@
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
+
 </html>
