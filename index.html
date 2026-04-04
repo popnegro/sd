@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUNDS OF DISTORTION | V3.0</title>
+    <title>SOUNDS & DISTORTION | V1.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
@@ -92,6 +92,32 @@
             50% { transform: translate(-2px, -1px); text-shadow: -2px 0 blue; }
             100% { transform: translate(1px, 1px); }
         }
+
+        /* Capa de Glitch para el Background */
+#glitch-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://media.giphy.com/media/oEI9uWUqhC9Fe/giphy.gif'); /* Ruido estático */
+    opacity: 0;
+    pointer-events: none;
+    z-index: 50;
+    mix-blend-mode: overlay;
+    transition: opacity 0.5s ease;
+}
+
+.is-depressed #glitch-overlay {
+    opacity: 0.15; /* Intensidad del glitch */
+    animation: noise-flash 0.2s infinite;
+}
+
+@keyframes noise-flash {
+    0% { filter: hue-rotate(0deg) brightness(1); }
+    50% { filter: hue-rotate(90deg) brightness(1.2); transform: scale(1.01); }
+    100% { filter: hue-rotate(0deg) brightness(1); }
+}
     </style>
 </head>
 <body class="no-scrollbar">
