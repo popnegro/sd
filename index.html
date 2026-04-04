@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUNDS & DISTORTION | CRT Sync V1.3</title>
+    <title>SOUNDS & CHANGES | V1.0 Production</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Optimización de scroll y variables */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         :root { --kick: 0; }
 
-        /* Contenedor CRT: Deformación y Color */
+        /* Efecto CRT y Deformación */
         .crt-container {
             transform: translate3d(0, calc(var(--kick) * 15px), 0);
             filter: contrast(calc(1 + var(--kick) * 0.8)) 
@@ -21,7 +21,7 @@
             will-change: transform, filter;
         }
 
-        /* Capas de Glitch RGB */
+        /* Capas de Glitch RGB dinámicas */
         .glitch-layer {
             background-size: cover;
             background-position: center;
@@ -41,7 +41,7 @@
             opacity: calc(var(--kick) * 0.8);
         }
 
-        /* Scanlines Estilo TV Antigua */
+        /* Scanlines (Líneas de TV Antigua) */
         .scanlines::before {
             content: "";
             position: absolute;
@@ -59,9 +59,18 @@
             transform: translate3d(0, calc(var(--kick) * -20px), 0);
         }
 
-        /* Transición rápida para el cambio de slide al ritmo del kick */
+        /* Transición de diapositivas optimizada para impacto */
         .slide {
-            transition: opacity 0.15s ease-in-out;
+            transition: opacity 0.1s steps(2, end);
+            will-change: opacity;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        #start-engine {
+            text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
         }
     </style>
 </head>
@@ -71,83 +80,64 @@
     <audio id="bg-track" src="assets/sounds/distorted-bass.wav" loop preload="auto"></audio>
 
     <main>
-    <section id="visualizer-section" class="relative h-screen flex items-end justify-start px-6 md:px-20 pb-20 overflow-hidden select-none bg-black">
-        
-        <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none scanlines">
-            <div id="glitch-wrapper" class="w-full h-full relative scale-110 crt-container">
-                
-                <div id="carousel" class="absolute inset-0 w-full h-full">
-                    <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0 active">
-                    <img src="assets/img/denial/2.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/3.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/4.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/acceptance/01.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/5.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                    <img src="assets/img/denial/6.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                </div>
-
-                <div class="glitch-layer layer-red absolute inset-0 w-full h-full mix-blend-screen"></div>
-                <div class="glitch-layer layer-blue absolute inset-0 w-full h-full mix-blend-screen"></div>
-            </div>
+        <section id="visualizer-section" class="relative h-screen flex items-end justify-start px-6 md:px-20 pb-20 overflow-hidden select-none bg-black">
             
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
-        </figure>
-
-        <div class="relative z-20 flex flex-col items-start max-w-6xl">
-            
-            <header class="mb-12">
-                <button id="start-engine" 
-                        class="group relative flex items-center gap-6 text-emerald-400 text-[11px] font-bold border border-emerald-400/30 bg-black/60 px-10 py-6 hover:bg-emerald-400 hover:text-black hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] transition-all duration-500 uppercase tracking-[0.6em] backdrop-blur-xl overflow-hidden">
+            <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none scanlines">
+                <div id="glitch-wrapper" class="w-full h-full relative scale-110 crt-container">
                     
-                    <span class="relative flex h-4 w-4">
-                        <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full transition-transform duration-500 group-hover:scale-125">
-                            <path d="M8 5v14l11-7z" />
-                        </svg>
+                    <div id="carousel" class="absolute inset-0 w-full h-full">
+                        <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-100">
+                        <img src="assets/img/denial/1.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                        <img src="assets/img/anger/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                        <img src="assets/img/depression/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                        <img src="assets/img/acceptance/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
+                        <img src="assets/img/denial/8.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">                       
+                    </div>
+
+                    <div class="glitch-layer layer-red absolute inset-0 w-full h-full mix-blend-screen"></div>
+                    <div class="glitch-layer layer-blue absolute inset-0 w-full h-full mix-blend-screen"></div>
+                </div>
+                
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
+            </figure>
+
+            <div class="relative z-20 flex flex-col items-start max-w-6xl">
+                
+                <header class="mb-12">
+                    <button id="start-engine" 
+                            class="group relative flex items-center gap-6 text-emerald-400 text-[11px] font-bold border border-emerald-400/30 bg-black/60 px-10 py-6 hover:bg-emerald-400 hover:text-black hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] transition-all duration-500 uppercase tracking-[0.6em] backdrop-blur-xl overflow-hidden">
+                        
+                        <span class="relative flex h-4 w-4">
+                            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full transition-transform duration-500 group-hover:scale-125">
+                                <path d="M8 5v14l11-7z" />
+                            </svg>
+                        </span>
+
+                        <span class="relative z-10">Play Stream</span>
+
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    </button>
+                </header>
+
+                <h1 class="main-title text-[12vw] md:text-[9vw] font-black text-left uppercase italic mix-blend-difference leading-[0.9] text-white opacity-80">
+                    Sounds<span class="text-emerald-500 md:inline md:ml-4"> &</span> Changes
+                </h1>
+                
+                <footer class="mt-10 flex flex-col gap-6 items-start">
+                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.8em] uppercase block">
+                        // Status: ABRIL 15 2026 - V1.0
                     </span>
 
-                    <span class="relative z-10">Play Stream</span>
-
-                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                </button>
-            </header>
-
-            <h1 class="main-title text-[12vw] md:text-[9vw] font-black text-left uppercase italic mix-blend-difference leading-[0.9] text-white opacity-80">
-                Sounds<span class="text-emerald-500 md:inline md:ml-4"> &</span> Changes
-            </h1>
-            
-            <footer class="mt-10 flex flex-col gap-6 items-start">
-                <span class="text-emerald-500 text-[10px] font-bold tracking-[0.8em] uppercase block">
-                    // Status: ABRIL 15 2026 - V1.0
-                </span>
-
-                <aside class="hidden md:block" role="status">
-                    <div class="h-[2px] w-72 bg-white/10 relative overflow-hidden">
-                        <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_15px_#10b981]"></div>
-                    </div>
-                </aside>
-            </footer>
-        </div>
-    </section>
-</main>
-
-<style>
-    @keyframes shimmer {
-        100% { transform: translateX(100%); }
-    }
-
-    #start-engine {
-        text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
-    }
-
-    /* Asegura que el contenedor de la sección ocupe el alto total */
-    #visualizer-section {
-        min-height: 100vh;
-    }
-</style>
+                    <aside class="hidden md:block" role="status">
+                        <div class="h-[2px] w-72 bg-white/10 relative overflow-hidden">
+                            <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_15px_#10b981]"></div>
+                        </div>
+                    </aside>
+                </footer>
+            </div>
+        </section>
+    </main>
 
     <script>
         (function() {
@@ -162,22 +152,26 @@
             let audioCtx, analyser, dataArray;
             let isRunning = false;
             let lastSwitchTime = 0;
-            const minSwitchCooldown = 350; // Evita cambios demasiado frenéticos (ms)
+            
+            // Configuración del motor de sincronización
+            const config = {
+                threshold: 0.65,       // Sensibilidad base
+                kickTrigger: 0.85,     // Fuerza necesaria para rotar slide
+                cooldown: 300          // Tiempo mínimo entre fotos (ms)
+            };
 
-            // Función para rotar imágenes
-            function rotateSlides() {
-                slides[currentIndex].classList.replace('opacity-100', 'opacity-0');
-                currentIndex = (currentIndex + 1) % slides.length;
-                slides[currentIndex].classList.replace('opacity-0', 'opacity-100');
-
-                // Sincronizar capas de glitch con la nueva imagen
-                const currentSrc = slides[currentIndex].src;
-                glitchLayers.forEach(l => l.style.backgroundImage = `url('${currentSrc}')`);
+            // Sincronizar capas de glitch con la imagen activa
+            function syncGlitch(src) {
+                glitchLayers.forEach(l => l.style.backgroundImage = `url('${src}')`);
             }
+            syncGlitch(slides[0].src);
 
-            // Inicializar primera slide
-            slides[0].classList.replace('opacity-0', 'opacity-100');
-            glitchLayers.forEach(l => l.style.backgroundImage = `url('${slides[0].src}')`);
+            function rotateSlides() {
+                slides[currentIndex].style.opacity = "0";
+                currentIndex = (currentIndex + 1) % slides.length;
+                slides[currentIndex].style.opacity = "1";
+                syncGlitch(slides[currentIndex].src);
+            }
 
             async function startEngine() {
                 if (isRunning) return;
@@ -195,26 +189,25 @@
                     isRunning = true;
                     btn.style.display = 'none';
                     render();
-                } catch (e) { console.error("Engine failed", e); }
+                } catch (e) { console.error("Sync Engine Error:", e); }
             }
 
             function render() {
                 if (!isRunning) return;
                 analyser.getByteFrequencyData(dataArray);
                 
-                // Detección de Bombo (Bajos profundos)
+                // Cálculo de energía en frecuencias bajas (Kick)
                 let lowFreq = (dataArray[0] + dataArray[1] + dataArray[2]) / 765;
-                let threshold = 0.62; // Ajustar sensibilidad según el MP3
-                let intensity = lowFreq > threshold ? (lowFreq - threshold) * 4 : 0;
+                let intensity = lowFreq > config.threshold ? (lowFreq - config.threshold) * 4.5 : 0;
                 let finalKick = Math.min(intensity, 1.5);
 
-                // Aplicar variables CSS
+                // Aplicar impacto visual a CSS
                 root.style.setProperty('--kick', finalKick.toFixed(3));
                 bar.style.width = (finalKick * 100) + "%";
 
-                // Lógica de cambio de slide sincronizada al golpe
+                // Gatillo de cambio de diapositiva
                 const now = Date.now();
-                if (finalKick > 0.85 && (now - lastSwitchTime) > minSwitchCooldown) {
+                if (finalKick > config.kickTrigger && (now - lastSwitchTime) > config.cooldown) {
                     rotateSlides();
                     lastSwitchTime = now;
                 }
