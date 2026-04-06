@@ -19,10 +19,9 @@
 
         :root { 
             --kick: 0; 
-            --morpheus-intensity: 50px; 
+            --morpheus-intensity: 80px; 
         }
 
-        /* ENGINE CONTAINER: Mantiene las proporciones */
         .viewport-wrapper {
             position: relative;
             width: 100vw;
@@ -31,69 +30,62 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            perspective: 1200px; /* Profundidad global */
         }
 
-        /* ASPECT RATIO CONTROL */
+        /* CRT CONTAINER CON ZOOM DE IMPACTO */
         .crt-container {
             position: relative;
-            background: #050505;
-            transition: transform 0.1s ease-out;
+            background: #000000;
+            transition: transform 0.05s ease-out;
+            /* El contenedor escala levemente con el bajo */
             transform: scale(calc(1 + var(--kick) * 0.05));
             will-change: transform;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 100vw;
+            height: 100vh;
         }
 
-        /* Desktop: 16:9 */
-        @media (min-width: 769px) {
-            .crt-container {
-                width: 100vw;
-                height: 56.25vw; /* 9/16 = 0.5625 */
-                max-height: 100vh;
-                max-width: 177.78vh; /* 16/9 = 1.7778 */
-            }
-        }
-
-        /* Mobile: 9:16 */
-        @media (max-width: 768px) {
-            .crt-container {
-                width: 100vw;
-                height: 100vh;
-                /* Si prefieres un recuadro 9:16 exacto en lugar de full screen: */
-                /* width: 56.25vh; height: 100vh; max-width: 100vw; */
-            }
-        }
-
-        /* MORPHEUS RGB LAYERS */
+        /* CAPAS DE GLITCH CON PROFUNDIDAD 3D */
         .glitch-layer {
             position: absolute;
-            inset: 0;
+            inset: -15%; /* Margen extra para que el zoom no muestre bordes vacíos */
             background-size: cover;
             background-position: center;
             mix-blend-mode: screen;
             pointer-events: none;
-            will-change: transform;
+            will-change: transform, opacity;
         }
 
+        /* Capa Roja: Se proyecta hacia adelante (Zoom In) */
         .layer-red {
             background-color: #f00;
             background-blend-mode: multiply;
-            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * -1.5), 0, 0);
+            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * -1.2), 0, calc(var(--kick) * 250px)) 
+                       scale(calc(1 + var(--kick) * 0.6));
+            z-index: 3;
         }
 
+        /* Capa Verde: Movimiento vertical y profundidad media */
         .layer-green {
             background-color: #0f0;
             background-blend-mode: multiply;
-            transform: translate3d(0, calc(var(--kick) * 10px), 0);
-            opacity: 0.8;
+            transform: translate3d(0, calc(var(--kick) * 20px), calc(var(--kick) * 100px))
+                       scale(calc(1 + var(--kick) * 0.3));
+            opacity: 0.7;
+            z-index: 2;
         }
 
+        /* Capa Azul: Se aleja hacia el fondo */
         .layer-blue {
             background-color: #00f;
             background-blend-mode: multiply;
-            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * 1.5), 0, 0);
+            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * 1.2), 0, calc(var(--kick) * -150px))
+                       scale(calc(1 + var(--kick) * 0.2));
+            z-index: 1;
         }
 
         /* IMAGEN BASE & SLIDES */
@@ -103,25 +95,26 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: grayscale(1) contrast(1.2);
+            transition: opacity 0.1s steps(2); /* Cambio tipo glitch */
+            filter: grayscale(1) contrast(1.4) brightness(0.8);
         }
 
-        /* EFECTOS DE PANTALLA (SCANLINES) */
+        /* SCANLINES (EFECTO CRT) */
         .scanlines::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4) 50%);
-            background-size: 100% 4px;
-            z-index: 10;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 50%);
+            background-size: 100% 3px;
+            z-index: 40;
             pointer-events: none;
+            opacity: 0.5;
         }
 
         /* UI ELEMENTS */
         .ui-overlay {
             position: absolute;
-            z-index: 50;
+            z-index: 100;
             bottom: 10%;
             left: 5%;
             pointer-events: none;
@@ -133,79 +126,69 @@
             text-transform: uppercase;
             font-style: italic;
             line-height: 0.8;
-            text-shadow: calc(var(--kick) * 10px) 0 0 rgba(255,0,0,0.5);
         }
 
         #start-engine {
             pointer-events: auto;
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
         }
 
-        .loading-bar-container {
-            width: 200px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        #loading-bar {
-            height: 100%;
-            background: #ff0000;
-            width: 0%;
-            transition: width 0.1s linear;
-            box-shadow: 0 0 15px #ff0000;
+        #carousel {
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
 <body>
 
-    <audio id="bg-track" src="assets/sounds/mixkit-space-soundscape-653.mp3" loop crossorigin="anonymous"></audio>
+    <audio id="bg-track" src="assets/sounds/mixkit-cinematic-transition-swoosh-heartbeat-trailer-488.wav" loop crossorigin="anonymous"></audio>
  
     <div class="viewport-wrapper">
         
         <div class="ui-overlay">
-            <div id="header-group">
-                <button id="start-engine" class="px-8 py-4 border border-white/30 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
-                    Execute Sequence
+            <div id="header-group" class="transition-opacity duration-1000">
+                <button id="start-engine" class="px-8 py-4 border border-white/50 text-white text-[11px] tracking-[0.5em] uppercase hover:bg-black hover:text-white transition-all duration-500 font-bold">
+                    Iniciar secuencia
                 </button>
             </div>
             
             <div class="mt-12">
-                <h1 class="main-title text-[12vw] md:text-[8vw]">
-                    SOUND<span class="text-white/80">OF</span><br>CHANGES
+                <h1 class="main-title text-[11vw] md:text-[8vw] tracking-[0.05em] opacity-50">
+                    WHISPERING <br>NOISE
                 </h1>
-                <div class="loading-bar-container">
-                    <div id="loading-bar"></div>
+                <div class="w-[200px] h-[2px] bg-white/10 mt-5 overflow-hidden">
+                    <div id="loading-bar" class="h-full bg-red-600 w-0 shadow-[0_0_15px_#f00] transition-all duration-75"></div>
                 </div>
-                <p class="text-[9px] text-white/40 tracking-[0.3em] mt-2 uppercase">Sync: Morpheus_RGB_v2.0</p>
+                <p class="text-[11px] text-white/50 tracking-[0.3em] mt-4 uppercase font-bold italic">STATUS: 15 04 2026</p>
             </div>
         </div>
 
         <figure class="crt-container scanlines">
-            <div id="carousel" class="absolute inset-0 w-full h-full opacity-20">
+            <div id="carousel" class="absolute inset-0 w-full h-full opacity-0">
                 <img src="assets/img/eyes.webp" class="slide opacity-100" alt="1">
-                <img src="assets/img/denial/1.webp" class="slide opacity-0" alt="2">
-                <img src="assets/img/acceptance/02.png" class="slide opacity-0" alt="3">
-                <img src="assets/img/anger/1.png" class="slide opacity-0" alt="4">
+                <img src="assets/img/cross.webp" class="slide opacity-0" alt="3">
+                <img src="assets/img/city.webp" class="slide opacity-0" alt="4">
+                <img src="assets/img/fire.webp" class="slide opacity-0" alt="4">
+                <img src="assets/img/red.webp" class="slide opacity-0" alt="3">
+                <img src="assets/img/people.webp" class="slide opacity-0" alt="3">
+                <img src="assets/img/sleep.webp" class="slide opacity-0" alt="3">
             </div>
 
             <div id="layer-r" class="glitch-layer layer-red"></div>
             <div id="layer-g" class="glitch-layer layer-green"></div>
             <div id="layer-b" class="glitch-layer layer-blue"></div>
 
-            <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_40%,black_120%)] z-20 pointer-events-none"></div>
+            <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_30%,black_150%)] z-20 pointer-events-none"></div>
         </figure>
 
     </div>
 
     <script>
         (function() {
-            // Configuración
             const CONFIG = {
-                threshold: 215,     // Sensibilidad al bajo (0-255)
-                rotationWait: 500,  // Tiempo mínimo entre cambios de imagen (ms)
-                intensityMult: 1.2  // Multiplicador de fuerza del glitch
+                threshold: 210,     
+                rotationWait: 400,  
+                intensityMult: 1.5  
             };
 
             const state = {
@@ -218,6 +201,7 @@
                 btn: document.getElementById('start-engine'),
                 audio: document.getElementById('bg-track'),
                 slides: document.querySelectorAll('.slide'),
+                carousel: document.getElementById('carousel'),
                 layers: [
                     document.getElementById('layer-r'),
                     document.getElementById('layer-g'),
@@ -255,15 +239,15 @@
 
                 analyser.getByteFrequencyData(dataArray);
 
-                // Capturamos el impacto de los bajos (frecuencias 2 a 5)
-                const bassValue = dataArray[2]; 
-                const intensity = Math.pow(bassValue / 255, 1.6) * CONFIG.intensityMult;
+                // Promedio de frecuencias bajas para la intensidad física
+                const bassValue = (dataArray[1] + dataArray[2] + dataArray[3]) / 3; 
+                
+                // Cálculo exponencial para que el zoom sea reactivo
+                const intensity = Math.pow(bassValue / 255, 2.2) * CONFIG.intensityMult;
 
-                // Actualizamos variables CSS en tiempo real
                 dom.root.style.setProperty('--kick', intensity.toFixed(4));
                 dom.bar.style.width = `${(bassValue / 255) * 100}%`;
 
-                // Disparador de cambio de imagen
                 if (bassValue > CONFIG.threshold) {
                     rotateContent();
                 }
@@ -286,13 +270,15 @@
                     await dom.audio.play();
                     state.isRunning = true;
                     
+                    // MOSTRAR CAROUSEL CON TRANSICIÓN
+                    dom.carousel.classList.replace('opacity-0', 'opacity-100');
                     dom.header.style.opacity = '0';
-                    setTimeout(() => dom.header.style.display = 'none', 500);
+                    setTimeout(() => dom.header.style.display = 'none', 1000);
 
                     updateLayerImages();
                     engineLoop();
                 } catch (e) {
-                    console.error("Error iniciando el motor:", e);
+                    console.error("Engine failure:", e);
                 }
             }
 
