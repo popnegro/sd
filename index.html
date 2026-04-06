@@ -3,221 +3,302 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOUNDS & CHANGES | V1.0 Production</title>
+    <title>VOID SIGNAL | MORPHEUS RGB ENGINE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Optimización de scroll y variables */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        :root { --kick: 0; }
-
-        /* Efecto CRT y Deformación */
-        .crt-container {
-            transform: translate3d(0, calc(var(--kick) * 15px), 0);
-            filter: contrast(calc(1 + var(--kick) * 0.8)) 
-                    saturate(calc(1 + var(--kick) * 1.5)) 
-                    brightness(calc(1 + var(--kick) * 0.4))
-                    blur(calc(var(--kick) * 1px));
-            will-change: transform, filter;
+        /* BASE & RESET */
+        body, html { 
+            background-color: #000; 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            font-family: ui-sans-serif, system-ui, sans-serif;
         }
 
-        /* Capas de Glitch RGB dinámicas */
+        :root { 
+            --kick: 0; 
+            --morpheus-intensity: 50px; 
+        }
+
+        /* ENGINE CONTAINER: Mantiene las proporciones */
+        .viewport-wrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* ASPECT RATIO CONTROL */
+        .crt-container {
+            position: relative;
+            background: #050505;
+            transition: transform 0.1s ease-out;
+            transform: scale(calc(1 + var(--kick) * 0.05));
+            will-change: transform;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Desktop: 16:9 */
+        @media (min-width: 769px) {
+            .crt-container {
+                width: 100vw;
+                height: 56.25vw; /* 9/16 = 0.5625 */
+                max-height: 100vh;
+                max-width: 177.78vh; /* 16/9 = 1.7778 */
+            }
+        }
+
+        /* Mobile: 9:16 */
+        @media (max-width: 768px) {
+            .crt-container {
+                width: 100vw;
+                height: 100vh;
+                /* Si prefieres un recuadro 9:16 exacto en lugar de full screen: */
+                /* width: 56.25vh; height: 100vh; max-width: 100vw; */
+            }
+        }
+
+        /* MORPHEUS RGB LAYERS */
         .glitch-layer {
+            position: absolute;
+            inset: 0;
             background-size: cover;
             background-position: center;
-            will-change: transform, opacity;
+            mix-blend-mode: screen;
             pointer-events: none;
+            will-change: transform;
         }
 
         .layer-red {
-            filter: hue-rotate(0deg) brightness(1.5);
-            transform: translate3d(calc(var(--kick) * 45px), 0, 0) skewX(calc(var(--kick) * 20deg));
-            opacity: calc(var(--kick) * 0.8);
+            background-color: #f00;
+            background-blend-mode: multiply;
+            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * -1.5), 0, 0);
+        }
+
+        .layer-green {
+            background-color: #0f0;
+            background-blend-mode: multiply;
+            transform: translate3d(0, calc(var(--kick) * 10px), 0);
+            opacity: 0.8;
         }
 
         .layer-blue {
-            filter: hue-rotate(180deg) brightness(1.5);
-            transform: translate3d(calc(var(--kick) * -45px), 0, 0) skewX(calc(var(--kick) * -20deg));
-            opacity: calc(var(--kick) * 0.8);
+            background-color: #00f;
+            background-blend-mode: multiply;
+            transform: translate3d(calc(var(--kick) * var(--morpheus-intensity) * 1.5), 0, 0);
         }
 
-        /* Scanlines (Líneas de TV Antigua) */
-        .scanlines::before {
+        /* IMAGEN BASE & SLIDES */
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: grayscale(1) contrast(1.2);
+        }
+
+        /* EFECTOS DE PANTALLA (SCANLINES) */
+        .scanlines::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.03), rgba(0, 0, 255, 0.05));
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.4) 50%);
+            background-size: 100% 4px;
             z-index: 10;
-            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* UI ELEMENTS */
+        .ui-overlay {
+            position: absolute;
+            z-index: 50;
+            bottom: 10%;
+            left: 5%;
+            pointer-events: none;
         }
 
         .main-title {
-            transition: transform 0.05s ease-out;
-            transform: translate3d(0, calc(var(--kick) * -20px), 0);
-        }
-
-        /* Transición de diapositivas optimizada para impacto */
-        .slide {
-            transition: opacity 0.1s steps(2, end);
-            will-change: opacity;
-        }
-
-        @keyframes shimmer {
-            100% { transform: translateX(100%); }
+            color: white;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-style: italic;
+            line-height: 0.8;
+            text-shadow: calc(var(--kick) * 10px) 0 0 rgba(255,0,0,0.5);
         }
 
         #start-engine {
-            text-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-bar-container {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        #loading-bar {
+            height: 100%;
+            background: #ff0000;
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 15px #ff0000;
         }
     </style>
 </head>
+<body>
 
-<body class="bg-black no-scrollbar antialiased">
-
-    <audio id="bg-track" src="assets/sounds/distorted-bass.wav" loop preload="auto"></audio>
-
-    <main>
-        <section id="visualizer-section" class="relative h-screen flex items-end justify-start px-6 md:px-20 pb-20 overflow-hidden select-none bg-black">
-            
-            <figure class="absolute inset-0 z-0 overflow-hidden pointer-events-none scanlines">
-                <div id="glitch-wrapper" class="w-full h-full relative scale-110 crt-container">
-                    
-                    <div id="carousel" class="absolute inset-0 w-full h-full">
-                        <img src="assets/img/eyes.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-100">
-                        <img src="assets/img/denial/1.webp" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                        <img src="assets/img/anger/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                        <img src="assets/img/depression/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                        <img src="assets/img/acceptance/1.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">
-                        <img src="assets/img/denial/8.png" class="slide absolute inset-0 w-full h-full object-cover opacity-0">                       
-                    </div>
-
-                    <div class="glitch-layer layer-red absolute inset-0 w-full h-full mix-blend-screen"></div>
-                    <div class="glitch-layer layer-blue absolute inset-0 w-full h-full mix-blend-screen"></div>
-                </div>
-                
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
-                <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-transparent to-transparent"></div>
-            </figure>
-
-            <div class="relative z-20 flex flex-col items-start max-w-6xl">
-                
-                <header class="mb-12">
-                    <button id="start-engine" 
-                            class="group relative flex items-center gap-6 text-emerald-400 text-[11px] font-bold border border-emerald-400/30 bg-black/60 px-10 py-6 hover:bg-emerald-400 hover:text-black hover:shadow-[0_0_30px_rgba(52,211,153,0.5)] transition-all duration-500 uppercase tracking-[0.6em] backdrop-blur-xl overflow-hidden">
-                        
-                        <span class="relative flex h-4 w-4">
-                            <svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full transition-transform duration-500 group-hover:scale-125">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                        </span>
-
-                        <span class="relative z-10">Play Stream</span>
-
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                    </button>
-                </header>
-
-                <h1 class="main-title text-[12vw] md:text-[9vw] font-black text-left uppercase italic mix-blend-difference leading-[0.9] text-white opacity-80">
-                    Sounds<span class="text-emerald-500 md:inline md:ml-4"> &</span> Changes
-                </h1>
-                
-                <footer class="mt-10 flex flex-col gap-6 items-start">
-                    <span class="text-emerald-500 text-[10px] font-bold tracking-[0.8em] uppercase block">
-                        // Status: ABRIL 15 2026 - V1.0
-                    </span>
-
-                    <aside class="hidden md:block" role="status">
-                        <div class="h-[2px] w-72 bg-white/10 relative overflow-hidden">
-                            <div id="visualizer-bar" class="h-full bg-emerald-500 w-0 transition-all duration-75 shadow-[0_0_15px_#10b981]"></div>
-                        </div>
-                    </aside>
-                </footer>
+    <audio id="bg-track" src="assets/sounds/mixkit-space-soundscape-653.mp3" loop crossorigin="anonymous"></audio>
+ 
+    <div class="viewport-wrapper">
+        
+        <div class="ui-overlay">
+            <div id="header-group">
+                <button id="start-engine" class="px-8 py-4 border border-white/30 text-white text-[10px] tracking-[0.5em] uppercase hover:bg-white hover:text-black transition-all duration-500">
+                    Execute Sequence
+                </button>
             </div>
-        </section>
-    </main>
+            
+            <div class="mt-12">
+                <h1 class="main-title text-[12vw] md:text-[8vw]">
+                    SOUND<span class="text-white/80">OF</span><br>CHANGES
+                </h1>
+                <div class="loading-bar-container">
+                    <div id="loading-bar"></div>
+                </div>
+                <p class="text-[9px] text-white/40 tracking-[0.3em] mt-2 uppercase">Sync: Morpheus_RGB_v2.0</p>
+            </div>
+        </div>
+
+        <figure class="crt-container scanlines">
+            <div id="carousel" class="absolute inset-0 w-full h-full opacity-20">
+                <img src="assets/img/eyes.webp" class="slide opacity-100" alt="1">
+                <img src="assets/img/denial/1.webp" class="slide opacity-0" alt="2">
+                <img src="assets/img/acceptance/02.png" class="slide opacity-0" alt="3">
+                <img src="assets/img/anger/1.png" class="slide opacity-0" alt="4">
+            </div>
+
+            <div id="layer-r" class="glitch-layer layer-red"></div>
+            <div id="layer-g" class="glitch-layer layer-green"></div>
+            <div id="layer-b" class="glitch-layer layer-blue"></div>
+
+            <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_40%,black_120%)] z-20 pointer-events-none"></div>
+        </figure>
+
+    </div>
 
     <script>
         (function() {
-            const btn = document.getElementById('start-engine');
-            const audio = document.getElementById('bg-track');
-            const slides = document.querySelectorAll('.slide');
-            const glitchLayers = document.querySelectorAll('.glitch-layer');
-            const bar = document.getElementById('visualizer-bar');
-            const root = document.documentElement;
-
-            let currentIndex = 0;
-            let audioCtx, analyser, dataArray;
-            let isRunning = false;
-            let lastSwitchTime = 0;
-            
-            // Configuración del motor de sincronización
-            const config = {
-                threshold: 0.65,       // Sensibilidad base
-                kickTrigger: 0.85,     // Fuerza necesaria para rotar slide
-                cooldown: 300          // Tiempo mínimo entre fotos (ms)
+            // Configuración
+            const CONFIG = {
+                threshold: 215,     // Sensibilidad al bajo (0-255)
+                rotationWait: 500,  // Tiempo mínimo entre cambios de imagen (ms)
+                intensityMult: 1.2  // Multiplicador de fuerza del glitch
             };
 
-            // Sincronizar capas de glitch con la imagen activa
-            function syncGlitch(src) {
-                glitchLayers.forEach(l => l.style.backgroundImage = `url('${src}')`);
-            }
-            syncGlitch(slides[0].src);
+            const state = {
+                isRunning: false,
+                currentIndex: 0,
+                lastRotation: 0
+            };
 
-            function rotateSlides() {
-                slides[currentIndex].style.opacity = "0";
-                currentIndex = (currentIndex + 1) % slides.length;
-                slides[currentIndex].style.opacity = "1";
-                syncGlitch(slides[currentIndex].src);
+            const dom = {
+                btn: document.getElementById('start-engine'),
+                audio: document.getElementById('bg-track'),
+                slides: document.querySelectorAll('.slide'),
+                layers: [
+                    document.getElementById('layer-r'),
+                    document.getElementById('layer-g'),
+                    document.getElementById('layer-b')
+                ],
+                root: document.documentElement,
+                bar: document.getElementById('loading-bar'),
+                header: document.getElementById('header-group')
+            };
+
+            let audioCtx, analyser, dataArray;
+
+            function updateLayerImages() {
+                const currentImg = dom.slides[state.currentIndex].src;
+                dom.layers.forEach(layer => {
+                    layer.style.backgroundImage = `url('${currentImg}')`;
+                });
             }
 
-            async function startEngine() {
-                if (isRunning) return;
+            function rotateContent() {
+                const now = Date.now();
+                if (now - state.lastRotation < CONFIG.rotationWait) return;
+
+                dom.slides[state.currentIndex].classList.replace('opacity-100', 'opacity-0');
+                state.currentIndex = (state.currentIndex + 1) % dom.slides.length;
+                dom.slides[state.currentIndex].classList.replace('opacity-0', 'opacity-100');
+                
+                updateLayerImages();
+                state.lastRotation = now;
+            }
+
+            function engineLoop() {
+                if (!state.isRunning) return;
+                requestAnimationFrame(engineLoop);
+
+                analyser.getByteFrequencyData(dataArray);
+
+                // Capturamos el impacto de los bajos (frecuencias 2 a 5)
+                const bassValue = dataArray[2]; 
+                const intensity = Math.pow(bassValue / 255, 1.6) * CONFIG.intensityMult;
+
+                // Actualizamos variables CSS en tiempo real
+                dom.root.style.setProperty('--kick', intensity.toFixed(4));
+                dom.bar.style.width = `${(bassValue / 255) * 100}%`;
+
+                // Disparador de cambio de imagen
+                if (bassValue > CONFIG.threshold) {
+                    rotateContent();
+                }
+            }
+
+            async function start() {
+                if (state.isRunning) return;
+
                 try {
                     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    const source = audioCtx.createMediaElementSource(audio);
                     analyser = audioCtx.createAnalyser();
                     analyser.fftSize = 64; 
                     
+                    const source = audioCtx.createMediaElementSource(dom.audio);
                     source.connect(analyser);
                     analyser.connect(audioCtx.destination);
+
                     dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                    await dom.audio.play();
+                    state.isRunning = true;
                     
-                    audio.play();
-                    isRunning = true;
-                    btn.style.display = 'none';
-                    render();
-                } catch (e) { console.error("Sync Engine Error:", e); }
-            }
+                    dom.header.style.opacity = '0';
+                    setTimeout(() => dom.header.style.display = 'none', 500);
 
-            function render() {
-                if (!isRunning) return;
-                analyser.getByteFrequencyData(dataArray);
-                
-                // Cálculo de energía en frecuencias bajas (Kick)
-                let lowFreq = (dataArray[0] + dataArray[1] + dataArray[2]) / 765;
-                let intensity = lowFreq > config.threshold ? (lowFreq - config.threshold) * 4.5 : 0;
-                let finalKick = Math.min(intensity, 1.5);
-
-                // Aplicar impacto visual a CSS
-                root.style.setProperty('--kick', finalKick.toFixed(3));
-                bar.style.width = (finalKick * 100) + "%";
-
-                // Gatillo de cambio de diapositiva
-                const now = Date.now();
-                if (finalKick > config.kickTrigger && (now - lastSwitchTime) > config.cooldown) {
-                    rotateSlides();
-                    lastSwitchTime = now;
+                    updateLayerImages();
+                    engineLoop();
+                } catch (e) {
+                    console.error("Error iniciando el motor:", e);
                 }
-
-                requestAnimationFrame(render);
             }
 
-            btn.addEventListener('click', () => {
+            dom.btn.addEventListener('click', () => {
                 if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-                startEngine();
+                start();
             });
         })();
     </script>
