@@ -1,1 +1,221 @@
-<!DOCTYPE html> <html lang="es" class="scroll-smooth"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width,initial-scale=1"> <title>WHISPERING NOISE | 15 04 2026 | GRASSO</title> <meta property="og:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO"> <meta property="og:description" content="Experiencia audiovisual inmersiva. Inicia la secuencia."> <meta name="theme-color" content="#000000"> <link rel="icon" type="image/png" href="assets/img/eye.webp"> <meta property="og:type" content="website"> <meta name="author" content="GRASSO"> <link rel="canonical" href="https://popnegro.github.io/sd/"> <meta property="og:url" content="https://popnegro.github.io/sd/"> <meta property="og:image" content="https://popnegro.github.io/sd/assets/img/og-preview.jpg"> <meta property="twitter:card" content="summary_large_image"> <meta property="twitter:url" content="https://popnegro.github.io/sd/"> <meta property="twitter:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO"> <meta property="twitter:description" content="Experiencia audiovisual inmersiva. Stream disponible el 15 de abril de 2026. Inicia la secuencia."> <meta property="twitter:image" content="https://popnegro.github.io/sd/assets/img/og-preview.jpg"> <script src="https://cdn.tailwindcss.com"></script> <style>body,html{background-color:#000;margin:0;padding:0;width:100%;height:100%;overflow:hidden;font-family:ui-sans-serif,system-ui,sans-serif}:root{--kick:0;--morpheus-intensity:80px}.viewport-wrapper{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;perspective:1200px}.crt-container{position:relative;background:#000;transition:transform .05s ease-out;transform:scale(calc(1 + var(--kick) * .05));will-change:transform;overflow:hidden;display:flex;align-items:center;justify-content:center;width:100vw;height:100vh}.glitch-layer{position:absolute;inset:-15%;background-size:cover;background-position:center;mix-blend-mode:screen;pointer-events:none;will-change:transform,opacity}.layer-red{background-color:red;background-blend-mode:multiply;transform:translate3d(calc(var(--kick) * var(--morpheus-intensity) * -1.2),0,calc(var(--kick) * 250px)) scale(calc(1 + var(--kick) * .6));z-index:3}.layer-green{background-color:#0f0;background-blend-mode:multiply;transform:translate3d(0,calc(var(--kick) * 20px),calc(var(--kick) * 100px)) scale(calc(1 + var(--kick) * .3));opacity:.7;z-index:2}.layer-blue{background-color:#00f;background-blend-mode:multiply;transform:translate3d(calc(var(--kick) * var(--morpheus-intensity) * 1.2),0,calc(var(--kick) * -150px)) scale(calc(1 + var(--kick) * .2));z-index:1}.slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .1s steps(2);filter:grayscale(1) contrast(1.4) brightness(.8)}.scanlines::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.3) 50%);background-size:100% 3px;z-index:40;pointer-events:none;opacity:.5}.ui-overlay{position:absolute;z-index:100;bottom:10%;left:5%;pointer-events:none}.main-title{color:#fff;font-weight:900;text-transform:uppercase;font-style:italic;line-height:.8}#start-engine{pointer-events:auto;background:rgba(255,255,255,.05);backdrop-filter:blur(5px)}#carousel{transition:opacity 1.5s cubic-bezier(.4,0,.2,1)}</style> </head> <body> <audio id="bg-track" src="assets/sounds/mixkit-cinematic-transition-swoosh-heartbeat-trailer-488.wav" loop crossorigin="anonymous"></audio> <div class="viewport-wrapper"> <div class="ui-overlay"> <div id="header-group" class="transition-opacity duration-1000"> <button id="start-engine" class="px-8 py-4 border border-white/50 text-white text-[11px] tracking-[.5em] uppercase hover:bg-black hover:text-white transition-all duration-500 font-bold"> Iniciar secuencia </button> </div> <div class="mt-12"> <h1 class="main-title text-[11vw] md:text-[8vw] tracking-[.05em] opacity-50"> WHISPERING <br>NOISE </h1> <div class="w-[200px] h-[2px] bg-white/10 mt-5 overflow-hidden"> <div id="loading-bar" class="h-full bg-red-600 w-0 shadow-[0_0_15px_#f00] transition-all duration-75"></div> </div> <p class="text-[12px] text-white/50 tracking-[.3em] mt-4 uppercase font-bold italic">// STREAM: 15 04 2026 // </p> </div> </div> <figure class="crt-container scanlines"> <div id="carousel" class="absolute inset-0 w-full h-full opacity-0"> <img src="assets/img/eye.webp" class="slide opacity-100" alt="1"> <img src="assets/img/cross.webp" class="slide opacity-0" alt="3"> <img src="assets/img/city.webp" class="slide opacity-0" alt="4"> <img src="assets/img/fire.webp" class="slide opacity-0" alt="4"> <img src="assets/img/red.webp" class="slide opacity-0" alt="3"> <img src="assets/img/people.webp" class="slide opacity-0" alt="3"> <img src="assets/img/sleep.webp" class="slide opacity-0" alt="3"> </div> <div id="layer-r" class="glitch-layer layer-red"></div> <div id="layer-g" class="glitch-layer layer-green"></div> <div id="layer-b" class="glitch-layer layer-blue"></div> <div class="absolute inset-0 bg-[radial-gradient(circle,transparent_30%,black_150%)] z-20 pointer-events-none"> </div> </figure> </div> <script>(function(){const e={threshold:210,rotationWait:400,intensityMult:1.5},t={isRunning:!1,currentIndex:0,lastRotation:0},n={btn:document.getElementById("start-engine"),audio:document.getElementById("bg-track"),slides:document.querySelectorAll(".slide"),carousel:document.getElementById("carousel"),layers:[document.getElementById("layer-r"),document.getElementById("layer-g"),document.getElementById("layer-b")],root:document.documentElement,bar:document.getElementById("loading-bar"),header:document.getElementById("header-group")};let a,o,r;function i(){const e=n.slides[t.currentIndex].src;n.layers.forEach(t=>{t.style.backgroundImage=`url('${e}')`})}function s(){const a=Date.now();a-t.lastRotation<e.rotationWait||(n.slides[t.currentIndex].classList.replace("opacity-100","opacity-0"),t.currentIndex=(t.currentIndex+1)%n.slides.length,n.slides[t.currentIndex].classList.replace("opacity-0","opacity-100"),i(),t.lastRotation=a)}function l(){t.isRunning&&(requestAnimationFrame(l),o.getByteFrequencyData(r));const a=(r[1]+r[2]+r[3])/3,i=Math.pow(a/255,2.2)*e.intensityMult;n.root.style.setProperty("--kick",i.toFixed(4)),n.bar.style.width=`${a/255*100}%`,a>e.threshold&&s()}async function c(){if(!t.isRunning)try{a=new(window.AudioContext||window.webkitAudioContext),o=a.createAnalyser(),o.fftSize=64;const e=a.createMediaElementSource(n.audio);e.connect(o),o.connect(a.destination),r=new Uint8Array(o.frequencyBinCount),await n.audio.play(),t.isRunning=!0,n.carousel.classList.replace("opacity-0","opacity-100"),n.header.style.opacity="0",setTimeout(()=>n.header.style.display="none",1e3),i(),l()}catch(t){console.error("Engine failure:",t)}}n.btn.addEventListener("click",()=>{a&&"suspended"===a.state&&a.resume(),c()})})();</script> </body> </html>
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>WHISPERING NOISE | 15 04 2026 | GRASSO</title>
+    <meta property="og:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO">
+    <meta property="og:description" content="Experiencia audiovisual inmersiva. Inicia la secuencia.">
+    <meta name="theme-color" content="#000000">
+    <link rel="icon" type="image/png" href="assets/img/eye.webp">
+    <meta property="og:type" content="website">
+    <meta name="author" content="GRASSO">
+    <link rel="canonical" href="https://popnegro.github.io/ws/">
+    <meta property="og:url" content="https://popnegro.github.io/ws/">
+    <meta property="og:image" content="https://popnegro.github.io/sd/assets/img/og-preview.jpg">
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://popnegro.github.io/ws/">
+    <meta property="twitter:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO">
+    <meta property="twitter:description"
+        content="Experiencia audiovisual inmersiva. Stream disponible el 15 de abril de 2026. Inicia la secuencia.">
+    <meta property="twitter:image" content="https://popnegro.github.io/ws/assets/img/og-preview.jpg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+        
+        body, html { 
+            background: #000; 
+            margin: 0; 
+            overflow: hidden; 
+            height: 100dvh; 
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Eliminado grayscale. Aumentamos contraste y saturación para un look más agresivo */
+        #mosh-canvas { 
+            filter: contrast(1.4) saturate(1.2) brightness(0.9); 
+            width: 100vw; 
+            height: 100dvh; 
+            display: block;
+        }
+
+        .main-title { 
+            font-family: 'Lora', serif;
+            color: #fff; 
+            font-weight: 400; 
+            text-transform: uppercase; 
+            font-style: italic; 
+            line-height: 0.8; 
+            letter-spacing: -0.01em;
+            mix-blend-mode: exclusion;
+        }
+
+        .ui-overlay { 
+            position: absolute; 
+            z-index: 100; 
+            inset: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 2rem; 
+            pointer-events: none; 
+        }
+
+        #start-engine { 
+            pointer-events: auto; 
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .scanlines { 
+            position: fixed; 
+            inset: 0; 
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.3) 50%); 
+            background-size: 100% 2px; 
+            z-index: 50; 
+            pointer-events: none; 
+        }
+    </style>
+</head>
+<body>
+    <audio id="bg-track" src="assets/sounds/hearbeat.mp3" loop crossorigin="anonymous"></audio>
+    
+    <div class="scanlines"></div>
+    <canvas id="mosh-canvas"></canvas>
+
+    <div class="ui-overlay">
+        <div id="header-group" class="flex justify-between items-start w-full">
+            <button id="start-engine" class="px-10 py-5 border border-white/40 text-white text-[10px] tracking-[.6em] uppercase hover:bg-white hover:text-red-600 transition-all duration-700 font-black">
+                Iniciar Secuencia
+            </button>
+            
+        </div>
+        
+        <div class="mb-4">
+            <h1 class="main-title text-[13vw] md:text-[10vw]">WHISPERING<br>NOISE</h1>
+            <div class="flex items-center gap-6 mt-8">
+                <div class="w-[300px] h-[2px] bg-white/20 overflow-hidden">
+                    <div id="loading-bar" class="h-full bg-red-600 w-0 shadow-[0_0_20px_#f00] transition-all duration-75"></div>
+                </div>
+                <p class="text-[11px] text-red-600 tracking-[.4em] uppercase font-black italic">Stream 15 04 2026</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const config = {
+            threshold: 190,
+            pixelShift: 40, 
+            imgPaths: [
+                'assets/img/eyes.webp', 'assets/img/cross.webp', 
+                'assets/img/city.webp', 'assets/img/fire.webp', 
+                'assets/img/red.webp', 'assets/img/sleep.webp', 
+                'assets/img/tierra.webp'
+            ]
+        };
+
+        const state = { isRunning: false, idx: 0, images: [], lastMosh: 0 };
+        const nodes = {
+            canvas: document.getElementById('mosh-canvas'),
+            ctx: document.getElementById('mosh-canvas').getContext('2d', { willReadFrequently: true }),
+            btn: document.getElementById('start-engine'),
+            audio: document.getElementById('bg-track'),
+            bar: document.getElementById('loading-bar'),
+            header: document.getElementById('header-group')
+        };
+
+        let audioCtx, analyser, dataArray;
+
+        const loadImages = () => Promise.all(config.imgPaths.map(path => new Promise(res => {
+            const img = new Image(); img.src = path; img.onload = () => res(img); state.images.push(img);
+        })));
+
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            nodes.canvas.width = window.innerWidth * dpr;
+            nodes.canvas.height = window.innerHeight * dpr;
+            nodes.ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function drawImageCover(ctx, img, offset = {x: 0, y: 0}) {
+            const cw = window.innerWidth, ch = window.innerHeight;
+            const imgRatio = img.width / img.height, canvasRatio = cw / ch;
+            let dw, dh, ox, oy;
+            if (imgRatio > canvasRatio) { dh = ch; dw = ch * imgRatio; ox = (cw - dw) / 2; oy = 0; }
+            else { dw = cw; dh = cw / imgRatio; ox = 0; oy = (ch - dh) / 2; }
+            ctx.drawImage(img, ox + offset.x, oy + offset.y, dw, dh);
+        }
+
+        function applyOrganicGlitch(kick) {
+            const cw = window.innerWidth, ch = window.innerHeight;
+            // Generamos cortes de imagen horizontales aleatorios
+            for (let i = 0; i < 5; i++) {
+                const sliceY = Math.random() * ch;
+                const sliceH = Math.random() * (ch * 0.2) * kick;
+                const hOffset = (Math.random() - 0.5) * config.pixelShift * kick;
+                
+                // Desplazamos una franja de la imagen
+                nodes.ctx.drawImage(nodes.canvas, 0, sliceY, cw, sliceH, hOffset, sliceY, cw, sliceH);
+            }
+        }
+
+        function render() {
+            if (!state.isRunning) return;
+            requestAnimationFrame(render);
+            analyser.getByteFrequencyData(dataArray);
+            const bass = dataArray[1]; 
+            const kickLevel = bass / 255;
+            nodes.bar.style.width = `${kickLevel * 100}%`;
+
+            if (bass > config.threshold) {
+                // DATAMOSH: Arrastre de buffer
+                nodes.ctx.drawImage(nodes.canvas, (Math.random()-0.5)*10, Math.random()*15, window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight);
+                
+                // GLITCH: Cortes de imagen orgánicos
+                applyOrganicGlitch(kickLevel);
+
+                if (Date.now() - state.lastMosh > 120) {
+                    state.idx = (state.idx + 1) % state.images.length;
+                    state.lastMosh = Date.now();
+                }
+
+                nodes.ctx.globalAlpha = 0.15; 
+                drawImageCover(nodes.ctx, state.images[state.idx]);
+                nodes.ctx.globalAlpha = 1.0;
+            } else {
+                nodes.ctx.globalAlpha = 0.03; 
+                drawImageCover(nodes.ctx, state.images[state.idx]);
+                nodes.ctx.globalAlpha = 1.0;
+            }
+        }
+
+        async function init() {
+            if (state.isRunning) return;
+            await loadImages();
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 64;
+            const source = audioCtx.createMediaElementSource(nodes.audio);
+            source.connect(analyser); analyser.connect(audioCtx.destination);
+            dataArray = new Uint8Array(analyser.frequencyBinCount);
+            try {
+                await nodes.audio.play();
+                state.isRunning = true;
+                nodes.header.style.opacity = '0';
+                setTimeout(() => nodes.header.style.visibility = 'hidden', 1000);
+                render();
+            } catch (err) { console.error(err); }
+        }
+
+        nodes.btn.addEventListener('click', () => {
+            if (audioCtx?.state === 'suspended') audioCtx.resume();
+            init();
+        });
+    })();
+    </script>
+</body>
+</html>
