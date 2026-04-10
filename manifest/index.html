@@ -1,12 +1,12 @@
-revisar <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
-    <!-- Google Analytics -->
+    <!-- GA4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-79PJLWVL74"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
+        function gtag(){dataLayer.push(arguments);}
         gtag("js", new Date());
         gtag("config", "G-79PJLWVL74");
     </script>
@@ -18,333 +18,258 @@ revisar <!DOCTYPE html>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body {
-            background: #000;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            overflow-x: hidden;
-        }
+        body { background:#000; color:#fff; margin:0; font-family:Arial; }
 
-        /* GRID SIMPLE */
         .gallery {
-            display: grid;
-            grid-template-columns: 1fr;
+            display:grid;
+            grid-template-columns:1fr;
         }
 
-        @media (min-width: 768px) {
-            .gallery {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        @media(min-width:768px){
+            .gallery { grid-template-columns:repeat(2,1fr); }
         }
 
-        /* FOTO */
-        .wn-photo {
-            position: relative;
+        .batch {
+            opacity:0;
+            transform:translateY(60px);
+            transition:1s ease;
         }
 
-        .wn-photo img {
-            width: 100%;
-            display: block;
+        .batch.visible {
+            opacity:1;
+            transform:translateY(0);
         }
 
-        /* OVERLAY */
+        .wn-photo { position:relative; }
+        .wn-photo img { width:100%; display:block; }
+
         .wn-overlay {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 8px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            opacity: 0;
-            transition: 0.3s;
+            position:absolute;
+            bottom:0;
+            width:100%;
+            padding:8px;
+            font-size:12px;
+            background:rgba(0,0,0,0.6);
+            display:flex;
+            justify-content:space-between;
+            opacity:0;
         }
 
-        .wn-photo:hover .wn-overlay {
-            opacity: 1;
+        .wn-photo:hover .wn-overlay { opacity:1; }
+        body.data-mode .wn-overlay { opacity:1 !important; }
+
+        .wn-hot-high{outline:3px solid red;}
+        .wn-hot-mid{outline:2px solid orange;}
+        .wn-hot-low{opacity:0.7;}
+
+        #wnDataToggle{
+            position:fixed;
+            top:20px; right:20px;
+            z-index:999;
+            background:#111;
+            padding:8px 12px;
+            border:1px solid #444;
         }
 
-        body.data-mode .wn-overlay {
-            opacity: 1 !important;
+        .wn-concept {
+            min-height:60vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            padding:40px;
         }
 
-        /* HEATMAP */
-        .wn-hot-high { outline: 3px solid red; }
-        .wn-hot-mid { outline: 2px solid orange; }
-        .wn-hot-low { opacity: 0.7; }
-
-        /* BOTÓN */
-        #wnDataToggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: rgba(0,0,0,0.7);
-            color: #fff;
-            border: 1px solid #444;
-            padding: 8px 12px;
-            font-size: 12px;
-            backdrop-filter: blur(10px);
+        .wn-concept p {
+            max-width:600px;
+            opacity:0;
+            transform:translateY(30px);
+            transition:0.8s;
         }
-        /* CONCEPT BLOCK */
 
-.wn-concept {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    text-align: center;
-}
-
-.wn-concept-inner {
-    max-width: 600px;
-}
-
-.wn-concept p {
-    color: #fff;
-    font-size: 18px;
-    font-weight: 300;
-    letter-spacing: 0.5px;
-    line-height: 1.6;
-    margin: 20px 0;
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s ease;
-}
-
-/* REVEAL */
-.wn-concept p.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+        .wn-concept p.visible {
+            opacity:1;
+            transform:translateY(0);
+        }
     </style>
 </head>
 
 <body>
 
-<!-- BOTÓN DATA -->
-<button id="wnDataToggle">Ver datos</button>
+<button id="wnDataToggle">DATA MODE</button>
 
-<!-- GALERÍA -->
-<div class="gallery">
-
-    <!-- FOTO -->
-    <div class="wn-photo" data-id="img_01">
-        <img src="https://popnegro.github.io/wn/manifest/01.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-    <div class="wn-photo" data-id="img_02">
-        <img src="https://popnegro.github.io/wn/manifest/02.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-    <div class="wn-photo" data-id="img_03">
-        <img src="https://popnegro.github.io/wn/manifest/03.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-    <div class="wn-photo" data-id="img_04">
-        <img src="https://popnegro.github.io/wn/manifest/04.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-    <div class="wn-photo" data-id="img_05">
-        <img src="https://popnegro.github.io/wn/manifest/05.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-    <div class="wn-photo" data-id="img_06">
-        <img src="https://popnegro.github.io/wn/manifest/06.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-
-</div>
-<div class="container mx-auto">
-     <div class="wn-photo" data-id="img_07">
-        <img src="https://popnegro.github.io/wn/manifest/07.webp">
-        <div class="wn-overlay">
-            <span class="wn-time">0s</span>
-            <span class="wn-label">—</span>
-        </div>
-    </div>
-</div>
-<section class="wn-concept">
-    <div class="wn-concept-inner">
-
-        <p id="wnDynamicText" class="wn-reveal">
-            Analizando tu forma de mirar...
-        </p>
-
-    </div>
-</section>
+<div id="app"></div>
 
 <script>
-let active = null;
-let start = 0;
+// ---------------- CONFIG ----------------
+const TOTAL = 30;
+const BATCH = 6;
 
-// TRACK
+// ---------------- GENERAR HTML ----------------
+const app = document.getElementById("app");
+
+for (let i = 1; i <= TOTAL; i++) {
+
+    if ((i - 1) % BATCH === 0) {
+        const gallery = document.createElement("div");
+        gallery.className = "gallery batch";
+        app.appendChild(gallery);
+    }
+
+    const currentGallery = app.lastElementChild;
+
+    const id = String(i).padStart(2, '0');
+
+    const photo = document.createElement("div");
+    photo.className = "wn-photo";
+    photo.dataset.id = `img_${id}`;
+
+    photo.innerHTML = `
+        <img src="/manifest/${id}.webp" loading="lazy">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    `;
+
+    currentGallery.appendChild(photo);
+
+    if (i % BATCH === 0) {
+        const section = document.createElement("section");
+        section.className = "wn-concept";
+        section.innerHTML = `
+            <p class="wn-reveal dynamic-text">
+                Analizando tu forma de mirar...
+            </p>
+        `;
+        app.appendChild(section);
+    }
+}
+
+// ---------------- TRACKING ----------------
 document.querySelectorAll('.wn-photo').forEach(el => {
 
-    // DESKTOP
-    el.addEventListener('mouseenter', () => {
-        active = el;
-        start = Date.now();
-    });
+    let start = 0;
 
-    el.addEventListener('mouseleave', () => trackTime(el));
+    const startTracking = () => start = Date.now();
 
-    // MOBILE
-    el.addEventListener('touchstart', () => {
-        active = el;
-        start = Date.now();
-    });
+    const endTracking = () => {
+        if (!start) return;
 
-    el.addEventListener('touchend', () => trackTime(el));
+        let time = Math.floor((Date.now() - start)/1000);
+        start = 0;
 
+        if (time < 1) return;
+
+        let label = "curioso";
+        if (time > 3) label = "interesado";
+        if (time > 6) label = "enganchado";
+
+        el.querySelector('.wn-time').innerText = time + "s";
+        el.querySelector('.wn-label').innerText = label;
+
+        saveWN(el.dataset.id, time);
+
+        if (typeof gtag !== "undefined") {
+            gtag('event','photo_interaction',{
+                photo_id: el.dataset.id,
+                engagement_time: time
+            });
+        }
+    };
+
+    el.addEventListener('mouseenter', startTracking);
+    el.addEventListener('mouseleave', endTracking);
+    el.addEventListener('touchstart', startTracking);
+    el.addEventListener('touchend', endTracking);
+
+    new IntersectionObserver(entries=>{
+        entries.forEach(e=>{
+            if(!e.isIntersecting) endTracking();
+        });
+    },{threshold:0.3}).observe(el);
 });
 
-function trackTime(el) {
-    if (!active) return;
+// ---------------- STORAGE ----------------
+function saveWN(id,time){
+    let data = JSON.parse(localStorage.getItem('wn-data')||"{}");
 
-    let time = Math.floor((Date.now() - start) / 1000);
-
-    let label = "curioso";
-    if (time > 3) label = "interesado";
-    if (time > 6) label = "enganchado";
-
-    el.querySelector('.wn-time').innerText = time + "s";
-    el.querySelector('.wn-label').innerText = label;
-
-    saveWN(el.dataset.id, time);
-
-    // GA4 EVENTO
-    if (typeof gtag !== "undefined") {
-        gtag('event', 'photo_interaction', {
-            event_category: 'UX',
-            event_label: el.dataset.id,
-            value: time
-        });
-    }
-
-    active = null;
-}
-
-// STORAGE
-function saveWN(id, time) {
-    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-
-    if (!data[id]) {
-        data[id] = { views: 0, total: 0 };
-    }
+    if(!data[id]) data[id]={views:0,total:0};
 
     data[id].views++;
-    data[id].total += time;
+    data[id].total+=time;
 
-    localStorage.setItem('wn-data', JSON.stringify(data));
+    localStorage.setItem('wn-data',JSON.stringify(data));
 }
 
-// DATA MODE
-let btn = document.getElementById("wnDataToggle");
-let dataMode = false;
-
-btn.onclick = () => {
+// ---------------- DATA MODE ----------------
+document.getElementById("wnDataToggle").onclick=()=>{
     document.body.classList.toggle("data-mode");
     renderData();
-    updateNarrative(); 
+    updateNarrative();
 };
 
-// RENDER
-function renderData() {
-    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+// ---------------- RENDER ----------------
+function renderData(){
+    let data = JSON.parse(localStorage.getItem('wn-data')||"{}");
 
-    document.querySelectorAll('.wn-photo').forEach(el => {
-        let id = el.dataset.id;
-        if (!data[id]) return;
+    document.querySelectorAll('.wn-photo').forEach(el=>{
+        let d = data[el.dataset.id];
+        if(!d) return;
 
-        let avg = Math.round(data[id].total / data[id].views);
+        let avg = Math.round(d.total/d.views);
 
-        el.querySelector('.wn-time').innerText = avg + "s";
+        el.querySelector('.wn-time').innerText = avg+"s";
 
         el.classList.remove("wn-hot-high","wn-hot-mid","wn-hot-low");
 
-        if (avg > 5) el.classList.add("wn-hot-high");
-        else if (avg > 3) el.classList.add("wn-hot-mid");
+        if(avg>5) el.classList.add("wn-hot-high");
+        else if(avg>3) el.classList.add("wn-hot-mid");
         else el.classList.add("wn-hot-low");
     });
 }
 
-// INIT
-window.addEventListener("load", renderData);
+// ---------------- NARRATIVA ----------------
+function updateNarrative(){
+    let data = JSON.parse(localStorage.getItem('wn-data')||"{}");
 
-const revealElements = document.querySelectorAll('.wn-reveal');
+    let totalViews=0,totalTime=0;
 
-const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, {
-    threshold: 0.2
-});
-
-revealElements.forEach(el => revealObserver.observe(el));
-function updateNarrative() {
-
-    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-
-    let totalViews = 0;
-    let totalTime = 0;
-
-    Object.values(data).forEach(d => {
-        totalViews += d.views;
-        totalTime += d.total;
+    Object.values(data).forEach(d=>{
+        totalViews+=d.views;
+        totalTime+=d.total;
     });
 
-    if (totalViews === 0) return;
+    if(totalViews===0) return;
 
-    let avg = totalTime / totalViews;
+    let avg = totalTime/totalViews;
 
-    let text = "";
+    let text =
+        avg<2 ? "Recorrés rápido. Buscás algo que todavía no aparece." :
+        avg<4 ? "Observás, pero decidís rápido." :
+        avg<7 ? "Hay interés. Algunas imágenes te retienen." :
+        "Te detenés. Mirás con intención.";
 
-    if (avg < 2) {
-        text = "Recorrés rápido. Buscás algo que todavía no aparece.";
-    } else if (avg < 4) {
-        text = "Observás, pero decidís rápido. Filtrás sin detenerte demasiado.";
-    } else if (avg < 7) {
-        text = "Hay interés. Algunas imágenes logran retenerte.";
-    } else {
-        text = "Te detenés. Mirás con intención. No solo consumís, interpretás.";
-    }
-
-    document.getElementById("wnDynamicText").innerText = text;
+    document.querySelectorAll('.dynamic-text').forEach(el=>{
+        el.innerText = text;
+    });
 }
-window.addEventListener("load", () => {
+
+// ---------------- REVEAL ----------------
+const observer = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+        if(e.isIntersecting) e.target.classList.add("visible");
+    });
+},{threshold:0.2});
+
+document.querySelectorAll('.batch').forEach(el=>observer.observe(el));
+document.querySelectorAll('.wn-reveal').forEach(el=>observer.observe(el));
+
+// INIT
+window.onload=()=>{
     renderData();
     updateNarrative();
-});
+};
 </script>
 
 </body>
