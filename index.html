@@ -19,6 +19,7 @@
     <style>
         :root {
             --accent-red: #ff0000;
+            --bg-red: #ff0000;
             --accent-orange: #ff8800;
         }
 
@@ -83,8 +84,8 @@
         }
 
         /* Estados de calor (Data Mode) */
-        body.data-mode .wn-hot-high { outline: 4px solid var(--accent-red); outline-offset: -4px; }
-        body.data-mode .wn-hot-mid { outline: 3px solid var(--accent-orange); outline-offset: -3px; }
+        body.data-mode .wn-hot-high { background-color: var(--bg-red); outline-offset: -4px; }
+        body.data-mode .wn-hot-mid { background-color: var(--bg-orange); outline-offset: -3px; }
         body.data-mode .wn-hot-low { opacity: 0.5; }
 
         /* Botón de control */
@@ -310,7 +311,7 @@ function syncUI() {
 // 5. INITIALIZE
 document.getElementById("wnDataToggle").onclick = (e) => {
     const isData = document.body.classList.toggle("data-mode");
-    e.target.innerText = isData ? "VIEW ART" : "VIEW DATA";
+    e.target.innerText = isData ? "VIEW IMAGE" : "VIEW DATA";
     if (isData) syncUI();
 };
 
