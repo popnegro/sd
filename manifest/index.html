@@ -133,7 +133,7 @@ revisar <!DOCTYPE html>
 
     <!-- FOTO -->
     <div class="wn-photo" data-id="img_01">
-        <img src="/manifest/01.webp">
+        <img src="https://popnegro.github.io/wn/manifest/01.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -141,7 +141,7 @@ revisar <!DOCTYPE html>
     </div>
 
     <div class="wn-photo" data-id="img_02">
-        <img src="/manifest/02.webp">
+        <img src="https://popnegro.github.io/wn/manifest/02.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -149,7 +149,7 @@ revisar <!DOCTYPE html>
     </div>
 
     <div class="wn-photo" data-id="img_03">
-        <img src="/manifest/03.webp">
+        <img src="https://popnegro.github.io/wn/manifest/03.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -157,7 +157,7 @@ revisar <!DOCTYPE html>
     </div>
 
     <div class="wn-photo" data-id="img_04">
-        <img src="/manifest/04.webp">
+        <img src="https://popnegro.github.io/wn/manifest/04.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -165,7 +165,7 @@ revisar <!DOCTYPE html>
     </div>
 
     <div class="wn-photo" data-id="img_05">
-        <img src="/manifest/05.webp">
+        <img src="https://popnegro.github.io/wn/manifest/05.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -173,7 +173,7 @@ revisar <!DOCTYPE html>
     </div>
 
     <div class="wn-photo" data-id="img_06">
-        <img src="/manifest/06.webp">
+        <img src="https://popnegro.github.io/wn/manifest/06.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -183,7 +183,7 @@ revisar <!DOCTYPE html>
 </div>
 <div class="container mx-auto">
      <div class="wn-photo" data-id="img_07">
-        <img src="/manifest/07.webp">
+        <img src="https://popnegro.github.io/wn/manifest/07.webp">
         <div class="wn-overlay">
             <span class="wn-time">0s</span>
             <span class="wn-label">—</span>
@@ -192,25 +192,11 @@ revisar <!DOCTYPE html>
 </div>
 <section class="wn-concept">
     <div class="wn-concept-inner">
-        <p class="wn-reveal">
-            La imagen no es solo lo que ves.
+
+        <p id="wnDynamicText" class="wn-reveal">
+            Analizando tu forma de mirar...
         </p>
 
-        <p class="wn-reveal">
-            Es el tiempo que decidís quedarte.
-        </p>
-
-        <p class="wn-reveal">
-            Es la pausa invisible entre estímulo y atención.
-        </p>
-
-        <p class="wn-reveal">
-            Este proyecto no mide clicks.
-        </p>
-
-        <p class="wn-reveal">
-            Mide percepción.
-        </p>
     </div>
 </section>
 
@@ -284,9 +270,9 @@ let btn = document.getElementById("wnDataToggle");
 let dataMode = false;
 
 btn.onclick = () => {
-    dataMode = !dataMode;
     document.body.classList.toggle("data-mode");
     renderData();
+    updateNarrative(); 
 };
 
 // RENDER
@@ -325,6 +311,40 @@ const revealObserver = new IntersectionObserver(entries => {
 });
 
 revealElements.forEach(el => revealObserver.observe(el));
+function updateNarrative() {
+
+    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+
+    let totalViews = 0;
+    let totalTime = 0;
+
+    Object.values(data).forEach(d => {
+        totalViews += d.views;
+        totalTime += d.total;
+    });
+
+    if (totalViews === 0) return;
+
+    let avg = totalTime / totalViews;
+
+    let text = "";
+
+    if (avg < 2) {
+        text = "Recorrés rápido. Buscás algo que todavía no aparece.";
+    } else if (avg < 4) {
+        text = "Observás, pero decidís rápido. Filtrás sin detenerte demasiado.";
+    } else if (avg < 7) {
+        text = "Hay interés. Algunas imágenes logran retenerte.";
+    } else {
+        text = "Te detenés. Mirás con intención. No solo consumís, interpretás.";
+    }
+
+    document.getElementById("wnDynamicText").innerText = text;
+}
+window.addEventListener("load", () => {
+    renderData();
+    updateNarrative();
+});
 </script>
 
 </body>
