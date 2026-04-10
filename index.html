@@ -1,1 +1,325 @@
-<!DOCTYPE html><html lang="es" class="scroll-smooth"><head><script async src="https://www.googletagmanager.com/gtag/js?id=G-79PJLWVL74"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("js",new Date);gtag("config","G-79PJLWVL74")</script><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WHISPERING NOISE | 15 04 2026</title><meta property="og:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO"><meta property="og:description" content="Experiencia audiovisual inmersiva. Inicia la secuencia."><meta name="theme-color" content="#000000"><link rel="icon" type="image/png" href="assets/img/eye.webp"><meta property="og:type" content="website"><meta name="author" content="GRASSO"><link rel="canonical" href="https://popnegro.github.io/ws/"><meta property="og:url" content="https://popnegro.github.io/ws/"><meta property="og:image" content="https://popnegro.github.io/ws/assets/img/og-preview.jpg"><meta property="twitter:card" content="summary_large_image"><meta property="twitter:url" content="https://popnegro.github.io/ws/"><meta property="twitter:title" content="WHISPERING NOISE | 15 04 2026 | GRASSO"><meta property="twitter:description" content="Experiencia audiovisual inmersiva. Stream disponible el 15 de abril de 2026. Inicia la secuencia."><meta property="twitter:image" content="https://popnegro.github.io/ws/assets/img/og-preview.jpg"><script src="https://cdn.tailwindcss.com"></script><style>@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');body,html{background:#000;margin:0;overflow:hidden;height:100dvh;font-family:Arial,Helvetica,sans-serif}#mosh-canvas{filter:contrast(1.4) saturate(1.2) brightness(.9);width:100vw;height:100dvh;display:block}.main-title{font-family:"Lora",serif;color:#fff;font-weight:500;text-transform:uppercase;font-style:italic;line-height:.85;letter-spacing:-.01em;mix-blend-mode:exclusion}.ui-overlay{position:absolute;z-index:100;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:2rem;pointer-events:none}#start-engine{pointer-events:auto;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}.scanlines{position:fixed;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,.3) 50%);background-size:100% 2px;z-index:50;pointer-events:none}</style></head><body><audio id="bg-track" src="assets/sounds/hearbeat.mp3" loop crossorigin="anonymous"></audio><div class="scanlines"></div><canvas id="mosh-canvas"></canvas><div class="ui-overlay"><div id="header-group" class="flex justify-between items-start w-full"><button id="start-engine" class="px-10 py-5 border border-white/40 text-white text-[10px] tracking-[.6em] uppercase hover:bg-white hover:text-red-600 transition-all duration-700 font-black">Iniciar Secuencia</button></div><div class="mb-4"><h1 class="main-title text-[13vw] md:text-[10vw]">WHISPERING<br>NOISE</h1><div class="flex items-center gap-6 mt-8"><div class="w-[300px] h-[2px] bg-white/20 overflow-hidden"><div id="loading-bar" class="h-full bg-red-600 w-0 shadow-[0_0_20px_#f00] transition-all duration-75"></div></div><p class="text-[11px] text-red-600 tracking-[.4em] uppercase font-black italic">15/04/26</p></div></div></div><script>(function(){const c={threshold:190,pixelShift:40,imgPaths:["assets/img/eyes.webp","assets/img/cross.webp","assets/img/city.webp","assets/img/fire.webp","assets/img/red.webp","assets/img/sleep.webp","assets/img/tierra.webp"]},s={isRunning:!1,idx:0,images:[],lastMosh:0},n={canvas:document.getElementById("mosh-canvas"),ctx:document.getElementById("mosh-canvas").getContext("2d",{willReadFrequently:!0}),btn:document.getElementById("start-engine"),audio:document.getElementById("bg-track"),bar:document.getElementById("loading-bar"),header:document.getElementById("header-group")};let a,r,d;const l=()=>Promise.all(c.imgPaths.map(t=>new Promise(e=>{const i=new Image;i.src=t,i.onload=()=>e(i),s.images.push(i)})));function o(){const t=window.devicePixelRatio||1;n.canvas.width=window.innerWidth*t,n.canvas.height=window.innerHeight*t,n.ctx.scale(t,t)}window.addEventListener("resize",o),o();function g(t,e,i={x:0,y:0}){const o=window.innerWidth,n=window.innerHeight,a=e.width/e.height,r=o/n;let d,l,c,s;a>r?(l=n,d=n*a,c=(o-d)/2,s=0):(d=o,l=o/a,c=0,s=(n-l)/2),t.drawImage(e,c+i.x,s+i.y,d,l)}function h(t){const e=window.innerWidth,i=window.innerHeight;for(let o=0;o<5;o++){const a=Math.random()*i,r=Math.random()*(i*.2)*t,d=(Math.random()-.5)*c.pixelShift*t;n.ctx.drawImage(n.canvas,0,a,e,r,d,a,e,r)}}function m(){if(!s.isRunning)return;requestAnimationFrame(m),r.getByteFrequencyData(d);const t=d[1],e=t/255;if(n.bar.style.width=`${100*e}%`,t>c.threshold){n.ctx.drawImage(n.canvas,10*(Math.random()-.5),15*Math.random(),window.innerWidth,window.innerHeight,0,0,window.innerWidth,window.innerHeight),h(e),Date.now()-s.lastMosh>120&&(s.idx=(s.idx+1)%s.images.length,s.lastMosh=Date.now()),n.ctx.globalAlpha=.15,g(n.ctx,s.images[s.idx]),n.ctx.globalAlpha=1}else n.ctx.globalAlpha=.03,g(n.ctx,s.images[s.idx]),n.ctx.globalAlpha=1}async function f(){if(s.isRunning)return;await l(),a=new(window.AudioContext||window.webkitAudioContext),r=a.createAnalyser(),r.fftSize=64;const t=a.createMediaElementSource(n.audio);t.connect(r),r.connect(a.destination),d=new Uint8Array(r.frequencyBinCount);try{await n.audio.play(),s.isRunning=!0,n.header.style.opacity="0",setTimeout(()=>n.header.style.visibility="hidden",1e3),m()}catch(e){console.error(e)}}n.btn.addEventListener("click",()=>{a?.state==="suspended"&&a.resume(),f()})})()</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WHISPERING NOISE | DATA EXPERIENCE</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-79PJLWVL74"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag("js", new Date());
+        gtag("config", "G-79PJLWVL74");
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root {
+            --accent-red: #ff0000;
+            --accent-orange: #ff8800;
+        }
+
+        body { 
+            background: #000; 
+            color: #fff; 
+            margin: 0; 
+            font-family: 'Inter', Arial, sans-serif; 
+            overflow-x: hidden;
+        }
+
+        /* Prevenir saltos de diseño (CLS) */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 2px;
+        }
+
+        @media(min-width: 768px) {
+            .gallery { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .wn-photo { 
+            position: relative; 
+            background: #111; 
+            overflow: hidden;
+            aspect-ratio: 1 / 1; /* Mantiene el espacio antes de cargar la imagen */
+        }
+
+        .wn-photo img { 
+            width: 100%; 
+            height: 100%;
+            object-fit: cover;
+            display: block; 
+            transition: transform 0.5s ease;
+        }
+
+        .wn-photo:hover img {
+            transform: scale(1.03);
+        }
+
+        /* Overlay de datos */
+        .wn-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 12px;
+            font-size: 11px;
+            font-family: monospace;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        .wn-photo:hover .wn-overlay,
+        body.data-mode .wn-overlay { 
+            opacity: 1; 
+        }
+
+        /* Estados de calor (Data Mode) */
+        body.data-mode .wn-hot-high { outline: 4px solid var(--accent-red); outline-offset: -4px; }
+        body.data-mode .wn-hot-mid { outline: 3px solid var(--accent-orange); outline-offset: -3px; }
+        body.data-mode .wn-hot-low { opacity: 0.5; }
+
+        /* Botón de control */
+        #wnDataToggle {
+            position: fixed;
+            top: 20px; right: 20px;
+            z-index: 999;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 10px 16px;
+            border: 1px solid #444;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #wnDataToggle:hover { background: #fff; color: #000; }
+        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: var(--accent-red); color: white; }
+
+        /* Animaciones de revelado */
+        .batch, .wn-reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .batch.visible, .wn-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wn-concept {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .dynamic-text {
+            font-size: 1.5rem;
+            max-width: 700px;
+            line-height: 1.4;
+            font-weight: 300;
+        }
+    </style>
+</head>
+
+<body>
+
+<button id="wnDataToggle">VIEW DATA</button>
+
+<div id="app"></div>
+
+<script>
+/**
+ * WHISPERING NOISE - CORE SCRIPT
+ */
+
+const CONFIG = {
+    TOTAL_IMAGES: 28,
+    BATCH_SIZE: 6,
+    // REVISIÓN: Quité el "/" inicial para que sea una ruta relativa a este archivo
+    IMG_PATH: 'manifest/' 
+};
+
+const app = document.getElementById("app");
+
+// 1. GENERACIÓN DINÁMICA
+function initGallery() {
+    const fragment = document.createDocumentFragment();
+    
+    for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
+        if ((i - 1) % CONFIG.BATCH_SIZE === 0) {
+            const gallery = document.createElement("div");
+            gallery.className = "gallery batch";
+            fragment.appendChild(gallery);
+        }
+
+        const currentGallery = fragment.lastElementChild;
+        const id = String(i).padStart(2, '0');
+
+        const photoDiv = document.createElement("div");
+        photoDiv.className = "wn-photo";
+        photoDiv.dataset.id = `img_${id}`;
+
+        // REVISIÓN: Añadido onerror para debug y visualización
+        photoDiv.innerHTML = `
+            <img 
+                src="${CONFIG.IMG_PATH}${id}.webp" 
+                loading="lazy" 
+                alt="Visual ${id}"
+                onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=\'padding:20px; font-size:10px; color:#444\'>ERR: ${id}.webp no encontrado</div>';"
+            >
+            <div class="wn-overlay">
+                <span class="wn-time">0s</span>
+                <span class="wn-label">PENDING</span>
+            </div>
+        `;
+
+        currentGallery.appendChild(photoDiv);
+
+        if (i % CONFIG.BATCH_SIZE === 0) {
+            const section = document.createElement("section");
+            section.className = "wn-concept";
+            section.innerHTML = `<p class="wn-reveal dynamic-text">Analizando mirada...</p>`;
+            fragment.appendChild(section);
+        }
+    }
+    app.appendChild(fragment);
+}
+
+// 2. SISTEMA DE TRACKING (Mejorado para Mobile y Desktop)
+function setupInteractions() {
+    
+    const startTracking = (e) => {
+        const el = e.currentTarget;
+        el.dataset.startTime = Date.now();
+    };
+
+    const stopTracking = (e) => {
+        const el = e.currentTarget;
+        const start = el.dataset.startTime;
+        if (!start) return;
+
+        const elapsed = Math.floor((Date.now() - start) / 1000);
+        delete el.dataset.startTime;
+
+        if (elapsed >= 1) {
+            updateElementData(el, elapsed);
+            saveToStorage(el.dataset.id, elapsed);
+        }
+    };
+
+    function updateElementData(el, time) {
+        let label = "curioso";
+        if (time > 3) label = "interesado";
+        if (time > 6) label = "enganchado";
+
+        el.querySelector('.wn-time').innerText = `${time}s`;
+        el.querySelector('.wn-label').innerText = label.toUpperCase();
+
+        if (typeof gtag === "function") {
+            gtag('event', 'photo_interaction', { 'photo_id': el.dataset.id, 'time': time });
+        }
+    }
+
+    // 3. OBSERVADOR GLOBAL (Revelado y Safe-Stop)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+            } else {
+                // Si el usuario scrollea rápido y sale de la imagen, detenemos el contador
+                if (entry.target.dataset.startTime) {
+                    const fakeEvent = { currentTarget: entry.target };
+                    stopTracking(fakeEvent);
+                }
+            }
+        });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.wn-photo').forEach(photo => {
+        // Eventos mouse
+        photo.addEventListener('mouseenter', startTracking);
+        photo.addEventListener('mouseleave', stopTracking);
+        // Eventos touch
+        photo.addEventListener('touchstart', startTracking, {passive: true});
+        photo.addEventListener('touchend', stopTracking, {passive: true});
+        
+        observer.observe(photo);
+    });
+
+    document.querySelectorAll('.batch, .wn-reveal').forEach(el => observer.observe(el));
+}
+
+// 4. PERSISTENCIA Y NARRATIVA
+function saveToStorage(id, time) {
+    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+    if (!data[id]) data[id] = { views: 0, total: 0 };
+    
+    data[id].views++;
+    data[id].total += time;
+    
+    localStorage.setItem('wn-data', JSON.stringify(data));
+}
+
+function syncUI() {
+    const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+    let globalTotalTime = 0;
+    let globalViews = 0;
+
+    document.querySelectorAll('.wn-photo').forEach(el => {
+        const item = data[el.dataset.id];
+        if (!item) return;
+
+        const avg = Math.round(item.total / item.views);
+        globalTotalTime += item.total;
+        globalViews += item.views;
+
+        el.querySelector('.wn-time').innerText = `${avg}s (AVG)`;
+        
+        // Clases de calor
+        el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
+        if (avg > 6) el.classList.add("wn-hot-high");
+        else if (avg > 3) el.classList.add("wn-hot-mid");
+        else el.classList.add("wn-hot-low");
+    });
+
+    // Actualizar texto narrativo
+    const avgGlobal = globalViews > 0 ? (globalTotalTime / globalViews) : 0;
+    const narrative = 
+        avgGlobal === 0 ? "Analizando tu forma de mirar..." :
+        avgGlobal < 2 ? "Tu mirada es fugaz. Buscás patrones en el ruido sin detenerte." :
+        avgGlobal < 5 ? "Observación estándar. Te permitís procesar lo que ves." :
+        "Te has sumergido. Los datos sugieren una conexión profunda con el ruido.";
+
+    document.querySelectorAll('.dynamic-text').forEach(p => p.innerText = narrative);
+}
+
+// 5. INITIALIZE
+document.getElementById("wnDataToggle").onclick = (e) => {
+    const isData = document.body.classList.toggle("data-mode");
+    e.target.innerText = isData ? "VIEW ART" : "VIEW DATA";
+    if (isData) syncUI();
+};
+
+window.onload = () => {
+    initGallery();
+    setupInteractions();
+    syncUI(); // Sincroniza si ya había datos previos
+};
+</script>
+
+</body>
+</html>
