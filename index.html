@@ -9,7 +9,7 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-79PJLWVL74"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
+        function gtag() { dataLayer.push(arguments); }
         gtag("js", new Date());
         gtag("config", "G-79PJLWVL74");
     </script>
@@ -22,15 +22,21 @@
             --accent-orange: #ff8800;
         }
 
-        body { 
-            background: #000; 
-            color: #fff; 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
+        body {
+            background: #000;
+            color: #fff;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            transition: filter 0.5s ease;
         }
 
-        /* Layout Galería */
+        /* Efecto de limpieza de sistema */
+        .system-wipe {
+            filter: brightness(3) contrast(2) grayscale(1) blur(10px);
+        }
+
+        /* Galería Estructural */
         .gallery {
             display: grid;
             grid-template-columns: 1fr;
@@ -41,46 +47,75 @@
             .gallery { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .wn-photo { 
-            position: relative; 
-            background: #0a0a0a; 
+        .wn-photo {
+            position: relative;
+            background: #0a0a0a;
             aspect-ratio: 1 / 1;
             overflow: hidden;
         }
 
-        .wn-photo img { 
-            width: 100%; height: 100%; object-fit: cover;
+        .wn-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
         .wn-photo:hover img { transform: scale(1.05); }
 
-        /* Overlay Individual */
+        /* Overlays y Labels */
         .wn-overlay {
             position: absolute;
             bottom: 0; width: 100%; padding: 10px;
             font-size: 10px; font-family: monospace;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
             display: flex; justify-content: space-between;
             opacity: 0; transition: opacity 0.3s;
             pointer-events: none;
         }
 
-        .wn-photo:hover .wn-overlay, body.data-mode .wn-overlay { opacity: 1; }
+        .wn-photo:hover .wn-overlay,
+        body.data-mode .wn-overlay { opacity: 1; }
 
-        /* Data Mode Clases */
+        /* Data Mode Heatmap */
         body.data-mode .wn-hot-high { outline: 4px solid var(--accent-red); outline-offset: -4px; }
         body.data-mode .wn-hot-mid { outline: 3px solid var(--accent-orange); outline-offset: -3px; }
         body.data-mode .wn-hot-low { opacity: 0.4; }
 
-        /* Footer Fijo Narrativo */
+        /* Interfaz de Control (Top) */
+        .ui-controls {
+            position: fixed;
+            top: 20px; right: 20px;
+            z-index: 1100;
+            display: flex; gap: 10px;
+        }
+
+        .btn-ui {
+            background: rgba(17, 17, 17, 0.8);
+            color: #fff;
+            padding: 8px 14px;
+            border: 1px solid #444;
+            font-size: 10px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            text-transform: uppercase;
+        }
+
+        #wnDataToggle:hover { background: #fff; color: #000; }
+        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: transparent; }
+        
+        #wnResetBtn { display: none; color: #999; border-color: #222; }
+        body.data-mode #wnResetBtn { display: block; }
+        #wnResetBtn:hover { color: var(--accent-red); border-color: var(--accent-red); }
+
+        /* Footer Narrativo */
         .wn-concept {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
-            height: 70px; z-index: 1000;
+            height: 75px; z-index: 1000;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             display: flex; align-items: center; justify-content: center;
             border-top: 1px solid #222;
         }
@@ -91,154 +126,209 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: #fff;
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            padding: 0 20px;
+            transition: opacity 0.3s, color 0.5s;
+            padding: 0 30px;
             text-align: center;
         }
-
-        /* Botón Control */
-        #wnDataToggle {
-            position: fixed;
-            top: 20px; right: 20px; z-index: 1100;
-            background: #111; color: #fff;
-            padding: 8px 14px; border: 1px solid #444;
-            font-size: 10px; letter-spacing: 1px; cursor: pointer;
-        }
-
-        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: transparent; }
 
         /* Animaciones */
         .batch { opacity: 0; transform: translateY(20px); transition: 1s; }
         .batch.visible { opacity: 1; transform: translateY(0); }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.6); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+        }
+
+        .ready-to-analyze {
+            animation: pulse-red 1.5s infinite;
+            border-color: var(--accent-red) !important;
+            color: #222 !important;
+        }
     </style>
 </head>
 
 <body>
 
-<button id="wnDataToggle">VIEW DATA</button>
-<div id="app"></div>
+    <div class="ui-controls">
+        <button id="wnResetBtn" class="btn-ui">Reset Memory</button>
+        <button id="wnDataToggle" class="btn-ui">View Data</button>
+    </div>
 
-<section class="wn-concept">
-    <p class="dynamic-text" id="narrative-log">Iniciando sistema...</p>
-</section>
+    <div id="app"></div>
 
-<script>
-const CONFIG = {
-    TOTAL_IMAGES: 28,
-    BATCH_SIZE: 6,
-    IMG_PATH: 'manifest/' // Asegúrate de que esta carpeta exista
-};
+    <section class="wn-concept">
+        <p class="dynamic-text" id="narrative-log">Iniciando sistema...</p>
+    </section>
 
-const app = document.getElementById("app");
-const log = document.getElementById("narrative-log");
+    <script>
+        const CONFIG = {
+            TOTAL_IMAGES: 28,
+            BATCH_SIZE: 6,
+            IMG_PATH: 'manifest/' 
+        };
 
-// 1. GENERAR GALERÍA
-function init() {
-    const fragment = document.createDocumentFragment();
-    for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
-        if ((i - 1) % CONFIG.BATCH_SIZE === 0) {
-            const gallery = document.createElement("div");
-            gallery.className = "gallery batch";
-            fragment.appendChild(gallery);
-        }
-        const id = String(i).padStart(2, '0');
-        const photo = document.createElement("div");
-        photo.className = "wn-photo";
-        photo.dataset.id = `img_${id}`;
-        photo.innerHTML = `
-            <img src="${CONFIG.IMG_PATH}${id}.webp" loading="lazy" onerror="this.style.opacity='0.2'">
-            <div class="wn-overlay">
-                <span class="wn-time">0s</span>
-                <span class="wn-label">--</span>
-            </div>
-        `;
-        fragment.lastElementChild.appendChild(photo);
-    }
-    app.appendChild(fragment);
-    app.style.paddingBottom = "100px"; // Espacio para no tapar última foto
-}
+        const app = document.getElementById("app");
+        const log = document.getElementById("narrative-log");
+        const dataToggle = document.getElementById("wnDataToggle");
+        const resetBtn = document.getElementById("wnResetBtn");
 
-// 2. NARRATIVA POR SCROLL
-const updateScrollNarrative = () => {
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const scrollPercent = scrollTop / docHeight;
-
-    let message = "";
-    if (scrollPercent < 0.1) message = "Esperando interacción...";
-    else if (scrollPercent < 0.3) message = "Analizando fijación ocular primaria";
-    else if (scrollPercent < 0.6) message = "Procesando fragmentos de ruido visual";
-    else if (scrollPercent < 0.9) message = "Patrones de atención detectados";
-    else message = "Análisis finalizado. Pulse 'View Data'";
-
-    const finalMsg = `[SCN_${Math.round(scrollPercent * 100)}%] ${message}`;
-    
-    if (log.innerText !== finalMsg) {
-        log.style.opacity = 0;
-        setTimeout(() => {
-            log.innerText = finalMsg;
-            log.style.opacity = 1;
-        }, 200);
-    }
-};
-
-// 3. TRACKING DE TIEMPO
-function setupTracking() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-            if (e.isIntersecting) {
-                e.target.classList.add("visible");
-                e.target.dataset.start = Date.now();
-            } else if (e.target.dataset.start) {
-                saveTime(e.target);
+        // 1. GENERAR GALERÍA
+        function init() {
+            const fragment = document.createDocumentFragment();
+            for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
+                if ((i - 1) % CONFIG.BATCH_SIZE === 0) {
+                    const gallery = document.createElement("div");
+                    gallery.className = "gallery batch";
+                    fragment.appendChild(gallery);
+                }
+                const id = String(i).padStart(2, '0');
+                const photo = document.createElement("div");
+                photo.className = "wn-photo";
+                photo.dataset.id = `img_${id}`;
+                photo.innerHTML = `
+                    <img src="${CONFIG.IMG_PATH}${id}.webp" loading="lazy" onerror="this.style.opacity='0.2'; this.parentElement.style.background='#111'">
+                    <div class="wn-overlay">
+                        <span class="wn-time">0s</span>
+                        <span class="wn-label">--</span>
+                    </div>
+                `;
+                fragment.lastElementChild.appendChild(photo);
             }
-        });
-    }, { threshold: 0.2 });
+            app.appendChild(fragment);
+            app.style.paddingBottom = "120px";
+        }
 
-    document.querySelectorAll('.wn-photo, .batch').forEach(el => observer.observe(el));
-}
+        // 2. LÓGICA DE NARRATIVA Y PERFIL
+        const getObserverProfile = (avg) => {
+            if (avg === 0) return "SISTEMA INACTIVO";
+            if (avg < 2) return "OBSERVADOR FUGAZ: Tu cerebro filtra información a alta velocidad, buscando patrones sin detenerse.";
+            if (avg < 5) return "OBSERVADOR ANALÍTICO: Mantienes un equilibrio óptimo entre curiosidad y eficiencia visual.";
+            return "OBSERVADOR CONTEMPLATIVO: Tu atención se sumerge en el ruido, buscando profundidad en la estática.";
+        };
 
-function saveTime(el) {
-    const time = Math.floor((Date.now() - el.dataset.start) / 1000);
-    delete el.dataset.start;
-    if (time < 1) return;
+        const updateScrollNarrative = () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = scrollTop / docHeight;
 
-    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-    if (!data[el.dataset.id]) data[el.dataset.id] = { v: 0, t: 0 };
-    data[el.dataset.id].v++;
-    data[el.dataset.id].t += time;
-    localStorage.setItem('wn-data', JSON.stringify(data));
-}
+            const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+            const values = Object.values(data);
+            const avgGlobal = values.length > 0 ? (values.reduce((a, b) => a + b.t, 0) / values.reduce((a, b) => a + b.v, 0)) : 0;
 
-// 4. DATA MODE
-document.getElementById("wnDataToggle").onclick = () => {
-    const isData = document.body.classList.toggle("data-mode");
-    document.getElementById("wnDataToggle").innerText = isData ? "VIEW ART" : "VIEW DATA";
-    if (isData) renderData();
-};
+            let message = "";
 
-function renderData() {
-    const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-    document.querySelectorAll('.wn-photo').forEach(el => {
-        const item = data[el.dataset.id];
-        if (!item) return;
-        const avg = Math.round(item.t / item.v);
-        el.querySelector('.wn-time').innerText = `${avg}s AVG`;
-        
-        el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
-        if (avg > 5) el.classList.add("wn-hot-high");
-        else if (avg > 2) el.classList.add("wn-hot-mid");
-        else el.classList.add("wn-hot-low");
-    });
-}
+            if (scrollPercent < 0.05) {
+                message = "Esperando interacción humana...";
+            } else if (scrollPercent < 0.96) {
+                const stages = [
+                    "Escaneando fijación ocular primaria...",
+                    "Detectando respuesta a estímulos visuales...",
+                    "Procesando fragmentos de ruido acumulado...",
+                    "Calculando entropía de la atención...",
+                    "Sincronizando métricas de usuario..."
+                ];
+                const stageIndex = Math.floor(scrollPercent * stages.length);
+                message = stages[stageIndex] || stages[0];
+            } else {
+                message = `ANÁLISIS COMPLETADO: ${getObserverProfile(avgGlobal)}`;
+                dataToggle.classList.add("ready-to-analyze");
+            }
 
-// INIT
-window.onload = () => {
-    init();
-    setupTracking();
-    window.addEventListener('scroll', updateScrollNarrative);
-};
-</script>
+            const finalMsg = `[SCN_${Math.round(scrollPercent * 100)}%] ${message}`;
 
+            if (log.innerText !== finalMsg) {
+                log.innerText = finalMsg;
+                if (scrollPercent >= 0.96) {
+                    log.style.color = "var(--accent-orange)";
+                } else {
+                    log.style.color = "#fff";
+                }
+            }
+        };
+
+        // 3. TRACKING DE TIEMPO
+        function setupTracking() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add("visible");
+                        e.target.dataset.start = Date.now();
+                    } else if (e.target.dataset.start) {
+                        saveTime(e.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            document.querySelectorAll('.wn-photo, .batch').forEach(el => observer.observe(el));
+        }
+
+        function saveTime(el) {
+            const time = Math.floor((Date.now() - el.dataset.start) / 1000);
+            delete el.dataset.start;
+            if (time < 1 || !el.dataset.id) return;
+
+            let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+            if (!data[el.dataset.id]) data[el.dataset.id] = { v: 0, t: 0 };
+            data[el.dataset.id].v++;
+            data[el.dataset.id].t += time;
+            localStorage.setItem('wn-data', JSON.stringify(data));
+            
+            if (document.body.classList.contains("data-mode")) renderData();
+        }
+
+        // 4. MODO DATOS Y RENDER
+        dataToggle.onclick = () => {
+            const isData = document.body.classList.toggle("data-mode");
+            dataToggle.innerText = isData ? "View Image" : "View Data";
+            if (isData) renderData();
+        };
+
+        function renderData() {
+            const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+            document.querySelectorAll('.wn-photo').forEach(el => {
+                const item = data[el.dataset.id];
+                if (!item) return;
+                const avg = Math.round(item.t / item.v);
+                el.querySelector('.wn-time').innerText = `${avg}s AVG`;
+                
+                el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
+                if (avg > 5) el.classList.add("wn-hot-high");
+                else if (avg > 2) el.classList.add("wn-hot-mid");
+                else el.classList.add("wn-hot-low");
+            });
+        }
+
+        // 5. RESET SYSTEM
+        resetBtn.onclick = () => {
+            if (confirm("¿CONFIRMAR BORRADO DE MEMORIA VOLÁTIL?")) {
+                localStorage.removeItem('wn-data');
+                document.body.classList.add("system-wipe");
+                
+                setTimeout(() => {
+                    document.body.classList.remove("system-wipe");
+                    document.body.classList.remove("data-mode");
+                    dataToggle.classList.remove("ready-to-analyze");
+                    dataToggle.innerText = "View Data";
+                    
+                    document.querySelectorAll('.wn-photo').forEach(el => {
+                        el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
+                        el.querySelector('.wn-time').innerText = "0s";
+                    });
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    log.innerText = "SISTEMA REINICIADO.";
+                }, 600);
+            }
+        };
+
+        // INITIALIZE
+        window.onload = () => {
+            init();
+            setupTracking();
+            window.addEventListener('scroll', updateScrollNarrative);
+        };
+    </script>
 </body>
 </html>
