@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE_REACTIVE_VANILLA_v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(16, 185, 129, 0.2);
+            position: absolute;
+            animation: scanline 4s linear infinite;
+            z-index: 10;
+        }
+        .glitch-active {
+            filter: hue-rotate(90deg) contrast(200%) invert(10%);
+            transform: translateX(2px);
+        }
+
+        /* --- NUEVO ESTILO PARA EL TEXTO DEFORMABLE --- */
+        #deformable-text-block {
+            transition: transform 0.05s ease-out, filter 0.05s ease-out;
+            will-change: transform, filter; /* Optimización de rendimiento */
+        }
+    </style>
+</head>
+<body class="bg-black text-emerald-500 font-mono overflow-hidden selection:bg-emerald-900 selection:text-white">
+
+    <header class="p-6 flex justify-between items-end border-b border-emerald-900/30">
+        <div>
+            <h1 class="text-xl font-bold tracking-tighter italic">RAW_INPUT_SYSTEM <span class="text-xs opacity-50">v2.1</span></h1>
+            <p class="text-[9px] opacity-50 uppercase tracking-[0.3em]">Mendoza_Experimental_Build</p>
+        </div>
+        <div id="status-tag" class="text-[10px] border border-emerald-500 px-2 py-1 transition-colors">READY_TO_BOOT</div>
+    </header>
+
+    <main class="flex flex-col items-center justify-center h-[75vh] p-4 relative">
+        
+        <div id="video-container" class="relative w-full max-w-4xl aspect-video border border-emerald-900/50 bg-zinc-950 overflow-hidden shadow-2xl shadow-emerald-950/20">
+            <div class="scanline"></div>
+            
+            <button id="start-btn" class="absolute inset-0 z-50 bg-black/95 hover:bg-emerald-950/20 transition-all flex items-center justify-center group">
+                <span class="border-2 border-emerald-500 px-8 py-4 group-hover:bg-emerald-500 group-hover:text-black font-bold uppercase tracking-widest text-lg shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                    [ INICIALIZAR_SENSORES ]
+                </span>
+            </button>
+
+            <video id="webcam" autoplay playsinline muted class="w-full h-full object-cover grayscale brightness-75 contrast-125 scale-x-[-1]"></video>
+            
+            <div id="deformable-text-block" class="absolute top-1/4 left-10 z-30 p-4 bg-black/70 border border-emerald-500/30 backdrop-blur-sm max-w-sm pointer-events-none origin-center">
+                <h3 class="text-xs font-bold text-white mb-2 tracking-widest uppercase">>>> RAW_DATA_STREAM</h3>
+                <p class="text-[10px] leading-relaxed opacity-90">
+                    Analizando flujo de entrada...<br>
+                    Estabilidad del núcleo: <span id="core-stability">100%</span><br>
+                    Umbral de distorsión: <span id="distort-threshold">55.0</span>dB<br>
+                    Estado: <span class="animate-pulse">ESPERANDO_AUDIO...</span><br>
+                    <span class="text-emerald-400">[ADVERTENCIA: Altos niveles de audio causarán inestabilidad molecular en este bloque de texto.]</span>
+                </p>
+            </div>
+
+            <div class="absolute bottom-4 left-4 z-20 text-[10px] bg-black/60 p-2 border-l-2 border-emerald-500">
+                <div id="db-meter">GAIN: 0.00dB</div>
+                <div id="freq-meter">FREQ: 0.00Hz</div>
+            </div>
+        </div>
+
+        <div id="visualizer" class="flex gap-1 h-16 w-full max-w-4xl mt-6 items-end opacity-40">
+            </div>
+    </main>
+
+    <footer class="fixed bottom-0 w-full p-4 text-[9px] flex gap-8 opacity-40 uppercase border-t border-emerald-900/20 bg-black">
+        <span>Operador: Luis_Grasso</span>
+        <span>Mendoza_Ar_Node</span>
+        <span class="ml-auto">Signal: ANALOG_CONVERSION_v2</span>
+    </footer>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const video = document.getElementById('webcam');
+        const videoContainer = document.getElementById('video-container');
+        const dbMeter = document.getElementById('db-meter');
+        const freqMeter = document.getElementById('freq-meter');
+        const visualizer = document.getElementById('visualizer');
+        const statusTag = document.getElementById('status-tag');
+        
+        // --- REFERENCIAS AL TEXTO DEFORMABLE ---
+        const textBlock = document.getElementById('deformable-text-block');
+        const stabilityMeter = document.getElementById('core-stability');
+
+        // Configuración
+        const DISTORTION_THRESHOLD = 55.0; // Umbral para empezar a deformar (dB promedio)
+
+        // Crear barras del visualizador
+        const NUM_BARS = 64;
+        for(let i=0; i<NUM_BARS; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'flex-1 bg-emerald-500 transition-all duration-75 origin-bottom';
+            bar.style.height = '4px';
+            visualizer.appendChild(bar);
+        }
+        const bars = visualizer.children;
+
+        async function init() {
+            try {
+                // Solicitar cámara y micrófono
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" }, 
+                    audio: true 
+                });
+                
+                video.srcObject = stream;
+                startBtn.classList.add('hidden');
+                statusTag.innerText = 'SYSTEM_ONLINE';
+                statusTag.classList.add('bg-emerald-500', 'text-black');
+
+                // Audio Processing (Web Audio API)
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioCtx.createMediaStreamSource(stream);
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 256; // Determina la resolución de frecuencia
+                source.connect(analyser);
+
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                // Bucle de animación principal
+                function process() {
+                    requestAnimationFrame(process);
+                    
+                    // Obtener datos de frecuencia (0 a 255)
+                    analyser.getByteFrequencyData(dataArray);
+
+                    let sum = 0;
+                    for(let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                        // Actualizar barras del visualizador inferior
+                        if(bars[i % NUM_BARS]) {
+                            const barHeight = (dataArray[i] / 255) * 100; // Normalizar a porcentaje
+                            bars[i % NUM_BARS].style.height = Math.max(4, barHeight) + '%';
+                            // Cambiar color de barras altas
+                            if(dataArray[i] > 200) {
+                                bars[i % NUM_BARS].classList.add('bg-white');
+                            } else {
+                                bars[i % NUM_BARS].classList.remove('bg-white');
+                            }
+                        }
+                    }
+
+                    // Calcular promedio (Gain)
+                    const average = sum / bufferLength;
+                    dbMeter.innerText = `GAIN: ${(average / 10).toFixed(2)}dB`;
+                    freqMeter.innerText = `FREQ: ${(average * 4).toFixed(0)}Hz`;
+
+                    // Reactividad Visual del Video (filtros CSS)
+                    video.style.filter = `grayscale(1) contrast(${120 + average}%) brightness(${75 + average/3}%)`;
+                    
+                    // --- LÓGICA DE DEFORMACIÓN DEL TEXTO ---
+                    if (average > DISTORTION_THRESHOLD) {
+                        // Calcular intensidad de la deformación (cuánto supera el umbral)
+                        const intensity = (average - DISTORTION_THRESHOLD) / (100 - DISTORTION_THRESHOLD);
+                        
+                        // 1. Deformación Geométrica (Transform)
+                        const scale = 1 + (intensity * 0.3); // Agrandar hasta un 30%
+                        const skewX = (Math.random() - 0.5) * intensity * 40; // Sesgar horizontalmente (+-20deg)
+                        const rotate = (Math.random() - 0.5) * intensity * 10; // Rotar levemente (+-5deg)
+                        
+                        // 2. Deformación Visual (Filter)
+                        const blur = intensity * 3; // Desenfocar hasta 3px
+                        const contrast = 100 + (intensity * 300); // Aumentar contraste agresivamente
+
+                        // Aplicar estilos
+                        textBlock.style.transform = `scale(${scale}) skewX(${skewX}deg) rotate(${rotate}deg)`;
+                        textBlock.style.filter = `blur(${blur}px) contrast(${contrast}%)`;
+                        textBlock.style.borderColor = `rgba(255, 255, 255, ${0.3 + intensity})`; // Borde blanco brillante
+                        
+                        // Actualizar HUD interno
+                        stabilityMeter.innerText = `${(100 - intensity * 100).toFixed(0)}% (CRÍTICO)`;
+                        stabilityMeter.classList.add('text-red-500');
+                        stabilityMeter.classList.remove('text-emerald-400');
+
+                    } else {
+                        // Volver al estado normal si está por debajo del umbral
+                        textBlock.style.transform = `scale(1) skewX(0deg) rotate(0deg)`;
+                        textBlock.style.filter = `blur(0px) contrast(100%)`;
+                        textBlock.style.borderColor = `rgba(16, 185, 129, 0.3)`;
+                        
+                        stabilityMeter.innerText = `100% (ESTABLE)`;
+                        stabilityMeter.classList.remove('text-red-500');
+                        stabilityMeter.classList.add('text-emerald-400');
+                    }
+                    
+                    // Efecto Glitch Global (Video) si hay ruido extremo
+                    if(average > 75) {
+                        videoContainer.classList.add('glitch-active');
+                        setTimeout(() => videoContainer.classList.remove('glitch-active'), 30);
+                    }
+                }
+                process();
+
+            } catch (err) {
+                console.error("Error capturando hardware:", err);
+                statusTag.innerText = 'ERROR: PERMISSION_DENIED';
+                statusTag.classList.add('bg-red-600', 'text-white');
+                alert("Para que esta web experimental funcione, necesitas permitir el acceso a la cámara y al micrófono, y usar HTTPS o localhost.");
+            }
+        }
+
+        startBtn.addEventListener('click', init);
+    </script>
+</body>
+</html>
