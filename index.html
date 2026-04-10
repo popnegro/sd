@@ -19,7 +19,6 @@
     <style>
         :root {
             --accent-red: #ff0000;
-            --bg-red: #ff0000;
             --accent-orange: #ff8800;
         }
 
@@ -27,14 +26,14 @@
             background: #000; 
             color: #fff; 
             margin: 0; 
-            font-family: 'Inter', Arial, sans-serif; 
+            font-family: 'Inter', sans-serif; 
             overflow-x: hidden;
         }
 
-        /* Prevenir saltos de diseño (CLS) */
+        /* Layout Galería */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(1, 1fr);
+            grid-template-columns: 1fr;
             gap: 2px;
         }
 
@@ -44,281 +43,200 @@
 
         .wn-photo { 
             position: relative; 
-            background: #111; 
+            background: #0a0a0a; 
+            aspect-ratio: 1 / 1;
             overflow: hidden;
-            aspect-ratio: 1 / 1; /* Mantiene el espacio antes de cargar la imagen */
         }
 
         .wn-photo img { 
-            width: 100%; 
-            height: 100%;
-            object-fit: cover;
-            display: block; 
-            transition: transform 0.5s ease;
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
         }
 
-        .wn-photo:hover img {
-            transform: scale(1.03);
-        }
+        .wn-photo:hover img { transform: scale(1.05); }
 
-        /* Overlay de datos */
+        /* Overlay Individual */
         .wn-overlay {
             position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 12px;
-            font-size: 11px;
-            font-family: monospace;
+            bottom: 0; width: 100%; padding: 10px;
+            font-size: 10px; font-family: monospace;
             background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            display: flex;
-            justify-content: space-between;
-            opacity: 0;
+            display: flex; justify-content: space-between;
+            opacity: 0; transition: opacity 0.3s;
             pointer-events: none;
-            transition: opacity 0.3s ease;
-            z-index: 10;
         }
 
-        .wn-photo:hover .wn-overlay,
-        body.data-mode .wn-overlay { 
-            opacity: 1; 
-        }
+        .wn-photo:hover .wn-overlay, body.data-mode .wn-overlay { opacity: 1; }
 
-        /* Estados de calor (Data Mode) */
-        body.data-mode .wn-hot-high { background-color: var(--bg-red); outline-offset: -4px; }
-        body.data-mode .wn-hot-mid { background-color: var(--bg-orange); outline-offset: -3px; }
-        body.data-mode .wn-hot-low { opacity: 0.5; }
+        /* Data Mode Clases */
+        body.data-mode .wn-hot-high { outline: 4px solid var(--accent-red); outline-offset: -4px; }
+        body.data-mode .wn-hot-mid { outline: 3px solid var(--accent-orange); outline-offset: -3px; }
+        body.data-mode .wn-hot-low { opacity: 0.4; }
 
-        /* Botón de control */
-        #wnDataToggle {
-            position: fixed;
-            top: 20px; right: 20px;
-            z-index: 999;
-            background: rgba(0,0,0,0.8);
-            color: #fff;
-            padding: 10px 16px;
-            border: 1px solid #444;
-            font-size: 12px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        #wnDataToggle:hover { background: #fff; color: #000; }
-        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: var(--accent-red); color: white; }
-
-        /* Animaciones de revelado */
-        .batch, .wn-reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-
-        .batch.visible, .wn-reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+        /* Footer Fijo Narrativo */
         .wn-concept {
-            min-height: 50vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 60px 20px;
+            position: fixed;
+            bottom: 0; left: 0; width: 100%;
+            height: 70px; z-index: 1000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex; align-items: center; justify-content: center;
+            border-top: 1px solid #222;
         }
 
         .dynamic-text {
-            font-size: 1.5rem;
-            max-width: 700px;
-            line-height: 1.4;
-            font-weight: 300;
+            font-family: monospace;
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #fff;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            padding: 0 20px;
+            text-align: center;
         }
+
+        /* Botón Control */
+        #wnDataToggle {
+            position: fixed;
+            top: 20px; right: 20px; z-index: 1100;
+            background: #111; color: #fff;
+            padding: 8px 14px; border: 1px solid #444;
+            font-size: 10px; letter-spacing: 1px; cursor: pointer;
+        }
+
+        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: transparent; }
+
+        /* Animaciones */
+        .batch { opacity: 0; transform: translateY(20px); transition: 1s; }
+        .batch.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 
 <body>
 
 <button id="wnDataToggle">VIEW DATA</button>
-
 <div id="app"></div>
 
-<script>
-/**
- * WHISPERING NOISE - CORE SCRIPT
- */
+<section class="wn-concept">
+    <p class="dynamic-text" id="narrative-log">Iniciando sistema...</p>
+</section>
 
+<script>
 const CONFIG = {
     TOTAL_IMAGES: 28,
     BATCH_SIZE: 6,
-    // REVISIÓN: Quité el "/" inicial para que sea una ruta relativa a este archivo
-    IMG_PATH: 'manifest/' 
+    IMG_PATH: 'manifest/' // Asegúrate de que esta carpeta exista
 };
 
 const app = document.getElementById("app");
+const log = document.getElementById("narrative-log");
 
-// 1. GENERACIÓN DINÁMICA
-function initGallery() {
+// 1. GENERAR GALERÍA
+function init() {
     const fragment = document.createDocumentFragment();
-    
     for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
         if ((i - 1) % CONFIG.BATCH_SIZE === 0) {
             const gallery = document.createElement("div");
             gallery.className = "gallery batch";
             fragment.appendChild(gallery);
         }
-
-        const currentGallery = fragment.lastElementChild;
         const id = String(i).padStart(2, '0');
-
-        const photoDiv = document.createElement("div");
-        photoDiv.className = "wn-photo";
-        photoDiv.dataset.id = `img_${id}`;
-
-        // REVISIÓN: Añadido onerror para debug y visualización
-        photoDiv.innerHTML = `
-            <img 
-                src="${CONFIG.IMG_PATH}${id}.webp" 
-                loading="lazy" 
-                alt="Visual ${id}"
-                onerror="this.style.display='none'; this.parentElement.innerHTML += '<div style=\'padding:20px; font-size:10px; color:#444\'>ERR: ${id}.webp no encontrado</div>';"
-            >
+        const photo = document.createElement("div");
+        photo.className = "wn-photo";
+        photo.dataset.id = `img_${id}`;
+        photo.innerHTML = `
+            <img src="${CONFIG.IMG_PATH}${id}.webp" loading="lazy" onerror="this.style.opacity='0.2'">
             <div class="wn-overlay">
                 <span class="wn-time">0s</span>
-                <span class="wn-label">PENDING</span>
+                <span class="wn-label">--</span>
             </div>
         `;
-
-        currentGallery.appendChild(photoDiv);
-
-        if (i % CONFIG.BATCH_SIZE === 0) {
-            const section = document.createElement("section");
-            section.className = "wn-concept";
-            section.innerHTML = `<p class="wn-reveal dynamic-text">Analizando mirada...</p>`;
-            fragment.appendChild(section);
-        }
+        fragment.lastElementChild.appendChild(photo);
     }
     app.appendChild(fragment);
+    app.style.paddingBottom = "100px"; // Espacio para no tapar última foto
 }
 
-// 2. SISTEMA DE TRACKING (Mejorado para Mobile y Desktop)
-function setupInteractions() {
+// 2. NARRATIVA POR SCROLL
+const updateScrollNarrative = () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = scrollTop / docHeight;
+
+    let message = "";
+    if (scrollPercent < 0.1) message = "Esperando interacción...";
+    else if (scrollPercent < 0.3) message = "Analizando fijación ocular primaria";
+    else if (scrollPercent < 0.6) message = "Procesando fragmentos de ruido visual";
+    else if (scrollPercent < 0.9) message = "Patrones de atención detectados";
+    else message = "Análisis finalizado. Pulse 'View Data'";
+
+    const finalMsg = `[SCN_${Math.round(scrollPercent * 100)}%] ${message}`;
     
-    const startTracking = (e) => {
-        const el = e.currentTarget;
-        el.dataset.startTime = Date.now();
-    };
-
-    const stopTracking = (e) => {
-        const el = e.currentTarget;
-        const start = el.dataset.startTime;
-        if (!start) return;
-
-        const elapsed = Math.floor((Date.now() - start) / 1000);
-        delete el.dataset.startTime;
-
-        if (elapsed >= 1) {
-            updateElementData(el, elapsed);
-            saveToStorage(el.dataset.id, elapsed);
-        }
-    };
-
-    function updateElementData(el, time) {
-        let label = "curioso";
-        if (time > 3) label = "interesado";
-        if (time > 6) label = "enganchado";
-
-        el.querySelector('.wn-time').innerText = `${time}s`;
-        el.querySelector('.wn-label').innerText = label.toUpperCase();
-
-        if (typeof gtag === "function") {
-            gtag('event', 'photo_interaction', { 'photo_id': el.dataset.id, 'time': time });
-        }
+    if (log.innerText !== finalMsg) {
+        log.style.opacity = 0;
+        setTimeout(() => {
+            log.innerText = finalMsg;
+            log.style.opacity = 1;
+        }, 200);
     }
+};
 
-    // 3. OBSERVADOR GLOBAL (Revelado y Safe-Stop)
+// 3. TRACKING DE TIEMPO
+function setupTracking() {
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-            } else {
-                // Si el usuario scrollea rápido y sale de la imagen, detenemos el contador
-                if (entry.target.dataset.startTime) {
-                    const fakeEvent = { currentTarget: entry.target };
-                    stopTracking(fakeEvent);
-                }
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                e.target.dataset.start = Date.now();
+            } else if (e.target.dataset.start) {
+                saveTime(e.target);
             }
         });
-    }, { threshold: 0.15 });
+    }, { threshold: 0.2 });
 
-    document.querySelectorAll('.wn-photo').forEach(photo => {
-        // Eventos mouse
-        photo.addEventListener('mouseenter', startTracking);
-        photo.addEventListener('mouseleave', stopTracking);
-        // Eventos touch
-        photo.addEventListener('touchstart', startTracking, {passive: true});
-        photo.addEventListener('touchend', stopTracking, {passive: true});
-        
-        observer.observe(photo);
-    });
-
-    document.querySelectorAll('.batch, .wn-reveal').forEach(el => observer.observe(el));
+    document.querySelectorAll('.wn-photo, .batch').forEach(el => observer.observe(el));
 }
 
-// 4. PERSISTENCIA Y NARRATIVA
-function saveToStorage(id, time) {
+function saveTime(el) {
+    const time = Math.floor((Date.now() - el.dataset.start) / 1000);
+    delete el.dataset.start;
+    if (time < 1) return;
+
     let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-    if (!data[id]) data[id] = { views: 0, total: 0 };
-    
-    data[id].views++;
-    data[id].total += time;
-    
+    if (!data[el.dataset.id]) data[el.dataset.id] = { v: 0, t: 0 };
+    data[el.dataset.id].v++;
+    data[el.dataset.id].t += time;
     localStorage.setItem('wn-data', JSON.stringify(data));
 }
 
-function syncUI() {
-    const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
-    let globalTotalTime = 0;
-    let globalViews = 0;
+// 4. DATA MODE
+document.getElementById("wnDataToggle").onclick = () => {
+    const isData = document.body.classList.toggle("data-mode");
+    document.getElementById("wnDataToggle").innerText = isData ? "VIEW ART" : "VIEW DATA";
+    if (isData) renderData();
+};
 
+function renderData() {
+    const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
     document.querySelectorAll('.wn-photo').forEach(el => {
         const item = data[el.dataset.id];
         if (!item) return;
-
-        const avg = Math.round(item.total / item.views);
-        globalTotalTime += item.total;
-        globalViews += item.views;
-
-        el.querySelector('.wn-time').innerText = `${avg}s (AVG)`;
+        const avg = Math.round(item.t / item.v);
+        el.querySelector('.wn-time').innerText = `${avg}s AVG`;
         
-        // Clases de calor
         el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
-        if (avg > 6) el.classList.add("wn-hot-high");
-        else if (avg > 3) el.classList.add("wn-hot-mid");
+        if (avg > 5) el.classList.add("wn-hot-high");
+        else if (avg > 2) el.classList.add("wn-hot-mid");
         else el.classList.add("wn-hot-low");
     });
-
-    // Actualizar texto narrativo
-    const avgGlobal = globalViews > 0 ? (globalTotalTime / globalViews) : 0;
-    const narrative = 
-        avgGlobal === 0 ? "Analizando tu forma de mirar..." :
-        avgGlobal < 2 ? "Tu mirada es fugaz. Buscás patrones en el ruido sin detenerte." :
-        avgGlobal < 5 ? "Observación estándar. Te permitís procesar lo que ves." :
-        "Te has sumergido. Los datos sugieren una conexión profunda con el ruido.";
-
-    document.querySelectorAll('.dynamic-text').forEach(p => p.innerText = narrative);
 }
 
-// 5. INITIALIZE
-document.getElementById("wnDataToggle").onclick = (e) => {
-    const isData = document.body.classList.toggle("data-mode");
-    e.target.innerText = isData ? "VIEW IMAGE" : "VIEW DATA";
-    if (isData) syncUI();
-};
-
+// INIT
 window.onload = () => {
-    initGallery();
-    setupInteractions();
-    syncUI(); // Sincroniza si ya había datos previos
+    init();
+    setupTracking();
+    window.addEventListener('scroll', updateScrollNarrative);
 };
 </script>
 
