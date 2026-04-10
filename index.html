@@ -31,12 +31,11 @@
             transition: filter 0.5s ease;
         }
 
-        /* Efecto de limpieza de sistema */
         .system-wipe {
-            filter: brightness(3) contrast(2) grayscale(1) blur(10px);
+            filter: brightness(3) contrast(2) grayscale(1) blur(15px);
         }
 
-        /* Galería Estructural */
+        /* Galería */
         .gallery {
             display: grid;
             grid-template-columns: 1fr;
@@ -63,7 +62,7 @@
 
         .wn-photo:hover img { transform: scale(1.05); }
 
-        /* Overlays y Labels */
+        /* Data Mode Labels */
         .wn-overlay {
             position: absolute;
             bottom: 0; width: 100%; padding: 10px;
@@ -77,12 +76,11 @@
         .wn-photo:hover .wn-overlay,
         body.data-mode .wn-overlay { opacity: 1; }
 
-        /* Data Mode Heatmap */
         body.data-mode .wn-hot-high { outline: 4px solid var(--accent-red); outline-offset: -4px; }
         body.data-mode .wn-hot-mid { outline: 3px solid var(--accent-orange); outline-offset: -3px; }
         body.data-mode .wn-hot-low { opacity: 0.4; }
 
-        /* Interfaz de Control (Top) */
+        /* Controles */
         .ui-controls {
             position: fixed;
             top: 20px; right: 20px;
@@ -102,22 +100,30 @@
             text-transform: uppercase;
         }
 
-        #wnDataToggle:hover { background: #fff; color: #000; }
         body.data-mode #wnDataToggle { background: var(--accent-red); border-color: transparent; }
-        
-        #wnResetBtn { display: none; color: #999; border-color: #222; }
+        #wnResetBtn { display: none; color: #666; border-color: #222; }
         body.data-mode #wnResetBtn { display: block; }
-        #wnResetBtn:hover { color: var(--accent-red); border-color: var(--accent-red); }
 
         /* Footer Narrativo */
         .wn-concept {
             position: fixed;
             bottom: 0; left: 0; width: 100%;
             height: 75px; z-index: 1000;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
             display: flex; align-items: center; justify-content: center;
             border-top: 1px solid #222;
+        }
+
+        /* Barra de Progreso */
+        #scroll-progress {
+            position: absolute;
+            top: 0; left: 0;
+            height: 2px;
+            background: var(--accent-red);
+            width: 0%;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 10px var(--accent-red);
         }
 
         .dynamic-text {
@@ -126,12 +132,24 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: #fff;
-            transition: opacity 0.3s, color 0.5s;
             padding: 0 30px;
             text-align: center;
         }
 
-        /* Animaciones */
+        /* Glitch Effect */
+        .glitch-active {
+            animation: glitch-anim 0.2s infinite;
+            text-shadow: 2px 0 var(--accent-red), -2px 0 var(--accent-orange);
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(-2px, -1px); opacity: 0.8; }
+            60% { transform: translate(2px, 1px); }
+            100% { transform: translate(0); }
+        }
+
         .batch { opacity: 0; transform: translateY(20px); transition: 1s; }
         .batch.visible { opacity: 1; transform: translateY(0); }
 
@@ -144,7 +162,6 @@
         .ready-to-analyze {
             animation: pulse-red 1.5s infinite;
             border-color: var(--accent-red) !important;
-            color: #222 !important;
         }
     </style>
 </head>
@@ -159,7 +176,8 @@
     <div id="app"></div>
 
     <section class="wn-concept">
-        <p class="dynamic-text" id="narrative-log">Iniciando sistema...</p>
+        <div id="scroll-progress"></div>
+        <p class="dynamic-text" id="narrative-log">Haz clic para iniciar sistema...</p>
     </section>
 
     <script>
@@ -173,8 +191,38 @@
         const log = document.getElementById("narrative-log");
         const dataToggle = document.getElementById("wnDataToggle");
         const resetBtn = document.getElementById("wnResetBtn");
+        const progressBar = document.getElementById("scroll-progress");
 
-        // 1. GENERAR GALERÍA
+        // --- AUDIO ENGINE ---
+        let audioCtx, noiseNode, filterNode, gainNode;
+
+        const initAudio = () => {
+            if (audioCtx) return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+
+            noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = noiseBuffer;
+            noiseNode.loop = true;
+
+            filterNode = audioCtx.createBiquadFilter();
+            filterNode.type = 'lowpass';
+            filterNode.frequency.value = 400;
+
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = 0.015; 
+
+            noiseNode.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            noiseNode.start();
+            log.innerText = "Sistema Online. Esperando interacción...";
+        };
+
+        // --- GENERAR GALERÍA ---
         function init() {
             const fragment = document.createDocumentFragment();
             for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
@@ -188,7 +236,7 @@
                 photo.className = "wn-photo";
                 photo.dataset.id = `img_${id}`;
                 photo.innerHTML = `
-                    <img src="${CONFIG.IMG_PATH}${id}.webp" loading="lazy" onerror="this.style.opacity='0.2'; this.parentElement.style.background='#111'">
+                    <img src="${CONFIG.IMG_PATH}${id}.webp" loading="lazy" onerror="this.style.opacity='0.2'">
                     <div class="wn-overlay">
                         <span class="wn-time">0s</span>
                         <span class="wn-label">--</span>
@@ -197,58 +245,48 @@
                 fragment.lastElementChild.appendChild(photo);
             }
             app.appendChild(fragment);
-            app.style.paddingBottom = "120px";
+            app.style.paddingBottom = "150px";
         }
 
-        // 2. LÓGICA DE NARRATIVA Y PERFIL
+        // --- NARRATIVA & SCROLL ---
         const getObserverProfile = (avg) => {
             if (avg === 0) return "SISTEMA INACTIVO";
-            if (avg < 2) return "OBSERVADOR FUGAZ: Tu cerebro filtra información a alta velocidad, buscando patrones sin detenerse.";
-            if (avg < 5) return "OBSERVADOR ANALÍTICO: Mantienes un equilibrio óptimo entre curiosidad y eficiencia visual.";
-            return "OBSERVADOR CONTEMPLATIVO: Tu atención se sumerge en el ruido, buscando profundidad en la estática.";
+            if (avg < 2) return "OBSERVADOR FUGAZ: Filtrado veloz de información.";
+            if (avg < 5) return "OBSERVADOR ANALÍTICO: Equilibrio entre curiosidad y eficiencia.";
+            return "OBSERVADOR CONTEMPLATIVO: Inmersión profunda en el ruido.";
         };
 
         const updateScrollNarrative = () => {
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = scrollTop / docHeight;
+            const scrollPercent = Math.max(0, Math.min(1, scrollTop / docHeight));
+
+            // Actualizar Visuales
+            progressBar.style.width = `${scrollPercent * 100}%`;
+            if (filterNode) filterNode.frequency.setTargetAtTime(400 + (scrollPercent * 1200), audioCtx.currentTime, 0.1);
+
+            // Glitch Effect al scrollear
+            log.classList.add('glitch-active');
+            setTimeout(() => log.classList.remove('glitch-active'), 100);
 
             const data = JSON.parse(localStorage.getItem('wn-data') || "{}");
             const values = Object.values(data);
             const avgGlobal = values.length > 0 ? (values.reduce((a, b) => a + b.t, 0) / values.reduce((a, b) => a + b.v, 0)) : 0;
 
             let message = "";
-
-            if (scrollPercent < 0.05) {
-                message = "Esperando interacción humana...";
-            } else if (scrollPercent < 0.96) {
-                const stages = [
-                    "Escaneando fijación ocular primaria...",
-                    "Detectando respuesta a estímulos visuales...",
-                    "Procesando fragmentos de ruido acumulado...",
-                    "Calculando entropía de la atención...",
-                    "Sincronizando métricas de usuario..."
-                ];
-                const stageIndex = Math.floor(scrollPercent * stages.length);
-                message = stages[stageIndex] || stages[0];
+            if (scrollPercent < 0.05) message = "Analizando presencia...";
+            else if (scrollPercent < 0.96) {
+                const stages = ["Escaneando fijación...", "Detectando patrones...", "Procesando entropía...", "Sincronizando métricas..."];
+                message = stages[Math.floor(scrollPercent * stages.length)];
             } else {
-                message = `ANÁLISIS COMPLETADO: ${getObserverProfile(avgGlobal)}`;
+                message = `ANÁLISIS: ${getObserverProfile(avgGlobal)}`;
                 dataToggle.classList.add("ready-to-analyze");
             }
 
-            const finalMsg = `[SCN_${Math.round(scrollPercent * 100)}%] ${message}`;
-
-            if (log.innerText !== finalMsg) {
-                log.innerText = finalMsg;
-                if (scrollPercent >= 0.96) {
-                    log.style.color = "var(--accent-orange)";
-                } else {
-                    log.style.color = "#fff";
-                }
-            }
+            log.innerText = `[SCN_${Math.round(scrollPercent * 100)}%] ${message}`;
         };
 
-        // 3. TRACKING DE TIEMPO
+        // --- TRACKING ---
         function setupTracking() {
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(e => {
@@ -260,7 +298,6 @@
                     }
                 });
             }, { threshold: 0.2 });
-
             document.querySelectorAll('.wn-photo, .batch').forEach(el => observer.observe(el));
         }
 
@@ -268,20 +305,17 @@
             const time = Math.floor((Date.now() - el.dataset.start) / 1000);
             delete el.dataset.start;
             if (time < 1 || !el.dataset.id) return;
-
             let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
             if (!data[el.dataset.id]) data[el.dataset.id] = { v: 0, t: 0 };
             data[el.dataset.id].v++;
             data[el.dataset.id].t += time;
             localStorage.setItem('wn-data', JSON.stringify(data));
-            
-            if (document.body.classList.contains("data-mode")) renderData();
         }
 
-        // 4. MODO DATOS Y RENDER
+        // --- CONTROLES ---
         dataToggle.onclick = () => {
             const isData = document.body.classList.toggle("data-mode");
-            dataToggle.innerText = isData ? "View Image" : "View Data";
+            dataToggle.innerText = isData ? "View Art" : "View Data";
             if (isData) renderData();
         };
 
@@ -292,7 +326,6 @@
                 if (!item) return;
                 const avg = Math.round(item.t / item.v);
                 el.querySelector('.wn-time').innerText = `${avg}s AVG`;
-                
                 el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
                 if (avg > 5) el.classList.add("wn-hot-high");
                 else if (avg > 2) el.classList.add("wn-hot-mid");
@@ -300,30 +333,24 @@
             });
         }
 
-        // 5. RESET SYSTEM
         resetBtn.onclick = () => {
-            if (confirm("¿CONFIRMAR BORRADO DE MEMORIA VOLÁTIL?")) {
+            if (confirm("¿BORRAR MEMORIA DEL SISTEMA?")) {
                 localStorage.removeItem('wn-data');
                 document.body.classList.add("system-wipe");
-                
                 setTimeout(() => {
-                    document.body.classList.remove("system-wipe");
-                    document.body.classList.remove("data-mode");
+                    document.body.classList.remove("system-wipe", "data-mode");
                     dataToggle.classList.remove("ready-to-analyze");
                     dataToggle.innerText = "View Data";
-                    
-                    document.querySelectorAll('.wn-photo').forEach(el => {
-                        el.classList.remove("wn-hot-high", "wn-hot-mid", "wn-hot-low");
-                        el.querySelector('.wn-time').innerText = "0s";
-                    });
-                    
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    log.innerText = "SISTEMA REINICIADO.";
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    location.reload(); // Recarga limpia
                 }, 600);
             }
         };
 
-        // INITIALIZE
+        // INICIAR
+        document.addEventListener('mousedown', initAudio, { once: true });
+        document.addEventListener('touchstart', initAudio, { once: true });
+
         window.onload = () => {
             init();
             setupTracking();
