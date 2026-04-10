@@ -1,231 +1,331 @@
-<!DOCTYPE html>
-<html lang="es">
+revisar <!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SENSORIAL_CORE_v3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Capa de interferencia tipo CRT */
-        .crt-overlay {
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.05), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.05));
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
-        }
-
-        /* Animación de escaneo */
-        @keyframes scan {
-            from { top: -10%; }
-            to { top: 110%; }
-        }
-        .scanner-line {
-            height: 5px;
-            background: rgba(16, 185, 129, 0.3);
-            box-shadow: 0 0 15px #10b981;
-            position: absolute;
-            width: 100%;
-            animation: scan 3s linear infinite;
-        }
-
-        /* Transición suave para la deformación */
-        #reactive-text {
-            will-change: transform, filter;
-            transition: all 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        /* Estado Glitch para el video */
-        .glitch-flash {
-            filter: invert(1) hue-rotate(180deg) !important;
-        }
-    </style>
-</head>
-<body class="bg-zinc-950 text-emerald-400 font-mono overflow-hidden">
-
-    <div class="fixed top-0 left-0 w-full p-4 z-50 flex justify-between items-start pointer-events-none">
-        <div class="bg-black/80 border-l-4 border-emerald-500 p-3">
-            <h1 class="text-lg font-black tracking-tighter uppercase italic">Mendoza_Terminal_01</h1>
-            <p class="text-[10px] opacity-70">SENSORS: ACTIVE // LATENCY: <span id="ping">0</span>ms</p>
-        </div>
-        <div class="bg-black/80 border-r-4 border-red-500 p-3 text-right">
-            <div class="flex items-center gap-2 justify-end">
-                <span class="w-2 h-2 bg-red-600 animate-ping rounded-full"></span>
-                <span class="text-xs font-bold uppercase tracking-widest text-red-500">Rec_Stream</span>
-            </div>
-            <p id="timer" class="text-xs mt-1">00:00:00:00</p>
-        </div>
-    </div>
-
-    <main class="relative h-screen w-screen flex items-center justify-center bg-black">
-        
-        <div id="capture-zone" class="relative w-full h-full max-w-[1920px] overflow-hidden group">
-            <div class="crt-overlay absolute inset-0 z-20"></div>
-            <div class="scanner-line z-20"></div>
-
-            <video id="v-feed" autoplay playsinline muted class="w-full h-full object-cover grayscale brightness-50 contrast-150 scale-x-[-1] transition-all duration-75"></video>
-
-            <div id="reactive-text" class="absolute z-30 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] p-6 bg-black/80 border border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)] backdrop-blur-md">
-    
-    <div class="flex justify-between items-center mb-4 border-b border-emerald-900 pb-2">
-        <span class="text-[10px] font-bold uppercase tracking-widest text-white">Input_Buffer</span>
-        <span class="text-[9px] px-2 py-0.5 bg-emerald-900 text-emerald-300">USER_EDITABLE</span>
-    </div>
-
-    <div 
-        id="user-input-area" 
-        contenteditable="true" 
-        class="text-sm leading-relaxed italic opacity-90 outline-none focus:text-white min-h-[100px] cursor-text"
-        spellcheck="false"
-    >
-        Acepta el ruido. Escucha el susurro. Estás presente.
-        <br><br>
-        Este texto mutará según la intensidad de la señal acústica captada por el procesador.
-    </div>
-
-    <div class="mt-4 pt-4 border-t border-emerald-900/50 grid grid-cols-2 gap-2 text-[9px] uppercase opacity-60">
-        <div>Gain: <span id="val-amp">0</span></div>
-        <div class="text-right">Core: <span id="core-status">Stable</span></div>
-    </div>
-</div>
-
-            <div id="overlay-boot" class="absolute inset-0 z-50 bg-zinc-950 flex flex-col items-center justify-center transition-opacity duration-1000">
-                <div class="text-center p-10 border border-emerald-500/30">
-                    <h2 class="text-3xl font-light tracking-[1em] mb-8 text-emerald-200">CORE_V3</h2>
-                    <button id="boot-btn" class="px-12 py-4 border border-emerald-500 hover:bg-emerald-500 hover:text-black transition-all font-bold tracking-[0.2em] uppercase text-sm">
-                        Autorizar Sensores
-                    </button>
-                    <p class="text-[9px] mt-6 opacity-40 uppercase">Requiere acceso a Micrófono y Cámara</p>
-                </div>
-            </div>
-        </div>
-
-        <canvas id="waveform" class="fixed bottom-0 left-0 w-full h-24 z-40 opacity-50 pointer-events-none"></canvas>
-    </main>
-
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-79PJLWVL74"></script>
     <script>
-        const bootBtn = document.getElementById('boot-btn');
-        const overlay = document.getElementById('overlay-boot');
-        const video = document.getElementById('v-feed');
-        const captureZone = document.getElementById('capture-zone');
-        const reactiveText = document.getElementById('reactive-text');
-        const canvas = document.getElementById('waveform');
-        const ctx = canvas.getContext('2d');
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "G-79PJLWVL74");
+    </script>
 
-        // Stats elements
-        const valAmp = document.getElementById('val-amp');
-        const valPitch = document.getElementById('val-pitch');
-        const pingEl = document.getElementById('ping');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WHISPERING NOISE | DATA EXPERIENCE</title>
 
-        async function startSystem() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "user" }, 
-                    audio: true 
-                });
+    <script src="https://cdn.tailwindcss.com"></script>
 
-                video.srcObject = stream;
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.classList.add('hidden'), 1000);
+    <style>
+        body {
+            background: #000;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
 
-                // Config Audio
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaStreamSource(stream);
-                const analyser = audioCtx.createAnalyser();
-                analyser.fftSize = 256;
-                source.connect(analyser);
+        /* GRID SIMPLE */
+        .gallery {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
 
-                const bufferLength = analyser.frequencyBinCount;
-                const dataArray = new Uint8Array(bufferLength);
-
-                // Función de animación
-                function render() {
-                    requestAnimationFrame(render);
-                    analyser.getByteFrequencyData(dataArray);
-
-                    // 1. Calcular Volumen Promedio
-                    let sum = 0;
-                    for(let i = 0; i < bufferLength; i++) sum += dataArray[i];
-                    const average = sum / bufferLength;
-
-                    // 2. Dibujar Ondas en Canvas
-                    canvas.width = window.innerWidth;
-                    canvas.height = 100;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.beginPath();
-                    ctx.moveTo(0, 50);
-                    ctx.strokeStyle = '#10b981';
-                    ctx.lineWidth = 2;
-                    
-                    const sliceWidth = canvas.width / bufferLength;
-                    let x = 0;
-                    for(let i = 0; i < bufferLength; i++) {
-                        const v = dataArray[i] / 128.0;
-                        const y = v * 50 / 2;
-                        ctx.lineTo(x, 50 + (i%2==0 ? y : -y));
-                        x += sliceWidth;
-                    }
-                    ctx.stroke();
-
-                    // 3. REACTIVIDAD DEL BLOQUE DE TEXTO
-                    const threshold = 55; // Sensibilidad
-                    if(average > threshold) {
-                        const power = (average - threshold) / (100 - threshold);
-                        
-                        // Transformaciones físicas
-                        const scale = 1 + (power * 0.4);
-                        const skew = (Math.random() - 0.5) * power * 60;
-                        const rotate = (Math.random() - 0.5) * power * 15;
-                        
-                        reactiveText.style.transform = `translate(-50%, -50%) scale(${scale}) skewX(${skew}deg) rotate(${rotate}deg)`;
-                        
-                        // Efectos visuales
-                        reactiveText.style.filter = `blur(${power * 4}px) contrast(${100 + power * 400}%)`;
-                        reactiveText.style.borderColor = `rgba(255, 255, 255, ${power})`;
-                        reactiveText.style.backgroundColor = `rgba(6, 78, 59, ${0.8 + power * 0.2})`;
-
-                        // Glitch en video si es muy fuerte
-                        if(average > 80) {
-                            captureZone.classList.add('glitch-flash');
-                        } else {
-                            captureZone.classList.remove('glitch-flash');
-                        }
-                    } else {
-                        // Estado base
-                        reactiveText.style.transform = `translate(-50%, -50%) scale(1) skewX(0deg) rotate(0deg)`;
-                        reactiveText.style.filter = `blur(0px) contrast(100%)`;
-                        reactiveText.style.borderColor = `rgba(16, 185, 129, 1)`;
-                        reactiveText.style.backgroundColor = `rgba(0, 0, 0, 0.8)`;
-                        captureZone.classList.remove('glitch-flash');
-                    }
-
-                    // 4. Update HUD
-                    valAmp.innerText = average.toFixed(1);
-                    valPitch.innerText = (dataArray[10] * 2).toFixed(0) + "Hz";
-                    pingEl.innerText = Math.floor(Math.random() * (15 - 8 + 1) + 8);
-                }
-
-                render();
-                startTimer();
-
-            } catch (err) {
-                console.error("Hardware Error:", err);
-                alert("Acceso denegado a sensores críticos.");
+        @media (min-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
-        // Timer de grabación estético
-        function startTimer() {
-            let s = 0, m = 0, h = 0, ms = 0;
-            setInterval(() => {
-                ms += 7; if(ms > 99) { ms = 0; s++; }
-                if(s > 59) { s = 0; m++; }
-                if(m > 59) { m = 0; h++; }
-                const pad = (n) => n.toString().padStart(2, '0');
-                document.getElementById('timer').innerText = `${pad(h)}:${pad(m)}:${pad(s)}:${pad(ms)}`;
-            }, 70);
+        /* FOTO */
+        .wn-photo {
+            position: relative;
         }
 
-        bootBtn.addEventListener('click', startSystem);
-    </script>
+        .wn-photo img {
+            width: 100%;
+            display: block;
+        }
+
+        /* OVERLAY */
+        .wn-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 8px;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .wn-photo:hover .wn-overlay {
+            opacity: 1;
+        }
+
+        body.data-mode .wn-overlay {
+            opacity: 1 !important;
+        }
+
+        /* HEATMAP */
+        .wn-hot-high { outline: 3px solid red; }
+        .wn-hot-mid { outline: 2px solid orange; }
+        .wn-hot-low { opacity: 0.7; }
+
+        /* BOTÓN */
+        #wnDataToggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            font-size: 12px;
+            backdrop-filter: blur(10px);
+        }
+        /* CONCEPT BLOCK */
+
+.wn-concept {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.wn-concept-inner {
+    max-width: 600px;
+}
+
+.wn-concept p {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+    margin: 20px 0;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+}
+
+/* REVEAL */
+.wn-concept p.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+    </style>
+</head>
+
+<body>
+
+<!-- BOTÓN DATA -->
+<button id="wnDataToggle">Ver datos</button>
+
+<!-- GALERÍA -->
+<div class="gallery">
+
+    <!-- FOTO -->
+    <div class="wn-photo" data-id="img_01">
+        <img src="/manifest/01.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+    <div class="wn-photo" data-id="img_02">
+        <img src="/manifest/02.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+    <div class="wn-photo" data-id="img_03">
+        <img src="/manifest/03.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+    <div class="wn-photo" data-id="img_04">
+        <img src="/manifest/04.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+    <div class="wn-photo" data-id="img_05">
+        <img src="/manifest/05.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+    <div class="wn-photo" data-id="img_06">
+        <img src="/manifest/06.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+
+</div>
+<div class="container mx-auto">
+     <div class="wn-photo" data-id="img_07">
+        <img src="/manifest/07.webp">
+        <div class="wn-overlay">
+            <span class="wn-time">0s</span>
+            <span class="wn-label">—</span>
+        </div>
+    </div>
+</div>
+<section class="wn-concept">
+    <div class="wn-concept-inner">
+        <p class="wn-reveal">
+            La imagen no es solo lo que ves.
+        </p>
+
+        <p class="wn-reveal">
+            Es el tiempo que decidís quedarte.
+        </p>
+
+        <p class="wn-reveal">
+            Es la pausa invisible entre estímulo y atención.
+        </p>
+
+        <p class="wn-reveal">
+            Este proyecto no mide clicks.
+        </p>
+
+        <p class="wn-reveal">
+            Mide percepción.
+        </p>
+    </div>
+</section>
+
+<script>
+let active = null;
+let start = 0;
+
+// TRACK
+document.querySelectorAll('.wn-photo').forEach(el => {
+
+    // DESKTOP
+    el.addEventListener('mouseenter', () => {
+        active = el;
+        start = Date.now();
+    });
+
+    el.addEventListener('mouseleave', () => trackTime(el));
+
+    // MOBILE
+    el.addEventListener('touchstart', () => {
+        active = el;
+        start = Date.now();
+    });
+
+    el.addEventListener('touchend', () => trackTime(el));
+
+});
+
+function trackTime(el) {
+    if (!active) return;
+
+    let time = Math.floor((Date.now() - start) / 1000);
+
+    let label = "curioso";
+    if (time > 3) label = "interesado";
+    if (time > 6) label = "enganchado";
+
+    el.querySelector('.wn-time').innerText = time + "s";
+    el.querySelector('.wn-label').innerText = label;
+
+    saveWN(el.dataset.id, time);
+
+    // GA4 EVENTO
+    if (typeof gtag !== "undefined") {
+        gtag('event', 'photo_interaction', {
+            event_category: 'UX',
+            event_label: el.dataset.id,
+            value: time
+        });
+    }
+
+    active = null;
+}
+
+// STORAGE
+function saveWN(id, time) {
+    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+
+    if (!data[id]) {
+        data[id] = { views: 0, total: 0 };
+    }
+
+    data[id].views++;
+    data[id].total += time;
+
+    localStorage.setItem('wn-data', JSON.stringify(data));
+}
+
+// DATA MODE
+let btn = document.getElementById("wnDataToggle");
+let dataMode = false;
+
+btn.onclick = () => {
+    dataMode = !dataMode;
+    document.body.classList.toggle("data-mode");
+    renderData();
+};
+
+// RENDER
+function renderData() {
+    let data = JSON.parse(localStorage.getItem('wn-data') || "{}");
+
+    document.querySelectorAll('.wn-photo').forEach(el => {
+        let id = el.dataset.id;
+        if (!data[id]) return;
+
+        let avg = Math.round(data[id].total / data[id].views);
+
+        el.querySelector('.wn-time').innerText = avg + "s";
+
+        el.classList.remove("wn-hot-high","wn-hot-mid","wn-hot-low");
+
+        if (avg > 5) el.classList.add("wn-hot-high");
+        else if (avg > 3) el.classList.add("wn-hot-mid");
+        else el.classList.add("wn-hot-low");
+    });
+}
+
+// INIT
+window.addEventListener("load", renderData);
+
+const revealElements = document.querySelectorAll('.wn-reveal');
+
+const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, {
+    threshold: 0.2
+});
+
+revealElements.forEach(el => revealObserver.observe(el));
+</script>
+
 </body>
 </html>
