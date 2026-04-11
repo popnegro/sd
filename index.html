@@ -3,47 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | INTEGRATED SYSTEM</title>
+    <title>WHISPERING NOISE | TOTAL INTEGRATION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --accent-red: #ff0000; --bg-dark: #050505; }
         body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-        #app { padding: 40px 5% 150px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
+        
+        /* Contenedor principal para no pisar el grid */
+        #app { position: relative; z-index: 10; padding: 40px 5% 300px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
 
         /* --- HERO & MANIFEST --- */
-        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 40px; }
-        .hero h1 { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: -3px; color: var(--accent-red); margin-bottom: 10px; font-weight: 900; }
-        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; transition: all 0.3s; font-family: monospace; font-size: 13px; letter-spacing: 2px; }
+        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; position: relative; z-index: 20; }
+        .hero h1 { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: -3px; color: var(--accent-red); font-weight: 900; }
+        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; transition: 0.3s; font-family: monospace; font-size: 13px; }
         .cta:hover { background: var(--accent-red); color: #000; }
 
-        .manifest-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; text-align: center; min-height: 50vh; }
-        #manifest-paragraph { font-size: 1.6rem; line-height: 1.8; color: #1a1a1a; transition: color 0.5s; }
-        .word { display: inline-block; margin-right: 10px; transition: color 0.8s ease, text-shadow 0.8s ease; }
-        .word.revealed { color: #fff; text-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
-        
-        /* --- GALLERY GRID --- */
-        .batch { opacity: 0; transform: translateY(50px); transition: 1.2s cubic-bezier(0.2, 1, 0.3, 1); margin-top: 60px; }
-        .batch.visible { opacity: 1; transform: translateY(0); }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; width: 100%; }
-        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; gap: 25px; } }
+        .manifest-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 20; }
+        #manifest-paragraph { font-size: 1.6rem; line-height: 1.8; color: #1a1a1a; }
+        .word { display: inline-block; margin-right: 10px; transition: color 0.8s; }
+        .word.revealed { color: #fff; }
 
-        .wn-photo { position: relative; background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; width: 100%; }
-        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease; }
+        /* --- GALLERY GRID --- */
+        .batch { opacity: 0; transform: translateY(50px); transition: 1.2s; margin-top: 60px; }
+        .batch.visible { opacity: 1; transform: translateY(0); }
+        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; } }
+        .wn-photo { background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #111; }
+        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1s; }
         .wn-photo img.loaded { opacity: 1; }
 
-        /* --- BIO-INSERT (REVELACIÓN) --- */
-        .bio-asset-box { border: 1px solid var(--accent-red) !important; animation: borderPulse 2s infinite; }
-        .bio-tag { position: absolute; top: 15px; left: 15px; background: var(--accent-red); color: #fff; font-family: monospace; font-size: 9px; padding: 3px 8px; z-index: 20; font-weight: bold; }
-        @keyframes borderPulse { 0%, 100% { border-color: var(--accent-red); } 50% { border-color: #444; } }
+        /* --- FULL WIDTH BIO REVEAL (FONDO FIJO) --- */
+        #persistent-bio-container {
+            position: fixed;
+            bottom: 70px;
+            left: 0;
+            width: 100%;
+            height: 35vh;
+            z-index: 5; /* Por detrás del texto y grid */
+            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+            border-top: 1px solid rgba(255, 0, 0, 0.1);
+        }
+        #gradual-bio-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 30%;
+            filter: blur(30px);
+            opacity: 0;
+        }
+        .scan-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 1px;
+            background: rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 15px var(--accent-red);
+            animation: scanning 4s linear infinite;
+        }
+        @keyframes scanning { 0% { top: 0% } 100% { top: 100% } }
 
         /* --- UI & FOOTER --- */
         .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; }
-        .btn-ui { background: rgba(10, 10, 10, 0.9); border: 1px solid #333; color: #fff; padding: 12px 20px; font-size: 10px; text-transform: uppercase; cursor: pointer; font-family: monospace; letter-spacing: 1px; }
+        .btn-ui { background: rgba(10, 10, 10, 0.9); border: 1px solid #333; color: #fff; padding: 10px 18px; font-size: 9px; font-family: monospace; cursor: pointer; text-transform: uppercase; }
         
         #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; }
-        
-        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 1500; background: rgba(5, 5, 5, 0.95); border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
+        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; text-align: left; }
+
+        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 1500; background: #050505; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
         #scroll-progress { position: absolute; top: 0; left: 0; height: 2px; background: var(--accent-red); width: 0%; transition: width 0.1s; }
         #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
         
@@ -54,22 +81,28 @@
 
     <video id="wn-stream" autoplay playsinline></video>
 
+    <div id="persistent-bio-container">
+        <img id="gradual-bio-img" src="" alt="Bio Reveal">
+        <div class="scan-line"></div>
+        <div style="position: absolute; top:10px; left:20px; color:rgba(255,0,0,0.5); font-size:8px; font-family:monospace;">RECON_SYSTEM_ACTIVE // ANALYZING_USER</div>
+    </div>
+
     <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Descargar_Informe</button>
+        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Descargar_Diagnóstico</button>
     </div>
 
     <div id="identity-modal">
         <div class="card-id">
             <div id="modal-bio-display" style="width:100%; height:200px; background:#111; margin-bottom:20px; overflow:hidden; border:1px solid #333;"></div>
-            <h2 style="color:var(--accent-red); margin-bottom: 15px; font-size: 14px; letter-spacing: 2px;">INFORME_BIO_SINC</h2>
+            <h2 style="color:var(--accent-red); margin-bottom: 15px; font-size: 14px; letter-spacing: 2px;">INFORME_FINAL_SUBSISTEMA</h2>
             <div id="id-content" style="font-size: 10px; line-height: 2; color: #777;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%; border-color: #444;">Reiniciar_Sistema</button>
+            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%;">Cerrar_Terminal</button>
         </div>
     </div>
 
     <section class="hero">
         <h1>WHISPERING_NOISE</h1>
-        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">AUDIO_VISUAL_RECON // ACTIVE</p>
+        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">MULTIMODAL_INTERCEPTOR_V4</p>
         <div class="cta" onclick="activateSystem('CLICK')">INICIAR_PROTOCOLO</div>
     </section>
 
@@ -81,16 +114,16 @@
 
     <footer class="wn-footer">
         <div id="scroll-progress"></div>
-        <p id="status-log">SISTEMA_STANDBY</p>
+        <p id="status-log">ESPERANDO_ACTIVACIÓN</p>
     </footer>
 
     <script>
         const CONFIG = { TOTAL_IMAGES: 28, BATCH_SIZE: 4, IMG_PATH: 'manifest/' };
         const MANIFEST_TEXT = "La observación altera lo observado. El sistema registra no solo lo que ves, sino cómo lo ves. Cada fijación ocular es un bit de información. El ruido se convierte en señal cuando el observador se integra en el flujo de datos.";
         
-        let audioCtx, gainNode, systemActivated = false, photoCaptured = false, photoInjected = false;
+        let audioCtx, gainNode, systemActivated = false, photoCaptured = false;
 
-        // ACTIVACIÓN DE SENSORES (Micro y Cámara)
+        // --- ACTIVACIÓN COMPLETA (AUDIO + CÁMARA + GEO) ---
         async function activateSystem(source) {
             if (systemActivated) return;
             systemActivated = true;
@@ -109,33 +142,21 @@
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 const source = audioCtx.createMediaStreamSource(stream);
-                
                 gainNode = audioCtx.createGain();
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = "lowpass";
-                filter.frequency.value = 1500;
-
-                source.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
+                source.connect(gainNode).connect(audioCtx.destination);
                 gainNode.gain.value = 0.4;
-                statusLog.innerText = "[SONIC_SENSOR]: CAPTURANDO";
-            } catch (e) {
-                statusLog.innerText = "[SONIC_SENSOR]: ERROR_DE_SINC";
-            }
+                statusLog.innerText = "[AUDIO]: INTERCEPTANDO_FRECUENCIA";
+            } catch (e) { statusLog.innerText = "[AUDIO]: ACCESO_DENEGADO"; }
         }
 
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 document.getElementById('wn-stream').srcObject = stream;
-            } catch (e) {
-                console.warn("Cámara no disponible.");
-            }
+            } catch (e) { console.warn("Cámara no disponible."); }
         }
 
-        function captureAndInject() {
+        function capturePhoto() {
             if (photoCaptured) return;
             const video = document.getElementById('wn-stream');
             if (!video.videoWidth) return;
@@ -146,17 +167,12 @@
             canvas.getContext('2d').drawImage(video, 0, 0);
             const dataUrl = canvas.toDataURL('image/webp');
             
+            document.getElementById('gradual-bio-img').src = dataUrl;
+            document.getElementById('persistent-bio-container').style.display = 'block';
+            
             localStorage.setItem('wn-bio-asset', dataUrl);
             photoCaptured = true;
-
-            const galleries = document.querySelectorAll('.gallery');
-            if (galleries[1]) {
-                const bioBox = document.createElement('div');
-                bioBox.className = "wn-photo bio-asset-box";
-                bioBox.innerHTML = `<div class="bio-tag">SUBJECT_DETECTED</div><img src="${dataUrl}" class="loaded" style="opacity:1">`;
-                galleries[1].prepend(bioBox);
-                statusLog.innerText = "[AVISO]: BIO_DATA_ASIMILADA";
-            }
+            statusLog.innerText = "[BIOMETRÍA]: CAPTURA_EXITOSA";
         }
 
         async function getGeoData() {
@@ -167,12 +183,11 @@
             } catch (e) {}
         }
 
+        // --- INICIALIZACIÓN DE CONTENIDOS ---
         function init() {
-            // Cargar Manifiesto
             const manifestP = document.getElementById('manifest-paragraph');
             manifestP.innerHTML = MANIFEST_TEXT.split(" ").map(word => `<span class="word">${word}</span>`).join(" ");
 
-            // Cargar Galería
             const frag = document.createDocumentFragment();
             for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
                 if ((i-1) % CONFIG.BATCH_SIZE === 0) {
@@ -201,15 +216,26 @@
 
             // FADE OUT AUDIO
             if (gainNode) {
-                const vol = Math.max(0, 0.4 * (1 - (scrollPercent * 1.2)));
+                const vol = Math.max(0, 0.4 * (1 - scrollPercent));
                 gainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
             }
 
             // CAPTURA AL 50%
-            if (scrollPercent > 0.5 && !photoCaptured) captureAndInject();
+            if (scrollPercent > 0.5 && !photoCaptured) capturePhoto();
             
-            // BOTÓN FINAL AL TERMINAR
-            if (scrollPercent > 0.96) document.getElementById('btnIdentity').style.display = 'block';
+            // REVELACIÓN GRADUAL (del 52% al 92%)
+            if (photoCaptured) {
+                const startReveal = 0.52;
+                const endReveal = 0.92;
+                let progress = (scrollPercent - startReveal) / (endReveal - startReveal);
+                progress = Math.min(Math.max(progress, 0), 1);
+
+                const gradualImg = document.getElementById('gradual-bio-img');
+                gradualImg.style.opacity = progress;
+                gradualImg.style.filter = `blur(${(1 - progress) * 30}px) brightness(${0.4 + progress * 0.6})`;
+            }
+
+            if (scrollPercent > 0.97) document.getElementById('btnIdentity').style.display = 'block';
         });
 
         function setupTracking() {
@@ -229,10 +255,10 @@
             const bio = localStorage.getItem('wn-bio-asset');
             if(bio) document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
             document.getElementById('id-content').innerHTML = `
-                SUJETO_ID: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
-                ORIGEN: ${geo.city || 'DESCONOCIDO'}<br>
-                SONIDO: AMBIENTE_DISSOLVED<br>
-                STATUS: INTEGRADO_AL_RUIDO
+                USER_ID: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
+                GEO_LOC: ${geo.city || 'INTERCEPTADO'}<br>
+                SIGNAL: FADED_TO_BLACK<br>
+                RESULT: BIOMETRIC_RECONSTRUCTION_COMPLETE
             `;
             document.getElementById('identity-modal').style.display = 'flex';
         };
