@@ -3,77 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | TOTAL INTEGRATION</title>
+    <title>WHISPERING NOISE | SCRUBBING REVEAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --accent-red: #ff0000; --bg-dark: #050505; }
         body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
         
-        /* Contenedor principal para no pisar el grid */
         #app { position: relative; z-index: 10; padding: 40px 5% 300px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
 
         /* --- HERO & MANIFEST --- */
         section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; position: relative; z-index: 20; }
         .hero h1 { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: -3px; color: var(--accent-red); font-weight: 900; }
-        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; transition: 0.3s; font-family: monospace; font-size: 13px; }
+        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; font-family: monospace; font-size: 13px; transition: 0.3s; }
         .cta:hover { background: var(--accent-red); color: #000; }
 
         .manifest-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 20; }
-        #manifest-paragraph { font-size: 1.6rem; line-height: 1.8; color: #1a1a1a; }
+        #manifest-paragraph { font-size: 1.3rem; line-height: 1.8; color: #1a1a1a; }
+        @media (min-width: 768px) { #manifest-paragraph { font-size: 1.6rem; } }
         .word { display: inline-block; margin-right: 10px; transition: color 0.8s; }
         .word.revealed { color: #fff; }
 
-        /* --- GALLERY GRID --- */
+        /* --- GALLERY GRID (RESPONSIVE) --- */
         .batch { opacity: 0; transform: translateY(50px); transition: 1.2s; margin-top: 60px; }
         .batch.visible { opacity: 1; transform: translateY(0); }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
-        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; } }
+        
+        .gallery { 
+            display: grid; 
+            grid-template-columns: 1fr; /* 1 columna en mobile */
+            gap: 20px; 
+        }
+        @media (min-width: 768px) {
+            .gallery { grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        }
+
         .wn-photo { background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #111; }
         .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1s; }
         .wn-photo img.loaded { opacity: 1; }
 
-        /* --- FULL WIDTH BIO REVEAL (FONDO FIJO) --- */
+        /* --- BACKGROUND REVEAL (BANNER 30% ALTO) --- */
         #persistent-bio-container {
-            position: fixed;
-            bottom: 70px;
-            left: 0;
-            width: 100%;
-            height: 35vh;
-            z-index: 5; /* Por detrás del texto y grid */
-            background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0) 100%);
-            display: none;
-            pointer-events: none;
-            overflow: hidden;
-            border-top: 1px solid rgba(255, 0, 0, 0.1);
+            position: fixed; top: 0; left: 0; width: 100%; height: 30vh; 
+            z-index: 5; display: none; pointer-events: none; overflow: hidden;
+            border-bottom: 1px solid rgba(255,0,0,0.2);
         }
-        #gradual-bio-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center 30%;
-            filter: blur(30px);
-            opacity: 0;
-        }
-        .scan-line {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 1px;
-            background: rgba(255, 0, 0, 0.4);
-            box-shadow: 0 0 15px var(--accent-red);
-            animation: scanning 4s linear infinite;
-        }
-        @keyframes scanning { 0% { top: 0% } 100% { top: 100% } }
+        #gradual-bio-img { width: 100%; height: 100%; object-fit: cover; filter: blur(30px); opacity: 0; }
 
-        /* --- UI & FOOTER --- */
+        /* --- SOCIAL HUD (ESTILO RED SOCIAL) --- */
+        #social-hud {
+            position: fixed; bottom: 90px; right: 20px; z-index: 100;
+            display: none; flex-direction: column; align-items: flex-end;
+            pointer-events: none; font-family: system-ui, -apple-system, sans-serif;
+        }
+        .hud-metric { 
+            display: flex; align-items: center; gap: 8px; 
+            background: rgba(0,0,0,0.8); padding: 5px 15px;
+            margin-bottom: 5px; border-radius: 6px; backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .likes-count { color: #fff; font-size: 14px; font-weight: 700; }
+        .hates-count { color: var(--accent-red); font-size: 14px; font-weight: 700; }
+        .hud-label { font-size: 8px; text-transform: uppercase; color: #666; letter-spacing: 2px; margin-bottom: 5px; }
+
+        /* --- UI & MODAL --- */
         .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; }
         .btn-ui { background: rgba(10, 10, 10, 0.9); border: 1px solid #333; color: #fff; padding: 10px 18px; font-size: 9px; font-family: monospace; cursor: pointer; text-transform: uppercase; }
-        
         #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; text-align: left; }
-
+        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; margin: 20px; }
+        
         .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 1500; background: #050505; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
         #scroll-progress { position: absolute; top: 0; left: 0; height: 2px; background: var(--accent-red); width: 0%; transition: width 0.1s; }
-        #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
-        
+        #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; }
         #wn-stream { display: none; }
     </style>
 </head>
@@ -82,28 +81,38 @@
     <video id="wn-stream" autoplay playsinline></video>
 
     <div id="persistent-bio-container">
-        <img id="gradual-bio-img" src="" alt="Bio Reveal">
-        <div class="scan-line"></div>
-        <div style="position: absolute; top:10px; left:20px; color:rgba(255,0,0,0.5); font-size:8px; font-family:monospace;">RECON_SYSTEM_ACTIVE // ANALYZING_USER</div>
+        <img id="gradual-bio-img" src="">
+    </div>
+
+    <div id="social-hud">
+        <div class="hud-label">Live_Data_Stream</div>
+        <div class="hud-metric">
+            <span>❤️</span>
+            <span id="likes-val" class="likes-count">0</span>
+        </div>
+        <div class="hud-metric">
+            <span>👎</span>
+            <span id="hates-val" class="hates-count">0</span>
+        </div>
     </div>
 
     <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Descargar_Diagnóstico</button>
+        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Finalizar_Analisis</button>
     </div>
 
     <div id="identity-modal">
         <div class="card-id">
             <div id="modal-bio-display" style="width:100%; height:200px; background:#111; margin-bottom:20px; overflow:hidden; border:1px solid #333;"></div>
-            <h2 style="color:var(--accent-red); margin-bottom: 15px; font-size: 14px; letter-spacing: 2px;">INFORME_FINAL_SUBSISTEMA</h2>
+            <h2 style="color:var(--accent-red); margin-bottom: 10px; font-size: 14px; letter-spacing: 2px;">REPORTE_SOCIOMETRICO</h2>
             <div id="id-content" style="font-size: 10px; line-height: 2; color: #777;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%;">Cerrar_Terminal</button>
+            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%;">Borrar_Evidencia</button>
         </div>
     </div>
 
     <section class="hero">
         <h1>WHISPERING_NOISE</h1>
-        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">MULTIMODAL_INTERCEPTOR_V4</p>
-        <div class="cta" onclick="activateSystem('CLICK')">INICIAR_PROTOCOLO</div>
+        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">THRESHOLD_SCRUBBING_V2</p>
+        <div class="cta" onclick="activateSystem('CLICK')">INICIAR_CAPTURA</div>
     </section>
 
     <div class="manifest-container">
@@ -114,7 +123,7 @@
 
     <footer class="wn-footer">
         <div id="scroll-progress"></div>
-        <p id="status-log">ESPERANDO_ACTIVACIÓN</p>
+        <p id="status-log">SISTEMA_STANDBY</p>
     </footer>
 
     <script>
@@ -123,18 +132,12 @@
         
         let audioCtx, gainNode, systemActivated = false, photoCaptured = false;
 
-        // --- ACTIVACIÓN COMPLETA (AUDIO + CÁMARA + GEO) ---
         async function activateSystem(source) {
             if (systemActivated) return;
             systemActivated = true;
-            
             await initAudio();
             await initCamera();
-            getGeoData();
-
-            if (source === 'CLICK') {
-                document.querySelector('.manifest-container').scrollIntoView({ behavior: 'smooth' });
-            }
+            if (source === 'CLICK') document.querySelector('.manifest-container').scrollIntoView({ behavior: 'smooth' });
         }
 
         async function initAudio() {
@@ -145,45 +148,32 @@
                 gainNode = audioCtx.createGain();
                 source.connect(gainNode).connect(audioCtx.destination);
                 gainNode.gain.value = 0.4;
-                statusLog.innerText = "[AUDIO]: INTERCEPTANDO_FRECUENCIA";
-            } catch (e) { statusLog.innerText = "[AUDIO]: ACCESO_DENEGADO"; }
+            } catch (e) {}
         }
 
         async function initCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 document.getElementById('wn-stream').srcObject = stream;
-            } catch (e) { console.warn("Cámara no disponible."); }
+            } catch (e) {}
         }
 
         function capturePhoto() {
             if (photoCaptured) return;
             const video = document.getElementById('wn-stream');
-            if (!video.videoWidth) return;
-
+            if(!video.videoWidth) return;
             const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
             const dataUrl = canvas.toDataURL('image/webp');
             
             document.getElementById('gradual-bio-img').src = dataUrl;
             document.getElementById('persistent-bio-container').style.display = 'block';
-            
             localStorage.setItem('wn-bio-asset', dataUrl);
             photoCaptured = true;
-            statusLog.innerText = "[BIOMETRÍA]: CAPTURA_EXITOSA";
+            statusLog.innerText = "[ALERTA]: BIO_RECON_30_BANNER_TRIGGER";
         }
 
-        async function getGeoData() {
-            try {
-                const resp = await fetch('https://ipapi.co/json/');
-                const data = await resp.json();
-                localStorage.setItem('wn-location', JSON.stringify(data));
-            } catch (e) {}
-        }
-
-        // --- INICIALIZACIÓN DE CONTENIDOS ---
         function init() {
             const manifestP = document.getElementById('manifest-paragraph');
             manifestP.innerHTML = MANIFEST_TEXT.split(" ").map(word => `<span class="word">${word}</span>`).join(" ");
@@ -214,28 +204,39 @@
             const scrollPercent = window.scrollY / (docHeight || 1);
             document.getElementById('scroll-progress').style.width = `${scrollPercent * 100}%`;
 
-            // FADE OUT AUDIO
             if (gainNode) {
-                const vol = Math.max(0, 0.4 * (1 - scrollPercent));
-                gainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
+                gainNode.gain.setTargetAtTime(Math.max(0, 0.4 * (1 - scrollPercent)), audioCtx.currentTime, 0.1);
             }
 
-            // CAPTURA AL 50%
-            if (scrollPercent > 0.5 && !photoCaptured) capturePhoto();
+            // --- 30%: CAPTURA ---
+            if (scrollPercent > 0.3 && !photoCaptured) capturePhoto();
             
-            // REVELACIÓN GRADUAL (del 52% al 92%)
+            // --- 30% AL 50%: REVELACIÓN ---
             if (photoCaptured) {
-                const startReveal = 0.52;
-                const endReveal = 0.92;
-                let progress = (scrollPercent - startReveal) / (endReveal - startReveal);
-                progress = Math.min(Math.max(progress, 0), 1);
+                const revealStart = 0.3;
+                const revealEnd = 0.5;
+                let revealProg = (scrollPercent - revealStart) / (revealEnd - revealStart);
+                revealProg = Math.min(Math.max(revealProg, 0), 1);
 
-                const gradualImg = document.getElementById('gradual-bio-img');
-                gradualImg.style.opacity = progress;
-                gradualImg.style.filter = `blur(${(1 - progress) * 30}px) brightness(${0.4 + progress * 0.6})`;
+                const bioImg = document.getElementById('gradual-bio-img');
+                bioImg.style.opacity = revealProg;
+                bioImg.style.filter = `blur(${(1 - revealProg) * 30}px) grayscale(${1 - revealProg})`;
             }
 
-            if (scrollPercent > 0.97) document.getElementById('btnIdentity').style.display = 'block';
+            // --- 50% AL 80%: BOMBARDEO MÉTRICAS (Ubicación Inferior Derecha) ---
+            const hud = document.getElementById('social-hud');
+            if (scrollPercent > 0.5 && scrollPercent < 0.8) {
+                hud.style.display = 'flex';
+                const multiplier = Math.pow((scrollPercent - 0.5) * 10, 5); 
+                document.getElementById('likes-val').innerText = Math.floor(multiplier * 2.5).toLocaleString();
+                document.getElementById('hates-val').innerText = Math.floor(multiplier * 7.8).toLocaleString();
+            } else if (scrollPercent >= 0.8) {
+                hud.style.display = 'flex';
+            } else {
+                hud.style.display = 'none';
+            }
+
+            if (scrollPercent > 0.96) document.getElementById('btnIdentity').style.display = 'block';
         });
 
         function setupTracking() {
@@ -249,17 +250,10 @@
         }
 
         const statusLog = document.getElementById("status-log");
-
         document.getElementById('btnIdentity').onclick = () => {
-            const geo = JSON.parse(localStorage.getItem('wn-location') || "{}");
             const bio = localStorage.getItem('wn-bio-asset');
-            if(bio) document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
-            document.getElementById('id-content').innerHTML = `
-                USER_ID: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
-                GEO_LOC: ${geo.city || 'INTERCEPTADO'}<br>
-                SIGNAL: FADED_TO_BLACK<br>
-                RESULT: BIOMETRIC_RECONSTRUCTION_COMPLETE
-            `;
+            document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
+            document.getElementById('id-content').innerHTML = `REVELACION: COMPLETA<br>VALOR_SOCIOMETRICO: AGOTADO<br>STATUS: IDENTIFICADO_EN_RED`;
             document.getElementById('identity-modal').style.display = 'flex';
         };
 
