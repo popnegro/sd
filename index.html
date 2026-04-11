@@ -3,105 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | INTEGRATED SYSTEM</title>
+    <title>WHISPERING NOISE | HEATMAP EVOLUTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { 
-            --accent-red: #ff0000; 
-            --bg-dark: #050505;
+        :root { --accent-red: #ff0000; --bg-dark: #050505; }
+        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        #app { padding: 40px 5% 150px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
+
+        /* --- CURSORES REMOTOS --- */
+        .remote-cursor {
+            position: fixed; width: 12px; height: 12px;
+            border: 1px solid var(--accent-red); border-radius: 50%;
+            pointer-events: none; z-index: 5000; transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: none;
         }
+        .remote-cursor::after { content: attr(data-label); position: absolute; top: -15px; left: 15px; font-family: monospace; font-size: 7px; color: var(--accent-red); }
+        body.data-mode .remote-cursor { display: block; }
 
-        body { 
-            background: var(--bg-dark); 
-            color: #fff; 
-            margin: 0; 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden; 
-            -webkit-font-smoothing: antialiased; 
-        }
-
-        #app {
-            padding: 40px 5% 150px 5%;
-            max-width: 1100px;
-            margin: 0 auto;
-            min-height: 100vh;
-        }
-
-        /* --- INTRO CONTAINER --- */
-        .intro-container {
-            max-width: 800px;
-            margin: 40px 0 80px 0;
-            padding-left: 20px;
-            border-left: 2px solid var(--accent-red);
-            animation: introSlide 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-        }
-        .intro-container h1 { font-size: 10px; letter-spacing: 5px; color: var(--accent-red); text-transform: uppercase; margin-bottom: 15px; }
-        .intro-container p { font-family: monospace; font-size: 13px; line-height: 1.8; color: #888; }
-
-        @keyframes introSlide {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* --- ESTRUCTURA --- */
-        .batch { opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
-        .batch.visible { opacity: 1; transform: translateY(0); }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; width: 100%; margin-bottom: 40px; }
-        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; gap: 20px; } }
-
+        /* --- FOTO Y CANVAS DE CALOR --- */
         .wn-photo { position: relative; background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; width: 100%; cursor: crosshair; }
+        .wn-photo.marked { outline: 2px solid var(--accent-red); outline-offset: -2px; }
+        
+        .heatmap-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 10; opacity: 0; transition: opacity 0.5s;
+            mix-blend-mode: screen;
+        }
+        body.data-mode .heatmap-canvas { opacity: 1; }
+
+        .mark-indicator { position: absolute; top: 10px; left: 10px; font-family: monospace; font-size: 8px; background: var(--accent-red); color: #000; padding: 2px 5px; opacity: 0; z-index: 30; }
+        .wn-photo.marked .mark-indicator { opacity: 1; }
         .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.5s ease; }
         .wn-photo img.loaded { opacity: 1; }
 
-        /* --- OVERLAYS Y HEATMAP --- */
-        .wn-overlay {
-            position: absolute; bottom: 0; width: 100%; padding: 15px; font-size: 10px; font-family: monospace;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9)); display: flex; justify-content: space-between;
-            opacity: 0; transition: 0.3s; pointer-events: none; z-index: 20;
-        }
-        .wn-photo:hover .wn-overlay, body.data-mode .wn-overlay { opacity: 1; }
-
-        .heatmap-point {
-            position: absolute; width: 30px; height: 30px;
-            background: radial-gradient(circle, rgba(255,0,0,0.8) 0%, rgba(255,0,0,0) 75%);
-            border-radius: 50%; transform: translate(-50%, -50%); pointer-events: none; mix-blend-mode: screen; z-index: 10; display: none;
-        }
-        body.data-mode .heatmap-point { display: block; animation: pulseHeat 2s infinite; }
-        body.data-mode .wn-hot-high { outline: 3px solid var(--accent-red); outline-offset: -3px; }
-
-        @keyframes pulseHeat { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; } 50% { transform: translate(-50%, -50%) scale(1.4); opacity: 0.2; } }
-
-        /* --- UI CONTROLS --- */
-        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; display: flex; gap: 10px; }
-        .btn-ui { background: rgba(15, 15, 15, 0.85); border: 1px solid #333; color: #fff; padding: 10px 16px; font-size: 9px; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 8px; transition: 0.3s; }
+        /* --- UI --- */
+        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 6000; display: flex; gap: 10px; }
+        .btn-ui { background: rgba(15, 15, 15, 0.85); border: 1px solid #333; color: #fff; padding: 10px 16px; font-size: 9px; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(10px); display: flex; align-items: center; transition: 0.3s; }
         .btn-ui:hover { background: #fff; color: #000; }
         
-        #wnResetBtn, #wnDownloadBtn, #btnIdentity { display: none; }
-        body.data-mode #wnResetBtn, body.data-mode #wnDownloadBtn { display: flex; }
-        body.data-mode #wnDataToggle { background: var(--accent-red); border-color: transparent; }
-
-        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 7000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .card-id { border: 1px solid #333; padding: 40px; max-width: 400px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #0a0a0a; }
 
-        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 1500; background: rgba(5, 5, 5, 0.95); border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
+        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 1500; background: rgba(5, 5, 5, 0.95); border-top: 1px solid #222; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #scroll-progress { position: absolute; top: 0; left: 0; height: 1px; background: var(--accent-red); width: 0%; transition: width 0.1s; }
-        #status-log { font-family: monospace; font-size: 10px; color: #666; text-transform: uppercase; text-align: center; width: 80%; }
+        #status-log { font-family: monospace; font-size: 10px; color: #666; text-transform: uppercase; text-align: center; max-width: 80%; }
     </style>
 </head>
-<body onmousemove="updateAudioPulse(event)">
+<body>
 
     <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui">Reporte Final</button>
-        <button id="wnDownloadBtn" class="btn-ui">Export</button>
-        <button id="wnResetBtn" class="btn-ui" style="color:#555">Wipe</button>
+        <button id="btnIdentity" class="btn-ui" style="display:none">Reporte Final</button>
         <button id="wnDataToggle" class="btn-ui">Análisis</button>
     </div>
 
     <div id="identity-modal">
         <div class="card-id">
-            <h2 style="color:var(--accent-red); margin-bottom: 20px;">DIAGNÓSTICO_COGNITIVO</h2>
-            <div id="id-content" style="font-size: 12px; line-height: 1.6; color: #aaa;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%;">Purgar Sesión</button>
+            <h2 style="color:var(--accent-red); margin-bottom: 20px;">DIAGNÓSTICO_FINAL</h2>
+            <div id="id-content" style="font-size: 12px; line-height: 1.6; color: #aaa; margin-bottom: 30px;"></div>
+            <button id="shareWhatsapp" class="btn-ui" style="background:#25D366; color:black; width:100%; justify-content:center; border:none; margin-bottom:10px;">WhatsApp</button>
+            <button onclick="document.getElementById('identity-modal').style.display='none'" class="btn-ui" style="width: 100%; justify-content: center;">Cerrar</button>
         </div>
     </div>
 
@@ -109,244 +69,125 @@
 
     <footer class="wn-footer">
         <div id="scroll-progress"></div>
-        <p id="status-log">CONNECTING_SYSTEM...</p>
+        <p id="status-log">SISTEMA_INICIALIZADO...</p>
+        <div id="node-counter" style="font-family: monospace; font-size: 9px; color: var(--accent-red); margin-top:5px;">NODOS_ACTIVOS: <span id="node-val">07</span></div>
     </footer>
 
     <script>
         const CONFIG = { TOTAL_IMAGES: 28, BATCH_SIZE: 4, IMG_PATH: 'manifest/' };
-        const NARRATIVE_DB = {
-            start: ["CALIBRANDO SENSORES...", "BUSCANDO HUELLAS...", "INICIALIZANDO PROTOCOLO..."],
-            mid: ["ANALIZANDO BLOQUE_{ID}...", "CAPTURA DE CALOR EN EJE_{HEX}...", "DECODIFICANDO TIEMPOS..."],
-            end: ["COMPILANDO REPORTE FINAL...", "OBSERVADOR IDENTIFICADO: {HEX}...", "DATOS LISTOS."]
+        const FRASES = {
+            scroll: ["Navegar no es observar.", "La velocidad es la enemiga de la huella.", "¿Cuántas imágenes has ignorado?"],
+            interaccion: ["Te has detenido. El tiempo existe ahora.", "¿Por qué este fragmento?", "Dejando huella térmica..."],
+            sistema: ["Sincronizando pulso visual...", "Rastreando otros observadores..."]
         };
 
-        const app = document.getElementById("app");
-        const statusLog = document.getElementById("status-log");
-        const progressBar = document.getElementById("scroll-progress");
-        
-        // --- AUDIO REACTIVO ---
-        let audioCtx, masterGain, lfo, filterNode, pannerNode, isAudioInit = false;
+        const ghosts = [];
+        function createGhosts() {
+            for (let i = 0; i < 5; i++) {
+                const el = document.createElement('div');
+                el.className = 'remote-cursor';
+                el.setAttribute('data-label', `NODE_0${Math.floor(Math.random()*99)}`);
+                document.body.appendChild(el);
+                ghosts.push({ el, x: Math.random()*window.innerWidth, y: Math.random()*window.innerHeight, tx: Math.random()*window.innerWidth, ty: Math.random()*window.innerHeight, speed: 0.03 });
+            }
+        }
 
-function initAudio() {
-    if (isAudioInit) {
-        // Si el audio ya existe pero está en "suspendido" (común en Chrome), lo reanudamos
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        return;
-    }
+        function animateGhosts() {
+            ghosts.forEach(g => {
+                g.x += (g.tx - g.x) * g.speed; g.y += (g.ty - g.y) * g.speed;
+                g.el.style.transform = `translate(${g.x}px, ${g.y}px)`;
+                if (Math.abs(g.tx - g.x) < 10) { g.tx = Math.random()*window.innerWidth; g.ty = Math.random()*window.innerHeight; }
+            });
+            requestAnimationFrame(animateGhosts);
+        }
 
-    try {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Generador de Ruido Blanco
-        const bufferSize = 2 * audioCtx.sampleRate;
-        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+        // --- LÓGICA DEL MAPA DE CALOR ACUMULATIVO ---
+        function paintHeat(canvas, xPercent, yPercent) {
+            const ctx = canvas.getContext('2d');
+            const x = (xPercent * canvas.width) / 100;
+            const y = (yPercent * canvas.height) / 100;
+            
+            // Estilo de mancha agigantada
+            const radius = 60; 
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+            grad.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
+            grad.addColorStop(1, 'rgba(255, 0, 0, 0)');
 
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBuffer;
-        noise.loop = true;
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-        // Filtro: Lo configuramos un poco más resonante (Q) para que se sienta más "sintético"
-        filterNode = audioCtx.createBiquadFilter();
-        filterNode.type = 'lowpass';
-        filterNode.frequency.value = 1000;
-        filterNode.Q.value = 5; // Añade carácter al sonido
-
-        pannerNode = audioCtx.createStereoPanner();
-        
-        // Master Gain con rampa suave para evitar el "pop" inicial
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.001; 
-        masterGain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 2);
-
-        // LFO (Respiración del sistema)
-        lfo = audioCtx.createOscillator();
-        lfo.type = 'sine';
-        lfo.frequency.value = 0.5; 
-        const lfoGain = audioCtx.createGain();
-        lfoGain.gain.value = 0.01; // Profundidad de la modulación
-
-        // Conexiones
-        lfo.connect(lfoGain);
-        lfoGain.connect(masterGain.gain); // El LFO modula el volumen
-        
-        noise.connect(filterNode);
-        filterNode.connect(pannerNode);
-        pannerNode.connect(masterGain);
-        masterGain.connect(audioCtx.destination);
-        
-        noise.start();
-        lfo.start();
-        isAudioInit = true;
-        
-        console.log("SISTEMA_AUDIO: ONLINE");
-    } catch (e) {
-        console.error("ERROR_AUDIO_INIT:", e);
-    }
-}
-
-// Función de actualización mejorada
-function updateAudioPulse(e) {
-    if (!isAudioInit || audioCtx.state === 'suspended') return;
-
-    // Panorámica: Izquierda/Derecha
-    const pan = (e.clientX / window.innerWidth) * 2 - 1;
-    pannerNode.pan.setTargetAtTime(pan, audioCtx.currentTime, 0.1);
-
-    // Reactividad Vertical: Mover el ratón arriba/abajo abre el filtro
-    // Esto hace que el usuario sienta que "controla" la claridad del ruido
-    const filterFreq = 100 + ((1 - e.clientY / window.innerHeight) * 4000);
-    filterNode.frequency.setTargetAtTime(filterFreq, audioCtx.currentTime, 0.1);
-}
-
-        // --- LÓGICA DE SEGUIMIENTO E INTERACCIÓN ---
         function handleInteraction(e, box) {
-            initAudio();
+            const canvas = box.querySelector('.heatmap-canvas');
             const rect = box.getBoundingClientRect();
-            const xRel = (e.clientX - rect.left) / rect.width;
-            const yRel = (e.clientY - rect.top) / rect.height;
+            const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+            const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
 
+            // Guardar datos
             let db = JSON.parse(localStorage.getItem('wn-heat') || "{}");
             if(!db[box.dataset.id]) db[box.dataset.id] = [];
-            db[box.dataset.id].push({x: (xRel*100).toFixed(1), y: (yRel*100).toFixed(1)});
+            db[box.dataset.id].push({x, y});
             localStorage.setItem('wn-heat', JSON.stringify(db));
             
-            createHeatPoint(box, xRel * 100, yRel * 100);
-            statusLog.innerText = `[INPUT] CAPTURING_COORDINATES: ${box.dataset.id}`;
+            paintHeat(canvas, x, y);
+            document.getElementById('status-log').innerText = FRASES.interaccion[Math.floor(Math.random()*FRASES.interaccion.length)];
         }
 
-        function createHeatPoint(container, x, y) {
-            const point = document.createElement('div');
-            point.className = 'heatmap-point';
-            point.style.left = `${x}%`;
-            point.style.top = `${y}%`;
-            container.appendChild(point);
-        }
-
-        function renderHeatmaps() {
-            const db = JSON.parse(localStorage.getItem('wn-heat') || "{}");
-            document.querySelectorAll('.wn-photo').forEach(box => {
-                const points = db[box.dataset.id] || [];
-                points.forEach(p => createHeatPoint(box, p.x, p.y));
-            });
-        }
-
-        function setupTracking() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.isIntersecting) {
-                        e.target.classList.add("visible");
-                        if (e.target.classList.contains('wn-photo')) e.target.dataset.start = Date.now();
-                    } else if (e.target.dataset.start) {
-                        const elapsed = Math.floor((Date.now() - e.target.dataset.start) / 1000);
-                        if (elapsed >= 1) {
-                            let data = JSON.parse(localStorage.getItem('wn-time') || "{}");
-                            if (!data[e.target.dataset.id]) data[e.target.dataset.id] = { v: 0, t: 0 };
-                            data[e.target.dataset.id].v++;
-                            data[e.target.dataset.id].t += elapsed;
-                            localStorage.setItem('wn-time', JSON.stringify(data));
-                            if(Object.keys(data).length > 3) document.getElementById('btnIdentity').style.display = 'flex';
-                        }
-                        delete e.target.dataset.start;
-                    }
-                });
-            }, { threshold: 0.3 });
-            document.querySelectorAll('.batch, .wn-photo').forEach(el => observer.observe(el));
-        }
-
-        // --- INICIALIZACIÓN ---
         function init() {
-            app.innerHTML = `
-                <div class="intro-container">
-                    <h1>SISTEMA DE MONITOREO INTEGRADO</h1>
-                    <p>
-                        Bienvenido a <strong>WHISPERING NOISE</strong>. El sistema registra fijación, clics y espacialidad sonora. 
-                        La integridad visual se mantiene constante; su comportamiento genera el diagnóstico.
-                    </p>
-                </div>
-            `;
+            createGhosts(); animateGhosts();
+            const marks = JSON.parse(localStorage.getItem('wn-marks') || "[]");
+            const heatData = JSON.parse(localStorage.getItem('wn-heat') || "{}");
 
-            const frag = document.createDocumentFragment();
             for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
                 if ((i-1) % CONFIG.BATCH_SIZE === 0) {
-                    const gallery = document.createElement("div");
-                    gallery.className = "gallery batch";
-                    frag.appendChild(gallery);
+                    const g = document.createElement("div"); g.className = "gallery grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 opacity-0 transform translate-y-10 transition-all duration-1000";
+                    app.appendChild(g);
                 }
-                const id = String(i).padStart(2, '0');
+                const id = `img_${String(i).padStart(2, '0')}`;
                 const box = document.createElement("div");
-                box.className = "wn-photo";
-                box.dataset.id = `img_${id}`;
+                box.className = `wn-photo ${marks.includes(id) ? 'marked' : ''}`;
+                box.dataset.id = id;
                 box.onclick = (e) => handleInteraction(e, box);
+                box.ondblclick = () => {
+                    box.classList.toggle('marked');
+                    let m = JSON.parse(localStorage.getItem('wn-marks') || "[]");
+                    m.includes(id) ? m = m.filter(x => x !== id) : m.push(id);
+                    localStorage.setItem('wn-marks', JSON.stringify(m));
+                };
 
-                const img = new Image();
-                img.loading = "lazy";
+                const canvas = document.createElement('canvas');
+                canvas.className = 'heatmap-canvas';
+                canvas.width = 500; canvas.height = 500; // Resolución interna
+                
+                const img = new Image(); img.src = `${CONFIG.IMG_PATH}${id.split('_')[1]}.webp`;
                 img.onload = () => img.classList.add('loaded');
-                img.src = `${CONFIG.IMG_PATH}${id}.webp`;
 
-                box.innerHTML = `<div class="wn-overlay"><span class="wn-time">0s</span><span class="wn-intensity">0%</span></div>`;
+                box.innerHTML = `<div class="mark-indicator">MARKED</div>`;
+                box.prepend(canvas);
                 box.prepend(img);
-                frag.lastElementChild.appendChild(box);
-            }
-            app.appendChild(frag);
-            setupTracking();
-            renderHeatmaps();
-        }
+                app.lastElementChild.appendChild(box);
 
-        window.addEventListener('scroll', () => {
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = window.scrollY / (docHeight || 1);
-            progressBar.style.width = `${scrollPercent * 100}%`;
-            
-            if (isAudioInit) {
-                filterNode.frequency.setTargetAtTime(200 + (scrollPercent * 3000), audioCtx.currentTime, 0.2);
-                lfo.frequency.setTargetAtTime(0.5 + (scrollPercent * 4), audioCtx.currentTime, 0.2);
+                // Renderizar calor previo
+                if(heatData[id]) heatData[id].forEach(pt => paintHeat(canvas, pt.x, pt.y));
             }
 
-            // Narrativa log
-            const currentThreshold = Math.floor(scrollPercent * 15);
-            let pool = (scrollPercent < 0.2) ? NARRATIVE_DB.start : (scrollPercent < 0.8) ? NARRATIVE_DB.mid : NARRATIVE_DB.end;
-            let phrase = pool[Math.floor(Math.random() * pool.length)];
-            phrase = phrase.replace("{ID}", Math.floor(Math.random() * 28) + 1).replace("{HEX}", Math.random().toString(16).slice(2, 5).toUpperCase());
-            statusLog.innerText = `[${Math.round(scrollPercent * 100)}%] ${phrase}`;
-        });
-
-        document.getElementById("wnDataToggle").onclick = function() {
-            const isD = document.body.classList.toggle("data-mode");
-            this.innerText = isD ? "Obra" : "Análisis";
-            if (isD) {
-                const data = JSON.parse(localStorage.getItem('wn-time') || "{}");
-                const maxT = Math.max(...Object.values(data).map(v => v.t), 1);
-                document.querySelectorAll('.wn-photo').forEach(el => {
-                    const item = data[el.dataset.id];
-                    if (item) {
-                        const intensity = Math.round((item.t / maxT) * 100);
-                        el.querySelector('.wn-time').innerText = `${Math.round(item.t / item.v)}s AVG`;
-                        el.querySelector('.wn-intensity').innerText = `${intensity}% INT`;
-                        el.classList.toggle("wn-hot-high", intensity > 60);
+            const obs = new IntersectionObserver((ents) => {
+                ents.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.classList.remove("opacity-0", "translate-y-10");
+                        if(e.target.dataset.id) e.target.dataset.start = Date.now();
                     }
                 });
-            }
-        };
+            }, {threshold: 0.1});
+            document.querySelectorAll('.gallery, .wn-photo').forEach(el => obs.observe(el));
+        }
 
-        document.getElementById('btnIdentity').onclick = () => {
-            const timeData = JSON.parse(localStorage.getItem('wn-time') || "{}");
-            const heatData = JSON.parse(localStorage.getItem('wn-heat') || "{}");
-            const totalSec = Object.values(timeData).reduce((a, b) => a + b.t, 0);
-            const totalClicks = Object.values(heatData).reduce((a, b) => a + b.length, 0);
-            let profile = totalClicks > (totalSec/2) ? "IMPULSIVO" : "CONTEMPLATIVO";
-            
-            document.getElementById('id-content').innerHTML = `
-                TIEMPO_TOTAL: ${totalSec}s<br>
-                PUNTOS_INTERÉS: ${totalClicks}<br>
-                SESIÓN_ID: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
-                PERFIL: <span style="color:white">${profile}</span>
-            `;
-            document.getElementById('identity-modal').style.display = 'flex';
+        document.getElementById("wnDataToggle").onclick = function() {
+            document.body.classList.toggle("data-mode");
+            this.innerText = document.body.classList.contains("data-mode") ? "Obra" : "Análisis";
         };
-
-        document.getElementById("wnResetBtn").onclick = () => { if(confirm("WIPE DATA?")) { localStorage.clear(); location.reload(); } };
 
         window.onload = init;
     </script>
