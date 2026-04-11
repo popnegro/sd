@@ -3,54 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | INTEGRATED SYSTEM</title>
+    <title>WHISPERING NOISE | SONIC INTERCEPT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --accent-red: #ff0000; --bg-dark: #050505; }
-        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         #app { padding: 80px 5% 150px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
 
-        /* --- HERO & MANIFEST --- */
-        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 40px; }
-        .hero h1 { font-size: clamp(2rem, 8vw, 4rem); letter-spacing: -2px; color: var(--accent-red); margin-bottom: 10px; font-weight: 900; }
-        .cta { border: 1px solid var(--accent-red); padding: 15px 30px; cursor: pointer; color: var(--accent-red); margin-top: 30px; transition: all 0.3s; font-family: monospace; font-size: 12px; }
+        /* --- HERO & UI --- */
+        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
+        .hero h1 { font-size: clamp(2rem, 8vw, 4rem); color: var(--accent-red); font-weight: 900; margin-bottom: 10px; }
+        .cta { border: 1px solid var(--accent-red); padding: 15px 30px; cursor: pointer; color: var(--accent-red); font-family: monospace; font-size: 12px; margin-top: 30px; transition: 0.3s; }
         .cta:hover { background: var(--accent-red); color: #000; }
 
-        .manifest-container { padding: 100px 20px; max-width: 900px; margin: 0 auto; text-align: center; min-height: 40vh; }
-        #manifest-paragraph { font-size: 1.5rem; line-height: 1.8; color: #1a1a1a; }
-        .word { display: inline-block; margin-right: 8px; transition: color 0.6s ease; }
-        .word.revealed { color: #fff; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
-        
-        /* --- GALLERY GRID --- */
-        .batch { opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.2, 1, 0.3, 1); }
+        /* --- GALLERY --- */
+        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-bottom: 40px; }
+        .batch { opacity: 0; transform: translateY(30px); transition: 1s; }
         .batch.visible { opacity: 1; transform: translateY(0); }
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; width: 100%; margin-bottom: 40px; }
-        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; gap: 20px; } }
-
-        .wn-photo { position: relative; background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; width: 100%; cursor: crosshair; border: 1px solid #111; }
-        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; }
-        @keyframes glitchLoad { 0% { opacity: 0; filter: contrast(200%) brightness(2) grayscale(1); } 100% { opacity: 1; filter: grayscale(1) contrast(1.2); } }
-        .wn-photo img.loaded { animation: glitchLoad 0.8s ease-out forwards; }
-
-        /* --- BIO-INSERT GRID (The surprise) --- */
-        #bio-grid-insert { display: none; border: 1px solid var(--accent-red); box-shadow: 0 0 15px rgba(255,0,0,0.2); }
-        #bio-grid-insert .tag { position: absolute; top: 10px; left: 10px; font-family: monospace; font-size: 9px; color: var(--accent-red); background: #000; padding: 2px 6px; z-index: 30; }
-
-        /* --- MODAL --- */
-        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .card-id { border: 1px solid #222; padding: 40px; max-width: 400px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #0a0a0a; }
-        .bio-frame { width: 100%; height: 180px; background: #111; margin-bottom: 20px; border: 1px solid #333; overflow: hidden; filter: grayscale(1) contrast(1.2); }
-        .bio-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .wn-photo { aspect-ratio: 1/1; background: #0a0a0a; overflow: hidden; position: relative; }
+        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.8s; }
+        .wn-photo img.loaded { opacity: 1; }
+        .bio-asset-box { border: 1px solid var(--accent-red); }
 
         /* --- UI ELEMENTS --- */
-        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; display: flex; gap: 10px; }
-        .btn-ui { background: rgba(15, 15, 15, 0.85); border: 1px solid #333; color: #fff; padding: 10px 16px; font-size: 9px; text-transform: uppercase; cursor: pointer; transition: 0.3s; font-family: monospace; }
-        .btn-ui:hover { background: #fff; color: #000; }
-        #wnResetBtn, #btnIdentity { display: none; }
-        body.data-mode #wnResetBtn { display: flex; }
-        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 80px; z-index: 1500; background: rgba(5, 5, 5, 0.95); border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
-        #scroll-progress { position: absolute; top: 0; left: 0; height: 1px; background: var(--accent-red); width: 0%; transition: width 0.1s; }
-        #status-log { font-family: monospace; font-size: 10px; color: #666; text-transform: uppercase; }
+        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; }
+        .btn-ui { background: rgba(15, 15, 15, 0.8); border: 1px solid #333; color: #fff; padding: 10px 16px; font-size: 9px; text-transform: uppercase; font-family: monospace; }
+        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .card-id { border: 1px solid #222; padding: 40px; max-width: 400px; font-family: monospace; background: #0a0a0a; border-top: 4px solid var(--accent-red); }
+        
+        .wn-footer { position: fixed; bottom: 0; width: 100%; height: 60px; background: #050505; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        #scroll-progress { position: absolute; top: 0; left: 0; height: 1px; background: var(--accent-red); width: 0%; }
+        #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; }
         #wn-stream { display: none; }
     </style>
 </head>
@@ -59,117 +42,77 @@
     <video id="wn-stream" autoplay playsinline></video>
 
     <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui" style="border-color: var(--accent-red); color: var(--accent-red);">Descargar_Diagnóstico</button>
-        <button id="wnResetBtn" class="btn-ui">Wipe_System</button>
-        <button id="wnDataToggle" class="btn-ui">Análisis</button>
+        <button id="btnIdentity" class="btn-ui" style="display:none; border-color:var(--accent-red); color:var(--accent-red);">Diagnóstico_Final</button>
     </div>
 
     <div id="identity-modal">
         <div class="card-id">
-            <div class="bio-frame" id="modal-bio-display"></div>
-            <h2 style="color:var(--accent-red); margin-bottom: 15px; font-size: 14px;">INFORME_FINAL_SUJETO</h2>
-            <div id="id-content" style="font-size: 10px; line-height: 1.8; color: #888;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%; justify-content: center;">Finalizar_Sesión</button>
+            <div id="modal-bio-display" style="width:100%; height:150px; background:#111; margin-bottom:20px; overflow:hidden;"></div>
+            <div id="id-content" style="font-size: 11px; color: #aaa; line-height: 2;"></div>
+            <button onclick="location.reload()" class="btn-ui" style="width:100%; margin-top:20px;">Terminar_Proceso</button>
         </div>
     </div>
 
     <section class="hero">
         <h1>WHISPERING_NOISE</h1>
-        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 2px;">SUBSYSTEM_LOG // PERCEPTION_SCANNER</p>
-        <div class="cta" onclick="scrollNext()">INICIAR_PROTOCOLO</div>
+        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 2px;">AUDIO_INTERCEPT_MODULE // ON</p>
+        <div class="cta" onclick="activateSystem('CLICK')">INICIAR_PROTOCOLO</div>
     </section>
-
-    <div class="manifest-container">
-        <p id="manifest-paragraph"></p>
-    </div>
 
     <div id="app"></div>
 
     <footer class="wn-footer">
         <div id="scroll-progress"></div>
-        <p id="status-log">ESPERANDO_SINCRONIZACION...</p>
+        <p id="status-log">ESPERANDO_SINC...</p>
     </footer>
 
     <script>
         const CONFIG = { TOTAL_IMAGES: 28, BATCH_SIZE: 4, IMG_PATH: 'manifest/' };
-        const MANIFEST_TEXT = "La observación altera lo observado. El sistema registra no solo lo que ves, sino cómo lo ves. Cada fijación ocular es un bit de información. El ruido se convierte en señal cuando el observador se integra en el flujo de datos.";
-        
-        const NARRATIVE_DB = {
-            start: ["SINCRONIZANDO_PULSO...", "IDENTIFICANDO_HUELLA...", "CALIBRANDO_BIO_SENSORES..."],
-            mid: ["ANALIZANDO_INTERACCION_{ID}...", "CAPTURA_NODAL_EN_{HEX}...", "EXTRAYENDO_METADATOS..."],
-            end: ["ESCANEO_COMPLETO", "SUJETO_CATEGORIZADO", "GENERANDO_DIAGNOSTICO..."]
-        };
+        let audioCtx, micStream, gainNode, systemActivated = false, photoCaptured = false;
 
-        const app = document.getElementById("app");
-        const statusLog = document.getElementById("status-log");
-        const progressBar = document.getElementById("scroll-progress");
-        let audioCtx, streamActive = false, photoCaptured = false, photoInjected = false;
+        // --- LÓGICA DE AUDIO ---
+        async function initAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                const source = audioCtx.createMediaStreamSource(stream);
+                gainNode = audioCtx.createGain();
+                
+                // Filtro para dar textura de "intercepción"
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = "bandpass";
+                filter.frequency.value = 1000;
+                filter.Q.value = 1;
+
+                source.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                gainNode.gain.value = 0.5; // Volumen inicial
+                statusLog.innerText = "[AUDIO_SENSOR]: CAPTURANDO_AMBIENTE";
+            } catch (e) {
+                statusLog.innerText = "[ERROR]: MIC_BLOQUEADO";
+            }
+        }
 
         async function initCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 document.getElementById('wn-stream').srcObject = stream;
-                streamActive = true;
-                statusLog.innerText = "[BIO_SENSOR_ACTIVO]: SINC_RETINAL_OK";
-            } catch (e) {
-                statusLog.innerText = "[ERROR]: ACCESO_BIOMETRICO_DENEGADO";
-            }
+            } catch (e) { console.warn("Cámara bloqueada"); }
         }
 
-        function captureAsset() {
-            if (!streamActive || photoCaptured) return;
-            const video = document.getElementById('wn-stream');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const dataUrl = canvas.toDataURL('image/webp');
-            localStorage.setItem('wn-bio-asset', dataUrl);
-            photoCaptured = true;
-            console.log("Capture process complete at 50%");
+        async function activateSystem(source) {
+            if (systemActivated) return;
+            systemActivated = true;
+            await initAudio();
+            await initCamera();
+            if (source === 'CLICK') window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
         }
 
-        function injectPhotoInGrid() {
-            if (photoInjected) return;
-            const dataUrl = localStorage.getItem('wn-bio-asset');
-            if (!dataUrl) return;
-
-            // Buscamos un punto en la galería (ej: después del segundo batch)
-            const galleries = document.querySelectorAll('.gallery');
-            if (galleries.length >= 2) {
-                const bioBox = document.createElement('div');
-                bioBox.className = "wn-photo";
-                bioBox.id = "bio-grid-insert";
-                bioBox.innerHTML = `
-                    <div class="tag">SUBJECT_BIO_ASSET</div>
-                    <img src="${dataUrl}" class="loaded" style="opacity:1">
-                `;
-                // Lo insertamos como primera pieza de la segunda galería
-                galleries[1].prepend(bioBox);
-                bioBox.style.display = "block";
-                photoInjected = true;
-                statusLog.innerText = "[ALERTA]: BIO_DATA_INTEGRADA_EN_GRID";
-            }
-        }
-
-        function scrollNext() {
-            initCamera();
-            getGeoData();
-            document.querySelector('.manifest-container').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function getGeoData() {
-            try {
-                const resp = await fetch('https://ipapi.co/json/');
-                const data = await resp.json();
-                localStorage.setItem('wn-location', JSON.stringify(data));
-            } catch (e) { }
-        }
-
-        function init() {
-            const manifestP = document.getElementById('manifest-paragraph');
-            manifestP.innerHTML = MANIFEST_TEXT.split(" ").map(word => `<span class="word">${word}</span>`).join(" ");
-
+        // --- LÓGICA DE GALERÍA Y SCROLL ---
+        function initGallery() {
             const frag = document.createDocumentFragment();
             for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
                 if ((i-1) % CONFIG.BATCH_SIZE === 0) {
@@ -177,103 +120,69 @@
                     gallery.className = "gallery batch";
                     frag.appendChild(gallery);
                 }
-                const id = String(i).padStart(2, '0');
                 const box = document.createElement("div");
                 box.className = "wn-photo";
-                box.dataset.id = `img_${id}`;
-                box.onclick = (e) => handleInteraction(e, box);
-
                 const img = new Image();
-                img.loading = "lazy";
                 img.onload = () => img.classList.add('loaded');
-                img.src = `${CONFIG.IMG_PATH}${id}.webp`;
-
-                box.innerHTML = `<div class="wn-overlay"><span class="wn-time">0s</span><span class="wn-intensity">0%</span></div>`;
-                box.prepend(img);
+                img.src = `${CONFIG.IMG_PATH}${String(i).padStart(2, '0')}.webp`;
+                box.appendChild(img);
                 frag.lastElementChild.appendChild(box);
             }
-            app.appendChild(frag);
-            setupTracking();
+            document.getElementById("app").appendChild(frag);
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.batch').forEach(b => observer.observe(b));
         }
 
         window.addEventListener('scroll', () => {
+            if (window.scrollY > 20 && !systemActivated) activateSystem('SCROLL');
+
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = window.scrollY / (docHeight || 1);
-            progressBar.style.width = `${scrollPercent * 100}%`;
             
-            // LÓGICA DE CAPTURA Y REVELACIÓN
-            if (scrollPercent > 0.50 && !photoCaptured) {
-                captureAsset();
-            }
-            if (scrollPercent > 0.60 && photoCaptured && !photoInjected) {
-                injectPhotoInGrid();
+            document.getElementById('scroll-progress').style.width = `${scrollPercent * 100}%`;
+
+            // --- FADE OUT DEL AUDIO ---
+            if (gainNode) {
+                // A medida que scrollPercent va de 0 a 1, el volumen va de 0.5 a 0
+                const vol = Math.max(0, 0.5 * (1 - scrollPercent));
+                gainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
             }
 
-            if (scrollPercent > 0.95) document.getElementById('btnIdentity').style.display = 'flex';
-
-            const currentThreshold = Math.floor(scrollPercent * 12); 
-            if (currentThreshold !== lastThreshold) {
-                let pool = (scrollPercent < 0.2) ? NARRATIVE_DB.start : (scrollPercent < 0.8) ? NARRATIVE_DB.mid : NARRATIVE_DB.end;
-                let phrase = pool[Math.floor(Math.random() * pool.length)];
-                phrase = phrase.replace("{ID}", Math.floor(Math.random() * 28) + 1).replace("{HEX}", Math.random().toString(16).slice(2, 5).toUpperCase());
-                statusLog.innerText = phrase;
-                lastThreshold = currentThreshold;
+            // Captura de imagen al 50%
+            if (scrollPercent > 0.5 && !photoCaptured) {
+                const video = document.getElementById('wn-stream');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const data = canvas.toDataURL('image/webp');
+                localStorage.setItem('wn-bio', data);
+                
+                // Inyectar en galería
+                const galleries = document.querySelectorAll('.gallery');
+                if(galleries[1]) {
+                    const bioBox = document.createElement('div');
+                    bioBox.className = "wn-photo bio-asset-box";
+                    bioBox.innerHTML = `<img src="${data}" class="loaded">`;
+                    galleries[1].prepend(bioBox);
+                }
+                photoCaptured = true;
             }
+
+            if (scrollPercent > 0.9) document.getElementById('btnIdentity').style.display = 'block';
         });
 
-        // Resto de funciones (Tracking, Heatmaps, UI) se mantienen igual para no romper el grid
-        function setupTracking() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.target.classList.contains('word') && e.isIntersecting) e.target.classList.add('revealed');
-                    if (e.isIntersecting && e.target.classList.contains('wn-photo')) {
-                        e.target.dataset.start = Date.now();
-                    } else if (!e.isIntersecting && e.target.dataset.start) {
-                        saveTime(e.target);
-                    }
-                    if (e.isIntersecting && e.target.classList.contains('batch')) e.target.classList.add('visible');
-                });
-            }, { threshold: 0.3 });
-            document.querySelectorAll('.word, .batch, .wn-photo').forEach(el => observer.observe(el));
-        }
-
-        function saveTime(target) {
-            const elapsed = Math.floor((Date.now() - target.dataset.start) / 1000);
-            if (elapsed >= 1) {
-                let data = JSON.parse(localStorage.getItem('wn-time') || "{}");
-                if (!data[target.dataset.id]) data[target.dataset.id] = { v: 0, t: 0 };
-                data[target.dataset.id].v++;
-                data[target.dataset.id].t += elapsed;
-                localStorage.setItem('wn-time', JSON.stringify(data));
-            }
-            delete target.dataset.start;
-        }
-
-        function handleInteraction(e, box) {
-            let db = JSON.parse(localStorage.getItem('wn-heat') || "{}");
-            if(!db[box.dataset.id]) db[box.dataset.id] = [];
-            db[box.dataset.id].push({x: ((e.clientX - box.getBoundingClientRect().left) / box.offsetWidth * 100).toFixed(1)});
-            localStorage.setItem('wn-heat', JSON.stringify(db));
-        }
-
+        const statusLog = document.getElementById("status-log");
         document.getElementById('btnIdentity').onclick = () => {
-            const timeData = JSON.parse(localStorage.getItem('wn-time') || "{}");
-            const geo = JSON.parse(localStorage.getItem('wn-location') || "{}");
-            const bio = localStorage.getItem('wn-bio-asset');
-            const totalSec = Object.values(timeData).reduce((a, b) => a + b.t, 0);
-            if(bio) document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}">`;
-            document.getElementById('id-content').innerHTML = `
-                ID_SUJETO: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
-                NODO_FISICO: ${geo.city || 'DESCONOCIDO'}<br>
-                IP_ORIGEN: ${geo.ip || '0.0.0.0'}<br>
-                TIEMPO_EXPOSICION: ${totalSec}s<br>
-                INTEGRIDAD: 100%_SCAN
-            `;
+            const bio = localStorage.getItem('wn-bio');
+            if(bio) document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
+            document.getElementById('id-content').innerHTML = `ID_BIO_RHYTHM: DETECTED<br>AUDIO_LOG: TERMINATED_BY_DISTANCE<br>STATUS: ARCHIVED`;
             document.getElementById('identity-modal').style.display = 'flex';
         };
 
-        document.getElementById("wnResetBtn").onclick = () => { localStorage.clear(); location.reload(); };
-        window.onload = init;
+        window.onload = initGallery;
     </script>
 </body>
 </html>
