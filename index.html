@@ -3,37 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | SONIC INTERCEPT</title>
+    <title>WHISPERING NOISE | INTEGRATED SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --accent-red: #ff0000; --bg-dark: #050505; }
-        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-        #app { padding: 80px 5% 150px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
+        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        #app { padding: 40px 5% 150px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
 
-        /* --- HERO & UI --- */
-        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; }
-        .hero h1 { font-size: clamp(2rem, 8vw, 4rem); color: var(--accent-red); font-weight: 900; margin-bottom: 10px; }
-        .cta { border: 1px solid var(--accent-red); padding: 15px 30px; cursor: pointer; color: var(--accent-red); font-family: monospace; font-size: 12px; margin-top: 30px; transition: 0.3s; }
+        /* --- HERO & MANIFEST --- */
+        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 40px; }
+        .hero h1 { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: -3px; color: var(--accent-red); margin-bottom: 10px; font-weight: 900; }
+        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; transition: all 0.3s; font-family: monospace; font-size: 13px; letter-spacing: 2px; }
         .cta:hover { background: var(--accent-red); color: #000; }
 
-        /* --- GALLERY --- */
-        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-bottom: 40px; }
-        .batch { opacity: 0; transform: translateY(30px); transition: 1s; }
-        .batch.visible { opacity: 1; transform: translateY(0); }
-        .wn-photo { aspect-ratio: 1/1; background: #0a0a0a; overflow: hidden; position: relative; }
-        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.8s; }
-        .wn-photo img.loaded { opacity: 1; }
-        .bio-asset-box { border: 1px solid var(--accent-red); }
-
-        /* --- UI ELEMENTS --- */
-        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; }
-        .btn-ui { background: rgba(15, 15, 15, 0.8); border: 1px solid #333; color: #fff; padding: 10px 16px; font-size: 9px; text-transform: uppercase; font-family: monospace; }
-        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .card-id { border: 1px solid #222; padding: 40px; max-width: 400px; font-family: monospace; background: #0a0a0a; border-top: 4px solid var(--accent-red); }
+        .manifest-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; text-align: center; min-height: 50vh; }
+        #manifest-paragraph { font-size: 1.6rem; line-height: 1.8; color: #1a1a1a; transition: color 0.5s; }
+        .word { display: inline-block; margin-right: 10px; transition: color 0.8s ease, text-shadow 0.8s ease; }
+        .word.revealed { color: #fff; text-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
         
-        .wn-footer { position: fixed; bottom: 0; width: 100%; height: 60px; background: #050505; border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        #scroll-progress { position: absolute; top: 0; left: 0; height: 1px; background: var(--accent-red); width: 0%; }
-        #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; }
+        /* --- GALLERY GRID --- */
+        .batch { opacity: 0; transform: translateY(50px); transition: 1.2s cubic-bezier(0.2, 1, 0.3, 1); margin-top: 60px; }
+        .batch.visible { opacity: 1; transform: translateY(0); }
+        .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; width: 100%; }
+        @media (max-width: 768px) { .gallery { grid-template-columns: 1fr; gap: 25px; } }
+
+        .wn-photo { position: relative; background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; width: 100%; }
+        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s ease; }
+        .wn-photo img.loaded { opacity: 1; }
+
+        /* --- BIO-INSERT (REVELACIÓN) --- */
+        .bio-asset-box { border: 1px solid var(--accent-red) !important; animation: borderPulse 2s infinite; }
+        .bio-tag { position: absolute; top: 15px; left: 15px; background: var(--accent-red); color: #fff; font-family: monospace; font-size: 9px; padding: 3px 8px; z-index: 20; font-weight: bold; }
+        @keyframes borderPulse { 0%, 100% { border-color: var(--accent-red); } 50% { border-color: #444; } }
+
+        /* --- UI & FOOTER --- */
+        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 2000; }
+        .btn-ui { background: rgba(10, 10, 10, 0.9); border: 1px solid #333; color: #fff; padding: 12px 20px; font-size: 10px; text-transform: uppercase; cursor: pointer; font-family: monospace; letter-spacing: 1px; }
+        
+        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; }
+        
+        .wn-footer { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; z-index: 1500; background: rgba(5, 5, 5, 0.95); border-top: 1px solid #222; display: flex; align-items: center; justify-content: center; }
+        #scroll-progress { position: absolute; top: 0; left: 0; height: 2px; background: var(--accent-red); width: 0%; transition: width 0.1s; }
+        #status-log { font-family: monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+        
         #wn-stream { display: none; }
     </style>
 </head>
@@ -42,57 +55,74 @@
     <video id="wn-stream" autoplay playsinline></video>
 
     <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui" style="display:none; border-color:var(--accent-red); color:var(--accent-red);">Diagnóstico_Final</button>
+        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Descargar_Informe</button>
     </div>
 
     <div id="identity-modal">
         <div class="card-id">
-            <div id="modal-bio-display" style="width:100%; height:150px; background:#111; margin-bottom:20px; overflow:hidden;"></div>
-            <div id="id-content" style="font-size: 11px; color: #aaa; line-height: 2;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="width:100%; margin-top:20px;">Terminar_Proceso</button>
+            <div id="modal-bio-display" style="width:100%; height:200px; background:#111; margin-bottom:20px; overflow:hidden; border:1px solid #333;"></div>
+            <h2 style="color:var(--accent-red); margin-bottom: 15px; font-size: 14px; letter-spacing: 2px;">INFORME_BIO_SINC</h2>
+            <div id="id-content" style="font-size: 10px; line-height: 2; color: #777;"></div>
+            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%; border-color: #444;">Reiniciar_Sistema</button>
         </div>
     </div>
 
     <section class="hero">
         <h1>WHISPERING_NOISE</h1>
-        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 2px;">AUDIO_INTERCEPT_MODULE // ON</p>
+        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">AUDIO_VISUAL_RECON // ACTIVE</p>
         <div class="cta" onclick="activateSystem('CLICK')">INICIAR_PROTOCOLO</div>
     </section>
+
+    <div class="manifest-container">
+        <p id="manifest-paragraph"></p>
+    </div>
 
     <div id="app"></div>
 
     <footer class="wn-footer">
         <div id="scroll-progress"></div>
-        <p id="status-log">ESPERANDO_SINC...</p>
+        <p id="status-log">SISTEMA_STANDBY</p>
     </footer>
 
     <script>
         const CONFIG = { TOTAL_IMAGES: 28, BATCH_SIZE: 4, IMG_PATH: 'manifest/' };
-        let audioCtx, micStream, gainNode, systemActivated = false, photoCaptured = false;
+        const MANIFEST_TEXT = "La observación altera lo observado. El sistema registra no solo lo que ves, sino cómo lo ves. Cada fijación ocular es un bit de información. El ruido se convierte en señal cuando el observador se integra en el flujo de datos.";
+        
+        let audioCtx, gainNode, systemActivated = false, photoCaptured = false, photoInjected = false;
 
-        // --- LÓGICA DE AUDIO ---
+        // ACTIVACIÓN DE SENSORES (Micro y Cámara)
+        async function activateSystem(source) {
+            if (systemActivated) return;
+            systemActivated = true;
+            
+            await initAudio();
+            await initCamera();
+            getGeoData();
+
+            if (source === 'CLICK') {
+                document.querySelector('.manifest-container').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         async function initAudio() {
             try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
                 const source = audioCtx.createMediaStreamSource(stream);
-                gainNode = audioCtx.createGain();
                 
-                // Filtro para dar textura de "intercepción"
+                gainNode = audioCtx.createGain();
                 const filter = audioCtx.createBiquadFilter();
-                filter.type = "bandpass";
-                filter.frequency.value = 1000;
-                filter.Q.value = 1;
+                filter.type = "lowpass";
+                filter.frequency.value = 1500;
 
                 source.connect(filter);
                 filter.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
                 
-                gainNode.gain.value = 0.5; // Volumen inicial
-                statusLog.innerText = "[AUDIO_SENSOR]: CAPTURANDO_AMBIENTE";
+                gainNode.gain.value = 0.4;
+                statusLog.innerText = "[SONIC_SENSOR]: CAPTURANDO";
             } catch (e) {
-                statusLog.innerText = "[ERROR]: MIC_BLOQUEADO";
+                statusLog.innerText = "[SONIC_SENSOR]: ERROR_DE_SINC";
             }
         }
 
@@ -100,19 +130,49 @@
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
                 document.getElementById('wn-stream').srcObject = stream;
-            } catch (e) { console.warn("Cámara bloqueada"); }
+            } catch (e) {
+                console.warn("Cámara no disponible.");
+            }
         }
 
-        async function activateSystem(source) {
-            if (systemActivated) return;
-            systemActivated = true;
-            await initAudio();
-            await initCamera();
-            if (source === 'CLICK') window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+        function captureAndInject() {
+            if (photoCaptured) return;
+            const video = document.getElementById('wn-stream');
+            if (!video.videoWidth) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            const dataUrl = canvas.toDataURL('image/webp');
+            
+            localStorage.setItem('wn-bio-asset', dataUrl);
+            photoCaptured = true;
+
+            const galleries = document.querySelectorAll('.gallery');
+            if (galleries[1]) {
+                const bioBox = document.createElement('div');
+                bioBox.className = "wn-photo bio-asset-box";
+                bioBox.innerHTML = `<div class="bio-tag">SUBJECT_DETECTED</div><img src="${dataUrl}" class="loaded" style="opacity:1">`;
+                galleries[1].prepend(bioBox);
+                statusLog.innerText = "[AVISO]: BIO_DATA_ASIMILADA";
+            }
         }
 
-        // --- LÓGICA DE GALERÍA Y SCROLL ---
-        function initGallery() {
+        async function getGeoData() {
+            try {
+                const resp = await fetch('https://ipapi.co/json/');
+                const data = await resp.json();
+                localStorage.setItem('wn-location', JSON.stringify(data));
+            } catch (e) {}
+        }
+
+        function init() {
+            // Cargar Manifiesto
+            const manifestP = document.getElementById('manifest-paragraph');
+            manifestP.innerHTML = MANIFEST_TEXT.split(" ").map(word => `<span class="word">${word}</span>`).join(" ");
+
+            // Cargar Galería
             const frag = document.createDocumentFragment();
             for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
                 if ((i-1) % CONFIG.BATCH_SIZE === 0) {
@@ -129,11 +189,7 @@
                 frag.lastElementChild.appendChild(box);
             }
             document.getElementById("app").appendChild(frag);
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.batch').forEach(b => observer.observe(b));
+            setupTracking();
         }
 
         window.addEventListener('scroll', () => {
@@ -141,48 +197,47 @@
 
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const scrollPercent = window.scrollY / (docHeight || 1);
-            
             document.getElementById('scroll-progress').style.width = `${scrollPercent * 100}%`;
 
-            // --- FADE OUT DEL AUDIO ---
+            // FADE OUT AUDIO
             if (gainNode) {
-                // A medida que scrollPercent va de 0 a 1, el volumen va de 0.5 a 0
-                const vol = Math.max(0, 0.5 * (1 - scrollPercent));
+                const vol = Math.max(0, 0.4 * (1 - (scrollPercent * 1.2)));
                 gainNode.gain.setTargetAtTime(vol, audioCtx.currentTime, 0.1);
             }
 
-            // Captura de imagen al 50%
-            if (scrollPercent > 0.5 && !photoCaptured) {
-                const video = document.getElementById('wn-stream');
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0);
-                const data = canvas.toDataURL('image/webp');
-                localStorage.setItem('wn-bio', data);
-                
-                // Inyectar en galería
-                const galleries = document.querySelectorAll('.gallery');
-                if(galleries[1]) {
-                    const bioBox = document.createElement('div');
-                    bioBox.className = "wn-photo bio-asset-box";
-                    bioBox.innerHTML = `<img src="${data}" class="loaded">`;
-                    galleries[1].prepend(bioBox);
-                }
-                photoCaptured = true;
-            }
-
-            if (scrollPercent > 0.9) document.getElementById('btnIdentity').style.display = 'block';
+            // CAPTURA AL 50%
+            if (scrollPercent > 0.5 && !photoCaptured) captureAndInject();
+            
+            // BOTÓN FINAL AL TERMINAR
+            if (scrollPercent > 0.96) document.getElementById('btnIdentity').style.display = 'block';
         });
 
+        function setupTracking() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                    if (e.target.classList.contains('word') && e.isIntersecting) e.target.classList.add('revealed');
+                    if (e.target.classList.contains('batch') && e.isIntersecting) e.target.classList.add('visible');
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.word, .batch').forEach(el => observer.observe(el));
+        }
+
         const statusLog = document.getElementById("status-log");
+
         document.getElementById('btnIdentity').onclick = () => {
-            const bio = localStorage.getItem('wn-bio');
+            const geo = JSON.parse(localStorage.getItem('wn-location') || "{}");
+            const bio = localStorage.getItem('wn-bio-asset');
             if(bio) document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
-            document.getElementById('id-content').innerHTML = `ID_BIO_RHYTHM: DETECTED<br>AUDIO_LOG: TERMINATED_BY_DISTANCE<br>STATUS: ARCHIVED`;
+            document.getElementById('id-content').innerHTML = `
+                SUJETO_ID: ${Math.random().toString(36).substring(7).toUpperCase()}<br>
+                ORIGEN: ${geo.city || 'DESCONOCIDO'}<br>
+                SONIDO: AMBIENTE_DISSOLVED<br>
+                STATUS: INTEGRADO_AL_RUIDO
+            `;
             document.getElementById('identity-modal').style.display = 'flex';
         };
 
-        window.onload = initGallery;
+        window.onload = init;
     </script>
 </body>
 </html>
