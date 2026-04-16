@@ -1,236 +1,317 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="bg-black selection:bg-red-600">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>WHISPERING NOISE | SCRUBBING REVEAL</title>
+    <title>WN | EMOTIONAL PORTFOLIO</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital@1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --accent-red: #ff0000; --bg-dark: #050505; }
-        body { background: var(--bg-dark); color: #fff; margin: 0; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-        
-        #app { position: relative; z-index: 10; padding: 40px 5% 300px 5%; max-width: 1100px; margin: 0 auto; min-height: 100vh; }
-
-        /* --- HERO & MANIFEST --- */
-        section.hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; text-align: center; position: relative; z-index: 20; }
-        .hero h1 { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: -3px; color: var(--accent-red); font-weight: 900; }
-        .cta { border: 1px solid var(--accent-red); padding: 15px 35px; cursor: pointer; color: var(--accent-red); margin-top: 30px; font-family: monospace; font-size: 13px; transition: 0.3s; }
-        .cta:hover { background: var(--accent-red); color: #000; }
-
-        .manifest-container { padding: 120px 20px; max-width: 900px; margin: 0 auto; text-align: center; position: relative; z-index: 20; }
-        #manifest-paragraph { font-size: 1.3rem; line-height: 1.8; color: #1a1a1a; }
-        @media (min-width: 768px) { #manifest-paragraph { font-size: 1.6rem; } }
-        .word { display: inline-block; margin-right: 10px; transition: color 0.8s; }
-        .word.revealed { color: #fff; }
-
-        /* --- GALLERY GRID (1 COL MOBILE) --- */
-        .batch { opacity: 0; transform: translateY(50px); transition: 1.2s; margin-top: 60px; }
-        .batch.visible { opacity: 1; transform: translateY(0); }
-        .gallery { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 768px) { .gallery { grid-template-columns: repeat(2, 1fr); gap: 40px; } }
-
-        .wn-photo { background: #0a0a0a; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #111; }
-        .wn-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 1s; }
-        .wn-photo img.loaded { opacity: 1; }
-
-        /* --- BOTTOM MONITORING PANEL --- */
-        #bottom-system-panel {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 25vh;
-            z-index: 2000; display: none; pointer-events: none;
-            background: #000; border-top: 1px solid rgba(255,0,0,0.3);
+        body { font-family: 'Space Mono', monospace; color: white; margin: 0; overflow-x: hidden; }
+        .horizontal-section {
+            position: sticky; top: 0; height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; align-items: center;
         }
-        #gradual-bio-img { width: 100%; height: 100%; object-fit: cover; filter: blur(30px); opacity: 0; position: absolute; inset: 0; }
-        
-        /* Overlay de métricas alineadas */
-        #social-hud-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 15px 25px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            display: flex; justify-content: flex-end; align-items: center; gap: 25px;
-            z-index: 2001; opacity: 0; transition: opacity 0.5s;
+        .panoramic-track {
+            display: flex; height: 80vh; will-change: transform;
+            transition: transform 0.1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .hud-metric { display: flex; align-items: center; gap: 8px; font-family: monospace; }
-        .likes-count { color: #fff; font-size: 18px; font-weight: 900; }
-        .hates-count { color: var(--accent-red); font-size: 18px; font-weight: 900; }
-
-        /* --- UI & MODAL --- */
-        .ui-controls { position: fixed; top: 25px; right: 25px; z-index: 3000; }
-        .btn-ui { background: rgba(10, 10, 10, 0.9); border: 1px solid #333; color: #fff; padding: 10px 18px; font-size: 9px; font-family: monospace; cursor: pointer; text-transform: uppercase; }
-        #identity-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 4000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card-id { border: 1px solid #222; padding: 40px; max-width: 420px; font-family: monospace; border-top: 4px solid var(--accent-red); background: #080808; margin: 20px; }
+        .pano-item {
+            flex: 0 0 100vw; height: 100%; padding: 0;
+            position: relative; display: flex; flex-direction: column; justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        .pano-img {
+            width: 100%; height: 70%; object-fit: contain;
+            filter: grayscale(1) brightness(0.7);
+            transition: all 0.8s ease;
+        }
+        .pano-item.active .pano-img { filter: grayscale(0) brightness(1); }
         
-        #wn-stream { display: none; }
+        #data-art-canvas {
+            position: absolute; inset: 0; opacity: 0;
+            pointer-events: none; transition: opacity 2s ease;
+        }
+        .scroll-proxy { height: 500vh; } /* Controla la velocidad del scroll total */
+        
+        .emotional-caption {
+            font-family: 'Lora', serif; font-style: italic;
+            margin-top: 2rem; font-size: 1.5rem; opacity: 0;
+            transform: translate3d(var(--parallax-x, 0), 20px, 0);
+            transition: opacity 1.2s ease, transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform;
+        }
+        .active .emotional-caption { opacity: 0.7; transform: translate3d(var(--parallax-x, 0), 0, 0); }
     </style>
 </head>
 <body>
 
-    <video id="wn-stream" autoplay playsinline></video>
+    <!-- Overlay UI -->
+    <nav class="fixed top-10 left-10 z-50 flex flex-col gap-2">
+        <span class="text-red-600 font-bold tracking-[0.3em] text-xs">WHISPERING_NOISE</span>
+        <span class="text-[10px] opacity-40 uppercase">Interactive_Archive / v1.0</span>
+    </nav>
 
-    <div id="bottom-system-panel">
-        <img id="gradual-bio-img" src="">
+    <div id="start-prompt" class="fixed inset-0 z-[100] flex items-center justify-center bg-black transition-opacity duration-1000">
+        <button onclick="startExperience()" class="border border-white/20 px-8 py-4 hover:bg-white hover:text-black transition-all uppercase tracking-widest text-[10px]">
+            Iniciar Experiencia Sensorial
+        </button>
+    </div>
+
+    <main>
+        <div class="horizontal-section">
+            <canvas id="data-art-canvas"></canvas>
+            
+            <div class="panoramic-track" id="track">
+                <!-- Bloque de Texto Inicial: Manifiesto -->
+                <section class="pano-item active">
+                    <div class="max-w-3xl px-10 md:px-20">
+                        <h2 class="text-red-600 text-[10px] tracking-[0.5em] uppercase mb-6 font-mono">Fragmento_00 / Introducción</h2>
+                        <h3 class="text-5xl md:text-8xl font-bold tracking-tighter leading-none mb-8 uppercase">MEMORIA<br><span class="italic font-serif text-white/40">SINTÉTICA</span></h3>
+                        <p class="text-xl md:text-2xl text-white/60 font-serif leading-relaxed italic">
+                            "Cada captura es una cicatriz digital. En este archivo, la imagen no es solo un registro, es el residuo de una emoción capturada entre el ruido y el silencio."
+                        </p>
+                    </div>
+                </section>
+
+                <section class="pano-item active">
+                    <img src="panoramic/1.png" class="pano-img" alt="City">
+                    <div class="emotional-caption">El peso del hormigón sobre el silencio.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/2.png" class="pano-img" alt="Fire">
+                    <div class="emotional-caption">Purificación a través del ruido visual.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/3.png" class="pano-img" alt="Red">
+                    <div class="emotional-caption">Conexiones invisibles en un campo de datos.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/4.png" class="pano-img" alt="Earth">
+                    <div class="emotional-caption">Donde la materia se convierte en código.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/5.png" class="pano-img" alt="Earth">
+                    <div class="emotional-caption">Donde la materia se convierte en código.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/6.png" class="pano-img" alt="Earth">
+                    <div class="emotional-caption">Donde la materia se convierte en código.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/7.png" class="pano-img" alt="Earth">
+                    <div class="emotional-caption">Donde la materia se convierte en código.</div>
+                </section>
+                <section class="pano-item">
+                    <img src="panoramic/8.png" class="pano-img" alt="Earth">
+                    <div class="emotional-caption">Donde la materia se convierte en código.</div>
+                </section>
+            </div>
+
+            <!-- Final Data Art Video (Hidden) -->
+            <video id="end-video" src="/panoramic/mouth.mp4" loop muted playsinline style="display:none"></video>
+
+            <!-- Progress Indicator -->
+            <div class="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4">
+                <div class="h-[1px] w-40 bg-white/10 overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-red-600 w-0 transition-all duration-300"></div>
+                </div>
+                <span id="index-display" class="text-[10px] font-mono opacity-50">01 / 08</span>
+            </div>
+        </div>
         
-        <div id="social-hud-overlay">
-            <div class="hud-metric">
-                <span style="font-size: 14px;">❤️</span>
-                <span id="likes-val" class="likes-count">0</span>
-            </div>
-            <div class="hud-metric">
-                <span style="font-size: 14px;">👎</span>
-                <span id="hates-val" class="hates-count">0</span>
-            </div>
-            <div style="font-size: 8px; color: #444; letter-spacing: 2px; border-left: 1px solid #222; padding-left: 15px;">LIVE_FEED_v2.6</div>
-        </div>
-    </div>
-
-    <div class="ui-controls">
-        <button id="btnIdentity" class="btn-ui" style="display:none; border-color: var(--accent-red); color: var(--accent-red);">Finalizar_Analisis</button>
-    </div>
-
-    <div id="identity-modal">
-        <div class="card-id">
-            <div id="modal-bio-display" style="width:100%; height:200px; background:#111; margin-bottom:20px; overflow:hidden; border:1px solid #333;"></div>
-            <h2 style="color:var(--accent-red); margin-bottom: 10px; font-size: 14px; letter-spacing: 2px;">REPORTE_SOCIOMETRICO</h2>
-            <div id="id-content" style="font-size: 10px; line-height: 2; color: #777;"></div>
-            <button onclick="location.reload()" class="btn-ui" style="margin-top: 30px; width: 100%;">Borrar_Evidencia</button>
-        </div>
-    </div>
-
-    <section class="hero">
-        <h1>WHISPERING_NOISE</h1>
-        <p style="font-family: monospace; font-size: 10px; color: #444; letter-spacing: 3px;">THRESHOLD_SCRUBBING_V2</p>
-        <div class="cta" onclick="activateSystem('CLICK')">INICIAR_CAPTURA</div>
-    </section>
-
-    <div class="manifest-container">
-        <p id="manifest-paragraph"></p>
-    </div>
-
-    <div id="app"></div>
+        <!-- Spacer for scroll logic -->
+        <div class="scroll-proxy"></div>
+    </main>
 
     <script>
-        const CONFIG = { TOTAL_IMAGES: 28, BATCH_SIZE: 4, IMG_PATH: 'manifest/' };
-        const MANIFEST_TEXT = "La observación altera lo observado. El sistema registra no solo lo que ves, sino cómo lo ves. Cada fijación ocular es un bit de información. El ruido se convierte en señal cuando el observador se integra en el flujo de datos.";
-        
-        let audioCtx, gainNode, systemActivated = false, photoCaptured = false;
+        let audioCtx, ambientSource, gainNode, bitcrusher;
+        let bits = 16, norm = 1;
+        let isStarted = false;
 
-        async function activateSystem(source) {
-            if (systemActivated) return;
-            systemActivated = true;
-            await initAudio();
-            await initCamera();
-            if (source === 'CLICK') document.querySelector('.manifest-container').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function initAudio() {
-            try {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                const source = audioCtx.createMediaStreamSource(stream);
-                gainNode = audioCtx.createGain();
-                source.connect(gainNode).connect(audioCtx.destination);
-                gainNode.gain.value = 0.4;
-            } catch (e) {}
-        }
-
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                document.getElementById('wn-stream').srcObject = stream;
-            } catch (e) {}
-        }
-
-        function capturePhoto() {
-            if (photoCaptured) return;
-            const video = document.getElementById('wn-stream');
-            if(!video.videoWidth) return;
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
-            const dataUrl = canvas.toDataURL('image/webp');
+        async function startExperience() {
+            document.getElementById('start-prompt').style.opacity = '0';
+            setTimeout(() => document.getElementById('start-prompt').remove(), 1000);
             
-            document.getElementById('gradual-bio-img').src = dataUrl;
-            document.getElementById('bottom-system-panel').style.display = 'block';
-            localStorage.setItem('wn-bio-asset', dataUrl);
-            photoCaptured = true;
-        }
+            // Audio Setup (Emotional Ambient)
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            gainNode = audioCtx.createGain();
+            gainNode.gain.value = 0;
 
-        function init() {
-            const manifestP = document.getElementById('manifest-paragraph');
-            manifestP.innerHTML = MANIFEST_TEXT.split(" ").map(word => `<span class="word">${word}</span>`).join(" ");
-
-            const frag = document.createDocumentFragment();
-            for (let i = 1; i <= CONFIG.TOTAL_IMAGES; i++) {
-                if ((i-1) % CONFIG.BATCH_SIZE === 0) {
-                    const gallery = document.createElement("div");
-                    gallery.className = "gallery batch";
-                    frag.appendChild(gallery);
+            // Bitcrusher Effect Node
+            bitcrusher = audioCtx.createScriptProcessor(4096, 1, 1);
+            let lastSample = 0;
+            let phase = 0;
+            bitcrusher.onaudioprocess = function(e) {
+                let input = e.inputBuffer.getChannelData(0);
+                let output = e.outputBuffer.getChannelData(0);
+                let step = Math.pow(0.5, bits);
+                for (let i = 0; i < input.length; i++) {
+                    phase += norm;
+                    if (phase >= 1) {
+                        phase -= 1;
+                        lastSample = step * Math.floor(input[i] / step + 0.5);
+                    }
+                    output[i] = lastSample;
                 }
-                const box = document.createElement("div");
-                box.className = "wn-photo";
-                const img = new Image();
-                img.onload = () => img.classList.add('loaded');
-                img.src = `${CONFIG.IMG_PATH}${String(i).padStart(2, '0')}.webp`;
-                box.appendChild(img);
-                frag.lastElementChild.appendChild(box);
-            }
-            document.getElementById("app").appendChild(frag);
-            setupTracking();
+            };
+
+            // Crear un sonido tipo 'drone' generativo
+            const osc = audioCtx.createOscillator();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(55, audioCtx.currentTime); // A1 Note
+            osc.connect(bitcrusher);
+            bitcrusher.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            
+            isStarted = true;
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 3);
+            initDataArt();
         }
+
+        const track = document.getElementById('track');
+        const items = document.querySelectorAll('.pano-item');
+        const progressBar = document.getElementById('progress-bar');
+        const indexDisplay = document.getElementById('index-display');
+        const canvas = document.getElementById('data-art-canvas');
+        const endVideo = document.getElementById('end-video');
+        const ctx = canvas.getContext('2d');
+        let scrollPercent = 0;
 
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 20 && !systemActivated) activateSystem('SCROLL');
+            if (!isStarted) return;
 
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollPercent = window.scrollY / (docHeight || 1);
-
-            // --- 30%: CAPTURA EN EL BOTTOM ---
-            if (scrollPercent > 0.3 && !photoCaptured) capturePhoto();
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            scrollPercent = window.scrollY / scrollHeight;
             
-            // --- 30% AL 50%: SCRUBBING REVEAL ---
-            if (photoCaptured) {
-                const revealStart = 0.3;
-                const revealEnd = 0.5;
-                let revealProg = (scrollPercent - revealStart) / (revealEnd - revealStart);
-                revealProg = Math.min(Math.max(revealProg, 0), 1);
+            // Horizontal Movement (0 to 3 slides worth of width)
+            const move = scrollPercent * (items.length - 1) * 100;
+            track.style.transform = `translate3d(-${move}vw, 0, 0)`;
 
-                const bioImg = document.getElementById('gradual-bio-img');
-                bioImg.style.opacity = revealProg;
-                bioImg.style.filter = `blur(${(1 - revealProg) * 30}px) grayscale(${1 - revealProg})`;
+            // Audio Reactivity: Increase pitch and volume based on scroll
+            if (gainNode) {
+                gainNode.gain.value = 0.1 + (scrollPercent * 0.4);
             }
 
-            // --- 50% AL 80%: MÉTRICAS ALINEADAS ---
-            const socialHud = document.getElementById('social-hud-overlay');
-            if (scrollPercent > 0.5 && scrollPercent < 0.9) {
-                socialHud.style.opacity = "1";
-                const multiplier = Math.pow((scrollPercent - 0.5) * 10, 5); 
-                document.getElementById('likes-val').innerText = Math.floor(multiplier * 2.5).toLocaleString();
-                document.getElementById('hates-val').innerText = Math.floor(multiplier * 7.8).toLocaleString();
-            } else if (scrollPercent >= 0.9) {
-                socialHud.style.opacity = "1";
+            // Parallax Logic & Active State
+            items.forEach((item, i) => {
+                // Calculate relative position to viewport (-1 to 1)
+                const relativePos = (scrollPercent * (items.length - 1)) - i;
+                const parallaxX = relativePos * -150; // Intensity of the float effect
+                
+                item.style.setProperty('--parallax-x', `${parallaxX}px`);
+                
+                // Fade effect logic: 1 at center, 0 when out of view
+                const opacity = Math.max(0, 1 - Math.abs(relativePos));
+                item.style.opacity = opacity;
+
+                item.classList.toggle('active', Math.abs(relativePos) < 0.5);
+            });
+
+            progressBar.style.width = `${scrollPercent * 100}%`;
+            const currentIndex = Math.min(Math.floor(scrollPercent * items.length), items.length - 1);
+            indexDisplay.innerText = `${(currentIndex + 1).toString().padStart(2, '0')} / ${items.length.toString().padStart(2, '0')}`;
+
+            // Trigger Data Art Animation at the very end
+            if (scrollPercent > 0.95) {
+                canvas.style.opacity = '1';
+                track.style.opacity = 1 - ((scrollPercent - 0.95) * 20);
+                if (endVideo.paused) endVideo.play();
+
+                // Bitcrusher intensity logic: intensifies with scroll
+                const intensity = (scrollPercent - 0.95) * 20; // 0 to 1
+                bits = 16 - (intensity * 12); // Drops from 16 to 4 bits
+                norm = 1 - (intensity * 0.9); // Reduce sample rate to 10%
             } else {
-                socialHud.style.opacity = "0";
-            }
+                canvas.style.opacity = '0';
+                track.style.opacity = '1';
+                endVideo.pause();
 
-            if (scrollPercent > 0.96) document.getElementById('btnIdentity').style.display = 'block';
+                bits = 16;
+                norm = 1;
+            }
         });
 
-        function setupTracking() {
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                    if (e.target.classList.contains('word') && e.isIntersecting) e.target.classList.add('revealed');
-                    if (e.target.classList.contains('batch') && e.isIntersecting) e.target.classList.add('visible');
+        // --- DATA ART GENERATIVE SYSTEM ---
+        let particles = [];
+        function initDataArt() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            for(let i=0; i<150; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speedX: (Math.random() - 0.5) * 2,
+                    speedY: (Math.random() - 0.5) * 2,
+                    life: Math.random()
                 });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.word, .batch').forEach(el => observer.observe(el));
+            }
+            animateDataArt();
         }
 
-        document.getElementById('btnIdentity').onclick = () => {
-            const bio = localStorage.getItem('wn-bio-asset');
-            document.getElementById('modal-bio-display').innerHTML = `<img src="${bio}" style="width:100%; height:100%; object-fit:cover;">`;
-            document.getElementById('id-content').innerHTML = `SISTEMA_REVELADO: BOTTOM_FEEDS<br>EXTRACCIÓN_COMPLETA<br>STATUS: ANALIZADO`;
-            document.getElementById('identity-modal').style.display = 'flex';
-        };
+        function animateDataArt() {
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (scrollPercent > 0.95) {
+                // Video Data Art Distortion Logic
+                ctx.save();
+                // Cinematic technical look: high contrast, no color
+                ctx.filter = 'contrast(2.5) grayscale(1) brightness(0.8)';
+                
+                // Random jitter based on scroll depth
+                const jitterIntensity = (scrollPercent - 0.95) * 50;
+                const jX = (Math.random() - 0.5) * jitterIntensity;
+                const jY = (Math.random() - 0.5) * jitterIntensity;
+                
+                ctx.drawImage(endVideo, jX, jY, canvas.width, canvas.height);
+                
+                // Data Art Distortion: Random horizontal slices
+                if (Math.random() > 0.8) {
+                    const y = Math.random() * canvas.height;
+                    const h = Math.random() * 50;
+                    const xOffset = (Math.random() - 0.5) * 300; // Heavy displacement
+                    ctx.drawImage(canvas, 0, y, canvas.width, h, xOffset, y, canvas.width, h);
+                }
+                
+                ctx.restore();
+            }
 
-        window.onload = init;
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                
+                if(p.x > canvas.width) p.x = 0;
+                if(p.x < 0) p.x = canvas.width;
+                if(p.y > canvas.height) p.y = 0;
+                if(p.y < 0) p.y = canvas.height;
+
+                ctx.fillStyle = `rgba(255, 0, 0, ${p.life})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw connection lines (Data Art)
+                particles.forEach(p2 => {
+                    let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                    if(dist < 100) {
+                        ctx.strokeStyle = `rgba(255, 0, 0, ${0.1 * (1 - dist/100)})`;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            requestAnimationFrame(animateDataArt);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 </html>
