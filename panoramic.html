@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es" class="bg-black">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WHISPERING NOISE | PANORAMIC EXPLORER</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root { --red-glitch: #ff0000; }
+        body { font-family: 'Space Mono', monospace; color: #fff; overflow-x: hidden; }
+        canvas { pointer-events: none; }
+        
+        /* Custom Scrollbar para no romper la estética */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--red-glitch); }
+
+        .pano-container {
+            position: relative;
+            width: 100%;
+            height: 80vh;
+            overflow: hidden;
+            cursor: crosshair;
+            border-top: 1px solid #222;
+            border-bottom: 1px solid #222;
+        }
+
+        .pano-wrapper {
+            position: absolute;
+            height: 100%;
+            width: 300%; /* El triple del ancho para permitir recorrido */
+            left: 0;
+            display: flex;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .pano-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(1) contrast(1.2);
+            transition: filter 0.5s;
+        }
+
+        .pano-container:hover .pano-image { filter: grayscale(0.5) contrast(1); }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(255,0,0,0.1) 0%, transparent 100%);
+            position: absolute;
+            bottom: -100px;
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { bottom: -100px; }
+            100% { bottom: 100%; }
+        }
+
+        .ui-label {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            background: rgba(0,0,0,0.8);
+            padding: 5px 10px;
+            border-left: 2px solid var(--red-glitch);
+            z-index: 20;
+        }
+
+        /* Data Art Stream */
+        #data-stream {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 8px;
+            color: var(--red-glitch);
+            opacity: 0.3;
+            writing-mode: vertical-rl;
+            text-orientation: monospace;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="selection:bg-red-600">
+    <!-- Intro Section -->
+    <section class="h-[60vh] flex flex-col justify-center px-10">
+        <h1 class="text-6xl font-bold tracking-tighter text-red-600 mb-4 italic">WIDE_SIGHT</h1>
+        <p class="max-w-xl text-sm opacity-50 leading-relaxed">
+            Desliza el cursor sobre las capturas para decodificar el panorama completo. 
+            La realidad fragmentada requiere una observación lateral persistente.
+        </p>
+        <div class="mt-8 flex gap-4 text-[10px] uppercase tracking-[4px]">
+            <span class="animate-pulse">● Recibiendo_Datos</span>
+            <span class="text-zinc-600">Protocolo: 0x284-PANO</span>
+        </div>
+    </section>
+
+    <div id="data-stream"></div>
+
+    <!-- Panorama 1: Interactive Mouse Tracking -->
+    <div class="px-10 mb-4 flex justify-between items-end">
+        <span class="text-[10px] opacity-40 uppercase">Sector_01: EYES_ON_CITY</span>
+        <span class="text-[10px] text-red-600">POS_X: <span id="pos-x">0</span>%</span>
+    </div>
+    <div class="pano-container group" id="pano-1">
+        <div class="ui-label uppercase">Interact_Scan: Mueve el mouse para recorrer</div>
+        <div class="scanline"></div>
+        <canvas id="hud-canvas" class="absolute inset-0 z-30 opacity-60"></canvas>
+        <div class="pano-wrapper" id="wrapper-1">
+            <img src="assets/img/city.webp" class="pano-image" alt="Panorama">
+            <img src="assets/img/fire.webp" class="pano-image" alt="Panorama">
+            <img src="assets/img/city.webp" class="pano-image" alt="Panorama">
+        </div>
+    </div>
+
+    <!-- Panorama 2: Vertical Scroll to Horizontal Reveal -->
+    <section class="mt-40 px-10 mb-4">
+        <div class="flex items-center gap-2 mb-2">
+            <div class="h-px flex-1 bg-zinc-800"></div>
+            <span class="text-[10px] text-red-600 animate-pulse">ESTADO: DECODIFICANDO_NÚCLEO</span>
+        </div>
+        <span class="text-[10px] opacity-40 uppercase">Sector_02: THE_VOID_SCRUBBER</span>
+    </section>
+    <div class="pano-container h-[50vh]" id="pano-2">
+        <div class="ui-label uppercase">Auto_Scrub: Vinculado al Scroll</div>
+        <div class="pano-wrapper" id="wrapper-2">
+            <img src="assets/img/tierra.webp" class="pano-image" alt="Panorama">
+            <img src="assets/img/red.webp" class="pano-image" alt="Panorama">
+            <img src="assets/img/tierra.webp" class="pano-image" alt="Panorama">
+        </div>
+    </div>
+
+    <footer class="h-[40vh] flex items-center justify-center border-t border-zinc-900 mt-20">
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="text-[10px] tracking-[5px] hover:text-red-600 transition-colors uppercase cursor-pointer">
+            Reiniciar_Ciclo
+        </button>
+    </footer>
+
+    <script>
+        // Panorama 1: Mouse movement logic
+        const container1 = document.getElementById('pano-1');
+        const wrapper1 = document.getElementById('wrapper-1');
+        const posXDisplay = document.getElementById('pos-x');
+        const canvas = document.getElementById('hud-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0;
+        let velocity = 0;
+
+        container1.addEventListener('mousemove', (e) => {
+            const rect = container1.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percent = (x / rect.width);
+            mouseX = x; mouseY = e.clientY - rect.top;
+            const movement = percent * 66.6; // Mueve el wrapper basado en su ancho extra (300% total)
+            
+            wrapper1.style.transform = `translate3d(-${movement}%, 0, 0)`;
+            posXDisplay.innerText = Math.round(percent * 100);
+        });
+
+        // Panorama 2: Scroll linked logic
+        const wrapper2 = document.getElementById('wrapper-2');
+        
+        window.addEventListener('scroll', () => {
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            // Solo aplicamos el efecto si estamos en una posición relevante de scroll
+            const move = scrollPercent * 50; 
+            wrapper2.style.transform = `translate3d(-${move}%, 0, 0)`;
+        });
+
+        // --- Data Art & Generative Logic ---
+        function resizeCanvas() {
+            canvas.width = container1.offsetWidth;
+            canvas.height = container1.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawHUD() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Generative Crosshair Tracking
+            ctx.strokeStyle = '#ff0000';
+            ctx.lineWidth = 0.5;
+            
+            // Draw dynamic lines connecting to "points of interest"
+            const points = [
+                {x: canvas.width * 0.2, y: canvas.height * 0.4},
+                {x: canvas.width * 0.7, y: canvas.height * 0.6},
+                {x: canvas.width * 0.5, y: canvas.height * 0.2}
+            ];
+
+            points.forEach(p => {
+                const dist = Math.hypot(mouseX - p.x, mouseY - p.y);
+                if (dist < 300) {
+                    ctx.beginPath();
+                    ctx.moveTo(mouseX, mouseY);
+                    ctx.lineTo(p.x, p.y);
+                    ctx.stroke();
+                    
+                    ctx.strokeRect(p.x - 10, p.y - 10, 20, 20);
+                    ctx.fillText(`TRK_0x${Math.floor(dist).toString(16)}`, p.x + 15, p.y);
+                }
+            });
+
+            // Hex Stream Generator
+            if (Math.random() > 0.9) {
+                const hex = '0123456789ABCDEF';
+                let code = '';
+                for(let i=0; i<8; i++) code += hex[Math.floor(Math.random()*16)];
+                
+                const stream = document.getElementById('data-stream');
+                const line = document.createElement('div');
+                line.innerText = `0x${code}_${window.scrollY.toString(16)}`;
+                stream.prepend(line);
+                if (stream.children.length > 20) stream.lastChild.remove();
+                
+                // Reactividad: Opacidad basada en la posición
+                stream.style.opacity = 0.2 + (Math.sin(Date.now() * 0.001) * 0.1);
+            }
+
+            requestAnimationFrame(drawHUD);
+        }
+        drawHUD();
+    </script>
+</body>
+</html>
